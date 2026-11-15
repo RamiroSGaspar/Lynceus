@@ -1,12 +1,14 @@
 # Arquitectura de Lynceus (nombre provisorio)
 
-> **Estado:** propuesta para aprobar (punto de control 1). Todavía no hay nada construido.
+> **Estado:** diseño aprobado y prototipo integrado. La historia y las referencias
+> medidas por el motor, la validación ampliada y el modelo de incertidumbre siguen
+> pendientes. El estado de cada entrega se mantiene en `producto.md`, sección 14.
 
 | | |
 |---|---|
 | **Proyecto** | NASA Space Apps Challenge 2026 — *Create Health Monitoring Software for Astronauts on Space Missions* |
 | **Fecha** | 15 de noviembre de 2026 |
-| **Para qué es** | Dejar por escrito qué se va a construir y cómo, para que Ramiro lo apruebe o le ponga límites antes de empezar. |
+| **Para qué es** | Conservar el diseño aprobado y sus supuestos como referencia para la construcción. |
 | **De dónde sale** | De las decisiones de las rondas 1 y 2 ([decisiones-y-criterios.md](decisiones-y-criterios.md)) y de las investigaciones de `investigaciones/`. Lo que es criterio nuestro y no de la NASA está en la sección 12. |
 
 ## 1. Qué es

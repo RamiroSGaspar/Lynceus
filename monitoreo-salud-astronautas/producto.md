@@ -156,22 +156,33 @@ Elegimos un solo problema y lo llevamos hasta el final, en lugar de un panel con
 
 ## 14. Estado actual
 
-Al domingo 15 de noviembre, 06:10:
+Al domingo 15 de noviembre de 2026, después de integrar la interfaz (`c673fb7`):
 
 | Parte | Estado |
 |---|---|
 | Investigación (ocho documentos) | Terminada |
-| Arquitectura y cinco especificaciones | Terminadas |
+| Arquitectura y especificaciones de construcción | Disponibles |
 | Estructura del proyecto y piezas comunes de la interfaz | Terminadas |
 | Formato de archivo del tomógrafo y ojo virtual con la tripulación | Hechos, con pruebas |
-| Instrumento virtual y análisis de la imagen | En construcción |
-| Reglas, niveles, próximos pasos y textos | En construcción |
-| Aplicación: inicio, sesión guiada, resultado, historia e informe | En construcción |
-| Pruebas de visión | En construcción |
-| Base de conocimiento y asistente | En construcción |
-| Pantalla de captura de la tomografía | Falta; espera al instrumento virtual |
-| Medición del error del análisis | Falta; espera al análisis |
+| Instrumento virtual y análisis de la imagen | Construidos y probados con imágenes simuladas |
+| Reglas, niveles, próximos pasos y textos | Construidos; el modelo de error todavía es provisorio |
+| Aplicación: inicio, sesión guiada, resultado, historia e informe | Integrada, con recorrido de captura real hasta resultado e informe |
+| Pruebas de visión | Construidas e integradas; no validadas con personas |
+| Base de conocimiento y asistente | Construidos e integrados; falta probar las respuestas contra la API real |
+| Pantalla de captura y visor de la tomografía | Integrados; muestran el análisis y permiten repetir capturas rechazadas |
+| Historia y examen de antes del vuelo | Todavía salen de tablas provisorias; falta sustituirlos por resultados del motor |
+| Medición del error del análisis | Primera evaluación sobre datos simulados disponible; faltan validación ampliada y modelo de calidad e incertidumbre |
 | Documentación en inglés y español, publicación, diapositivas y formulario | Falta |
+
+La entrega integrada pasó 640 pruebas automáticas y compiló. El recorrido en navegador
+incluyó el cuestionario, ambos ojos, un rechazo con repetición, resultado, visor, historia
+e informe, en inglés y español. En ese recorrido final se omitieron agudeza y Amsler;
+no se probaron una respuesta del asistente contra la API, el botón de descarga ni la
+impresión en papel. Las pruebas por separado no equivalen a validación clínica.
+
+Los avisos de resultados y referencias provisorios siguen visibles. El recorrido ya
+se puede usar como prototipo, pero sus márgenes de error no deben presentarse como
+resultado de la validación ampliada.
 
 **Falta decidir o hacer por parte del equipo:** crear el equipo en la web de Space Apps, crear el repositorio y el proyecto en Vercel, cargar la clave del asistente con su tope de gasto, y confirmar el nombre.
 
