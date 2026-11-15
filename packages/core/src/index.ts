@@ -21,3 +21,12 @@ export { qualityDb } from './quality';
 export { readVol, writeVol, writeVolBlocks } from './vol/io';
 export { toDisplayGray, displayGray } from './vol/display';
 export { INVALID_VALUE, VolFormatError, volFileBytes } from './vol/format';
+
+// Rules, texts, provisional history and report (specification 04).
+export * from './rules/sources';
+export * from './rules/thresholds';
+export * from './rules/errorModel';
+export * from './rules/probability';
+export * from './rules/assess';
+export { getHistory, PROVISIONAL_ENGINE_VERSION } from './dataset/provisional';
+export * from './texts';
