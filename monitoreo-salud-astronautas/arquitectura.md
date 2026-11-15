@@ -1,8 +1,9 @@
 # Arquitectura de Lynceus (nombre provisorio)
 
-> **Estado:** diseño aprobado y prototipo integrado. La historia y las referencias
-> medidas por el motor, la validación ampliada y el modelo de incertidumbre siguen
-> pendientes. El estado de cada entrega se mantiene en `producto.md`, sección 14.
+> **Estado:** diseño aprobado y prototipo integrado, con historia y referencias
+> medidas por el motor. La validación ampliada y los modelos de calidad e
+> incertidumbre siguen pendientes. El estado de cada entrega se mantiene en
+> `producto.md`, sección 14.
 
 | | |
 |---|---|
