@@ -12,7 +12,8 @@ La pausa queda levantada. La validación existente se cerró en `validacion`
   por parpadeo simulado y aceptado al repetir; resultado, historia e informe.
   Se comprobó la descarga del informe y los textos principales en ambos idiomas.
 - Se saltearon cuestionario, agudeza y Amsler para este control breve; la aplicación
-  los muestra como no hechos. No se probó la API del asistente ni la impresión.
+  los muestra como no hechos. La impresión no se probó; el asistente se comprobó
+  después con la API real, como se registra abajo.
 - Se conservaron las 621 capturas, se comprobó el ajuste publicado y se corrigió
   una prueba cuyo cambio se cancelaba contra la referencia. Núcleo: 340 pruebas;
   web: 310; validación: 21 más una de rendimiento. Compilación y credenciales correctas.
@@ -37,16 +38,26 @@ La documentación ya está escrita: [README](../README.es.md), guías públicas 
 [guía personal](guia-para-defender-el-proyecto.md).
 
 1. Siete diapositivas y texto del formulario a partir de `producto.md`.
-2. Prueba breve de la API en curso, encargada al worker de `asistente-api`.
-   Ramiro confirmó la carga de la clave; el chequeo seguro devuelve `present`.
-   Fijó el presupuesto en **USD 8**; el límite mensual efectivo se configura en
-   la consola de Anthropic. La comprobación local no verifica ese ajuste externo.
-   El producto usa **Haiku 5.5** (`claude-haiku-5-5`, esfuerzo `medium`).
-   La preparación de Opus (`38a4faa`) incluye `assistant:smoke`: seis casos.
-   `pnpm --filter @app/web assistant:smoke -- --check` comprueba configuración
-   sin llamadas; `NO KEY` no demuestra que la API funcione. Reiniciar Vite
-   después de cargar la clave.
-3. Publicación cuando Ramiro la autorice y defina el destino.
+2. Publicación cuando Ramiro la autorice y defina el destino.
+
+### Asistente: prueba real completada
+
+Ramiro cargó la clave y fijó un presupuesto de **USD 8**; el límite mensual efectivo
+se configura en Anthropic y no se verifica con el chequeo local.
+**Haiku 5.5** (`claude-haiku-5-5`, esfuerzo `medium`) completó seis casos con el
+resultado esperado y una consulta desde la interfaz: siete llamadas HTTP 200,
+sin reintentos ni fallos del proveedor. La prueba de interfaz fue sobre Elena,
+día 118, con respuesta en español y tres fuentes.
+
+Los seis casos costaron aproximadamente USD 0,004 según los tokens y las tarifas
+documentadas; esa estimación no incluye la consulta de interfaz. Una frase usó
+«probable» en vez de repetir «primer indicio»; el nivel del motor y los números
+permanecieron correctos. Ver [registro público](../docs/es/development.md).
+
+El código ya está integrado (`38a4faa`, incorporado en `70fa9c5`).
+El servidor principal recargó `.env.local` al cambiarlo. No hace falta repetir la
+batería para continuar con la presentación. Si cambia la clave, comprobar la
+recarga del servidor antes de usarlo.
 
 Sonnet 5.5 High en Devin para tareas directas; Opus 5.5 High para las que lo
 requieran. Claude Code solo por indicación de Ramiro. Worktrees nuevos: hijos de

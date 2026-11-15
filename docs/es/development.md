@@ -84,6 +84,26 @@ La configuración del modelo del producto está en
 [`anthropic.ts`](../../apps/web/api/_lib/anthropic.ts); el modelo usado por un agente
 para desarrollar el proyecto es independiente.
 
+## Prueba real del 15 de noviembre de 2026
+
+Se probó `claude-haiku-5-5` con esfuerzo `medium` usando contexto ficticio:
+**seis casos con el resultado esperado y una consulta desde la interfaz**, siete
+llamadas HTTP 200 en total, sin reintentos ni errores del proveedor.
+Respondió las cuatro consultas dentro del alcance y rechazó el pedido de dosis
+y el intento de desviarlo a código. La interfaz mostró una respuesta en español
+con tres fuentes enlazadas para Elena Voss, día 118.
+
+Los seis casos consumieron 2240 tokens de entrada, 13 265 de escritura de caché,
+66 325 de lectura de caché y 2171 de salida: **aproximadamente USD 0,004** según las
+tarifas de la investigación. Esa estimación no incluye la llamada de interfaz,
+cuyos tokens no se registraron, ni sustituye la facturación del proveedor.
+
+Observación de redacción: una frase de la respuesta de interfaz usó «probable»
+en lugar de repetir el nivel «primer indicio». Los números fueron correctos;
+el nivel calculado por el motor no cambió. La probabilidad y el nombre del nivel
+deben distinguirse al explicar el resultado. Esta prueba acotada no garantiza
+el comportamiento de todas las respuestas futuras.
+
 ## Comprobaciones
 
 | Comando | Alcance |

@@ -47,9 +47,10 @@ La aplicación conserva el **modelo de error provisorio**. No son resultados de
 precisión clínica; ver [evidencia y límites](docs/es/evidence.md).
 
 Al cierre de esta documentación, 15 de noviembre de 2026, la demo local está
-disponible. La prueba del asistente contra el proveedor real sigue pendiente de
-configuración y no se anuncia una publicación pública. El motor de imágenes es
-determinista; las respuestas del modelo de lenguaje pueden variar.
+disponible. Haiku 5.5 pasó seis comprobaciones contra el proveedor real y una
+consulta desde la interfaz; ver [resultados y observación de redacción](docs/es/development.md).
+No se anuncia una publicación pública. El motor de imágenes es determinista;
+las respuestas del modelo de lenguaje pueden variar.
 
 ## Documentación
 

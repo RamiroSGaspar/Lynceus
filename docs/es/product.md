@@ -88,8 +88,10 @@ inicio. La aplicación no sincroniza historias entre dispositivos.
 
 La demo local permite completar el recorrido y descargar el informe. La evaluación
 de 621 capturas está publicada; el modelo ajustado quedó experimental y el modelo
-provisorio sigue activo. La comprobación con la API real del asistente está pendiente
-en este cierre documental.
+provisorio sigue activo. En el entorno de desarrollo se completaron seis casos
+contra la API real de Haiku 5.5 y una consulta desde la interfaz. Los resultados y
+una observación de redacción están en [desarrollo](development.md).
+Una instalación nueva necesita configurar su clave.
 
 No mide presión intracraneal, cambios cerebrales, graduación, quistes ni grosor de
 coroides. No está validado con pacientes, astronautas reales ni el tomógrafo físico.

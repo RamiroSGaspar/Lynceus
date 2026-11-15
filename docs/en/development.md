@@ -83,6 +83,25 @@ The product model is configured in
 [`anthropic.ts`](../../apps/web/api/_lib/anthropic.ts). The model used by a coding
 agent to build the project is a separate choice.
 
+## Real-provider check on 15 November 2026
+
+`claude-haiku-5-5` with `medium` effort was tested using fictional context:
+**six cases with the expected outcome and one UI query**, seven HTTP 200 calls
+in total, without retries or provider errors. It answered the four in-scope
+queries and refused the dosage request and code-writing hijack. The UI showed
+a Spanish response with three linked sources for Elena Voss, day 118.
+
+The six cases used 2240 input tokens, 13,265 cache-write tokens, 66,325 cache-read
+tokens and 2171 output tokens: **approximately USD 0.004** at the researched
+rates. This estimate excludes the UI call, whose tokens were not recorded, and
+does not replace provider billing.
+
+Wording observation: one UI sentence used “probable” (“likely”) instead of
+repeating the level “primer indicio” (“first sign”). Numbers were correct and
+the engine's calculated level did not change. Probability and the level's name
+should be distinguished when explaining the result. This small check does not
+guarantee the behavior of every future answer.
+
 ## Checks
 
 | Command | Scope |

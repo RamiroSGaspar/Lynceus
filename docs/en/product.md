@@ -90,8 +90,9 @@ is no cross-device history synchronization.
 
 The local demo completes the workflow and downloads the report. The 621-capture
 evaluation is published; the fitted model remains experimental and the provisional
-model remains active. Real-provider assistant verification is pending at this
-documentation checkpoint.
+model remains active. Six real-provider Haiku 5.5 cases and one UI query were
+completed in the development environment. Results and a wording observation are
+recorded in [development](development.md). A new installation still needs a key.
 
 The tool does not measure intracranial pressure, brain changes, refraction, cysts
 or choroidal thickness. It is not validated on patients, real astronauts or the

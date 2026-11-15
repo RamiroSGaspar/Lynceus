@@ -168,7 +168,7 @@ Al domingo 15 de noviembre de 2026, después de cerrar la validación sintética
 | Reglas, niveles, próximos pasos y textos | Construidos; el modelo de error todavía es provisorio |
 | Aplicación: inicio, sesión guiada, resultado, historia e informe | Integrada, con recorrido de captura real hasta resultado e informe |
 | Pruebas de visión | Construidas e integradas; no validadas con personas |
-| Base de conocimiento y asistente | Construidos e integrados; falta probar las respuestas contra la API real |
+| Base de conocimiento y asistente | Integrados; seis casos reales con Haiku 5.5 y una consulta desde la interfaz comprobados |
 | Pantalla de captura y visor de la tomografía | Integrados; muestran el análisis y permiten repetir capturas rechazadas |
 | Historia y examen de antes del vuelo | Medidos con el mismo motor: 27 sesiones de los cuatro tripulantes, con sus pedidos y reintentos registrados |
 | Medición del error del análisis | Evaluadas 621 capturas simuladas; informe y explicación bilingüe disponibles. El modelo ajustado no cumplió sus criterios y se conserva el provisorio |
@@ -178,9 +178,11 @@ Al domingo 15 de noviembre de 2026, después de cerrar la validación sintética
 Entradas: [README en español](../README.es.md), [README en inglés](../README.md)
 y [guía personal para defender el proyecto](guia-para-defender-el-proyecto.md).
 El asistente tiene una prueba breve de seis casos y diagnóstico de fallos de API;
-su comprobación real sigue pendiente de la clave y el tope de gasto.
+la comprobación real completó los seis casos y una consulta desde la interfaz,
+sin fallos del proveedor. Se registró una frase imprecisa entre probabilidad y
+nombre del nivel; ver [desarrollo](../docs/es/development.md).
 
-La entrega reúne 672 pruebas automáticas comprobadas, además de compilación y control
+La entrega reúne 680 pruebas automáticas comprobadas, además de compilación y control
 de credenciales. En el cierre se corrigió una prueba que modificaba por igual el examen
 y su referencia, cancelando el cambio que esperaba detectar; el módulo corregido pasó
 sus pruebas. El modelo de la aplicación sigue siendo el provisorio.
@@ -190,8 +192,9 @@ rechazo del izquierdo por parpadeo simulado, segundo intento aceptado, resultado
 historia e informe con descarga. Se comprobaron textos en español e inglés y la nueva
 explicación de validación en ambos idiomas. Se saltearon cuestionario, agudeza y Amsler,
 y el resultado los identifica como no hechos. El visor y las pruebas de visión ya se
-habían comprobado en las entregas anteriores. Quedan sin probar la respuesta del
-asistente contra la API real y la impresión en papel. Esto no es validación clínica.
+habían comprobado en las entregas anteriores. Posteriormente se comprobó el
+asistente con la API real y una consulta desde el resultado de Elena del día 118.
+Queda sin probar la impresión en papel. Esto no es validación clínica.
 
 La historia se regeneró dos veces y su archivo coincidió byte a byte. Además, se
 comprobó en el navegador el visor de una referencia y de un control cuyo primer
@@ -202,7 +205,7 @@ Los registros antiguos que se hayan guardado con referencias provisorias conserv
 sus avisos. El modelo de error también sigue rotulado como provisorio: los márgenes
 actuales no deben presentarse como resultado de la validación ampliada.
 
-**Falta decidir o hacer por parte del equipo:** crear el equipo en la web de Space Apps, crear el repositorio y el proyecto en Vercel, cargar la clave del asistente con su tope de gasto, y confirmar el nombre.
+**Falta decidir o hacer por parte del equipo:** crear el equipo en la web de Space Apps, crear el repositorio y el proyecto en Vercel, configurar allí el secreto y los controles de gasto para la publicación, y confirmar el nombre.
 
 ## 15. Glosario
 

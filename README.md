@@ -48,7 +48,8 @@ The application retains the **provisional error model**. These are not clinical
 accuracy results; see [evidence and limitations](docs/en/evidence.md).
 
 At this documentation checkpoint, 15 November 2026, the local demo is available.
-Real-provider assistant testing is pending configuration, and no public deployment
+Haiku 5.5 passed six real-provider checks and one UI query; see the
+[results and wording observation](docs/en/development.md). No public deployment
 is claimed. The image engine is deterministic; language-model responses need not be.
 
 ## Read more

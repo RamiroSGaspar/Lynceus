@@ -64,3 +64,5 @@ This flow was checked with vision tests skipped, rejection and retry, result,
 history, report download and key text in both languages. The validation explanation
 was also checked in English and Spanish. Physical printing and a real-provider
 AI response were not part of that check. A local link works while its server runs.
+The real API was subsequently checked with six questions and one UI query about
+Elena, day 118; see [results](development.md).

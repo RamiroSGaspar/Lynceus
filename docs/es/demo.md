@@ -67,3 +67,5 @@ resultado, historia, descarga del informe y textos principales en ambos idiomas.
 La explicación de validación también se comprobó en español e inglés. La
 impresión física y una respuesta real del proveedor de IA no forman parte de ese
 control. Un enlace local solo funciona mientras su servidor esté encendido.
+Después se comprobó la API real con seis preguntas y una consulta desde la
+interfaz sobre Elena, día 118; ver [resultados](development.md).
