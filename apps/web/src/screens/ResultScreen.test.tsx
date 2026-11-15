@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { SessionRecord } from '@app/core';
+import { ENGINE_VERSION, type SessionRecord } from '@app/core';
 import { CREW, explainAssessment, getHistory } from '../app/core';
 import { withMissionDay, withRecord } from '../app/store';
 import { makeVisionSession } from '../sample/vision';
@@ -166,6 +166,19 @@ describe('result screen', () => {
     expect(text).toContain(explainAssessment((getHistory('B', 150)[0] as SessionRecord).assessment, 'en').headline);
     expect(html).not.toContain('level-badge');
     expect(html).not.toContain('<svg role="img"');
+  });
+
+  it('says in plain sight when the numbers of a control were not measured on an image', () => {
+    const fromTables = textOf(renderHtml(<ResultScreen crewId="C" flightDay={118} />, 'en'));
+    expect(fromTables).toContain('The numbers of this control were not measured on an image.');
+    const record = sampleRecord(getHistory('B', 150), 'B', { flightDay: 150, od: 26, os: 3, origin: 'live' });
+    const measured = (eye: 'OD' | 'OS') => {
+      const capture = record.eyes[eye];
+      return { ...capture, accepted: capture.accepted && { ...capture.accepted, engineVersion: ENGINE_VERSION } };
+    };
+    const byEngine: SessionRecord = { ...record, eyes: { OD: measured('OD'), OS: measured('OS') } };
+    const text = textOf(renderHtml(<ResultScreen crewId="B" flightDay={150} />, 'en', testStore((state) => withRecord(state, byEngine))));
+    expect(text).not.toContain('were not measured on an image');
   });
 
   it('follows the mission day: a control after it is not there yet', () => {

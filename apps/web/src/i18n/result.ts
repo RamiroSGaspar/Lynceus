@@ -13,6 +13,7 @@ export const resultMessages = defineMessages(
     'origin.precomputed': 'Control that comes with the application.',
     'title': 'Result of flight day {day}: {name}',
     'eyes.heading': 'Each eye',
+    'source.notImage': 'The numbers of this control were not measured on an image. Their source says: “{engine}”.',
 
     'sure.heading': 'How sure',
     'sure.lead':
@@ -131,6 +132,7 @@ export const resultMessages = defineMessages(
     'origin.precomputed': 'Control que viene con la aplicación.',
     'title': 'Resultado del día de vuelo {day}: {name}',
     'eyes.heading': 'Cada ojo',
+    'source.notImage': 'Los números de este control no se midieron sobre una imagen. Su origen dice: “{engine}”.',
 
     'sure.heading': 'Qué tan seguro',
     'sure.lead':

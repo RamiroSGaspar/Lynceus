@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from 'react';
 import {
+  ENGINE_VERSION,
   QUALITY_MAX_DB,
   QUALITY_POOR_DB,
   ACUITY_RETEST_LIMIT_LOGMAR,
@@ -514,6 +515,10 @@ export function ResultScreen({ crewId, flightDay }: { crewId: CrewId; flightDay:
     EYES.map((eye) => changeScaleDomain(todayMark(record, eye), earlierMarks(history, eye, record.flightDay))),
   );
   const baseline = baselineOf(history);
+  // An exam says which analysis produced it. Anything other than the measuring engine is said in plain sight.
+  const otherSource = EYES.map((eye) => record.eyes[eye].accepted?.engineVersion).find(
+    (version) => version !== undefined && version !== ENGINE_VERSION,
+  );
 
   return (
     <div className="screen result">
@@ -533,6 +538,8 @@ export function ResultScreen({ crewId, flightDay }: { crewId: CrewId; flightDay:
           <p key={sentence}>{sentence}</p>
         ))}
       </div>
+
+      {otherSource && <p className="callout callout--caution">{t('source.notImage', { engine: otherSource })}</p>}
 
       <section className="screen__section" aria-labelledby="eyes-heading">
         <h2 id="eyes-heading">{t('eyes.heading')}</h2>
