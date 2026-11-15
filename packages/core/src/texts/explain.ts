@@ -58,6 +58,11 @@ export interface Explanation {
 }
 
 const PHRASES: Readonly<Record<Locale, Phrases>> = { en: EN, es: ES };
+
+/** The sentences of one language, for the modules that build on the same wording (the report). */
+export function phrasesFor(locale: Locale): Phrases {
+  return PHRASES[locale];
+}
 const EYES: readonly Eye[] = ['OD', 'OS'];
 const MAX_SUMMARY_SENTENCES = 4;
 
