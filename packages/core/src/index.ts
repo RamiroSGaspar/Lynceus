@@ -10,3 +10,4 @@ export * from './rules/thresholds';
 export * from './rules/errorModel';
 export * from './rules/probability';
 export * from './rules/assess';
+export { getHistory, PROVISIONAL_ENGINE_VERSION } from './dataset/provisional';
