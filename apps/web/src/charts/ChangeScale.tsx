@@ -3,7 +3,8 @@ import { useI18n, useMessages } from '../i18n';
 import { chartMessages } from '../i18n/charts';
 import { commonMessages } from '../i18n/common';
 import { layoutChangeScale } from './changeScaleLayout';
-import { changeFormat } from './format';
+import { formatExact, formatPlain } from '../app/format';
+import { formatChange } from './format';
 import { bandOf, changeDomain, type BandId, type ChangeThresholds, type Domain } from './scale';
 import { useChartBox } from './useChartBox';
 
@@ -44,16 +45,14 @@ const BAND_IDS: readonly BandId[] = ['normal-variation', 'first-sign', 'clinical
  * doc `comunicar-resultados-de-salud.md`, table row 3).
  */
 export function ChangeScale({ eye, today, previous, thresholds, domain }: Props) {
-  const { formatNumber } = useI18n();
+  const { locale } = useI18n();
   const t = useMessages(chartMessages);
   const tc = useMessages(commonMessages);
   const { ref, width, fontPx, valueFontPx, measure } = useChartBox<HTMLDivElement>();
 
-  const signed = (valueUm: number, like: number = valueUm): string =>
-    formatNumber(valueUm, changeFormat(like, thresholds));
-  const thresholdText = (valueUm: number): string => formatNumber(valueUm, { maximumFractionDigits: 1 });
-  const first = thresholdText(thresholds.firstSignUm);
-  const second = thresholdText(thresholds.clinicallyConcerningUm);
+  const signed = (valueUm: number, like: number = valueUm): string => formatChange(valueUm, thresholds, locale, like);
+  const first = formatExact(thresholds.firstSignUm, locale);
+  const second = formatExact(thresholds.clinicallyConcerningUm, locale);
   const bandNames = Object.fromEntries(BAND_IDS.map((id) => [id, t(`band.${id}`)])) as Record<BandId, string>;
 
   const range = today?.change.interval95 ?? null;
@@ -69,10 +68,10 @@ export function ChangeScale({ eye, today, previous, thresholds, domain }: Props)
     domain: domain ?? changeScaleDomain(today, previous),
     thresholds,
     bandNames,
-    zero: { value: formatNumber(0), note: t('scale.zero.note') },
+    zero: { value: formatPlain(0, 0, locale), note: t('scale.zero.note') },
     firstSign: { value: t('threshold.value', { value: first }), note: t('nasa') },
     clinicallyConcerning: { value: t('threshold.value', { value: second }), note: t('nasa') },
-    tickLabel: (valueUm) => formatNumber(valueUm),
+    tickLabel: (valueUm) => formatPlain(valueUm, 0, locale),
     today:
       today && todayValue !== null
         ? {

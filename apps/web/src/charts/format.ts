@@ -1,4 +1,6 @@
-import { bandOf, type ChangeThresholds } from './scale';
+import type { Locale } from '@app/core';
+import { decimalsBeside, formatSigned } from '../app/format';
+import type { ChangeThresholds } from './scale';
 
 /**
  * Decimal places a change needs so that the number on screen falls on the same
@@ -6,15 +8,18 @@ import { bandOf, type ChangeThresholds } from './scale';
  * almost always; a value just past a threshold gets the decimals that show it.
  */
 export function changeDigits(valueUm: number, thresholds: ChangeThresholds): number {
-  const band = bandOf(valueUm, thresholds);
-  for (const digits of [0, 1, 2]) {
-    if (bandOf(Number(valueUm.toFixed(digits)), thresholds) === band) return digits;
-  }
-  return 2;
+  return decimalsBeside(valueUm, [thresholds.firstSignUm, thresholds.clinicallyConcerningUm]);
 }
 
-/** Number format of a change: explicit sign, and the decimals `changeDigits` asks for. */
-export function changeFormat(valueUm: number, thresholds: ChangeThresholds): Intl.NumberFormatOptions {
-  const digits = changeDigits(valueUm, thresholds);
-  return { minimumFractionDigits: digits, maximumFractionDigits: digits, signDisplay: 'exceptZero' };
+/**
+ * A change in micrometres with its sign. `like` is the value whose decimals to
+ * use, so the ends of a range are written like the value they belong to.
+ */
+export function formatChange(
+  valueUm: number,
+  thresholds: ChangeThresholds,
+  locale: Locale,
+  like: number = valueUm,
+): string {
+  return formatSigned(valueUm, changeDigits(like, thresholds), locale);
 }

@@ -4,7 +4,8 @@ import type { ChangePoint } from '../app/history';
 import { useI18n, useMessages } from '../i18n';
 import { chartMessages } from '../i18n/charts';
 import { commonMessages } from '../i18n/common';
-import { changeFormat } from './format';
+import { formatExact, formatPlain } from '../app/format';
+import { formatChange } from './format';
 import { layoutHistoryChart, type PlacedText } from './historyChartLayout';
 import { changeDomain, type BandId, type ChangeThresholds } from './scale';
 import { useChartBox } from './useChartBox';
@@ -47,18 +48,16 @@ function SeriesMark({ eye, x, y, size, live }: { eye: Eye; x: number; y: number;
  * the same bands as the number line. An equivalent table follows the drawing.
  */
 export function HistoryChart({ points, eyes = EYES, mission, thresholds, currentDay = null }: Props) {
-  const { formatNumber, locale } = useI18n();
+  const { locale } = useI18n();
   const t = useMessages(chartMessages);
   const tc = useMessages(commonMessages);
   const { ref, width, fontPx, measure } = useChartBox<HTMLDivElement>();
   const [activeDay, setActiveDay] = useState<number | null>(null);
 
   const shown = EYES.filter((eye) => eyes.includes(eye));
-  const signed = (valueUm: number, like: number = valueUm): string =>
-    formatNumber(valueUm, changeFormat(like, thresholds));
-  const thresholdText = (valueUm: number): string => formatNumber(valueUm, { maximumFractionDigits: 1 });
-  const first = thresholdText(thresholds.firstSignUm);
-  const second = thresholdText(thresholds.clinicallyConcerningUm);
+  const signed = (valueUm: number, like: number = valueUm): string => formatChange(valueUm, thresholds, locale, like);
+  const first = formatExact(thresholds.firstSignUm, locale);
+  const second = formatExact(thresholds.clinicallyConcerningUm, locale);
   const levelName = (level: Level | null): string => (level === null ? tc('level.not-measured') : tc(`level.${level}`));
 
   const domain = changeDomain(
@@ -81,7 +80,7 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
       clinicallyConcerning: t('threshold.label', { value: second }),
     },
     zeroLabel: t('history.zero'),
-    tickLabel: (value) => formatNumber(value),
+    tickLabel: (value) => formatPlain(value, 0, locale),
     yTitle: t('history.axis.y'),
     xTitle: t('history.axis.x'),
     series: shown.map((eye) => ({
