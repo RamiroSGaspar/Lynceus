@@ -288,7 +288,8 @@ function headline(assessment: SessionAssessment, isReference: boolean, p: Phrase
   const notMeasured = EYES.filter((eye) => !assessment.eyes[eye].measured);
   if (isReference) return p.headlineReference(notMeasured);
   if (assessment.level === 'acute-visual-symptom') return p.headlineAcute();
-  if (measured.length === 0) return p.headlineNothingMeasured();
+  // A session without a level is one where no eye could be measured.
+  if (assessment.level === null || measured.length === 0) return p.headlineNothingMeasured();
   if (assessment.level === 'first-sign' || assessment.level === 'clinically-concerning') {
     const atLevel = EYES.filter((eye) => assessment.eyes[eye].level === assessment.level);
     return p.headlineLevel(assessment.level, eyeSet(atLevel.length > 0 ? atLevel : measured), notMeasured);

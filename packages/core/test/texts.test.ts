@@ -304,9 +304,19 @@ describe('texts: what a result means and what it does not', () => {
       }
       expect(none.headline).not.toMatch(/\d/);
     }
+    // The session then has no level, and no text says "no detectable change".
+    expect(CASES.nothingMeasured!.level).toBeNull();
     expect(plain(explainAssessment(CASES.nothingMeasured!, 'en').headline)).toBe(
       'Neither eye could be measured today: this exam has no scan result.',
     );
+    expect(plain(explainAssessment(CASES.nothingMeasured!, 'es').headline)).toBe(
+      'Hoy no se pudo medir ninguno de los dos ojos: este control no tiene resultado de la tomografía.',
+    );
+    for (const locale of LOCALES) {
+      for (const { where, text } of texts(explainAssessment(CASES.nothingMeasured!, locale))) {
+        expect(text, `${locale} ${where}`).not.toMatch(/No detectable change|Sin cambio detectable/i);
+      }
+    }
     expect(explainAssessment(CASES.nothingMeasured!, 'en').eyes.OD.lines[0]).toBe('The scan was not centred on the optic nerve.');
     expect(explainAssessment(CASES.nothingMeasured!, 'en').eyes.OS.lines[0]).toBe('Part of the image was missing, as happens with a blink.');
   });

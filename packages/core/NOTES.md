@@ -11,7 +11,7 @@ especificación y qué falta.
 | 1. Azar, matemática y formato `.vol` | Hecho |
 | 2. Ojo virtual, tripulación y valor verdadero | Hecho |
 | 3. Instrumento virtual y `preview` | Hecho |
-| 4. Motor | Pendiente |
+| 4. Motor | Hecho |
 | 5. `accuracy`, precisión, rechazo y rendimiento | Pendiente |
 
 ## Mapa del código
@@ -38,6 +38,10 @@ especificación y qué falta.
 | `src/instrument/bscan.ts` | Dibujo de un corte: capas por columna integradas por píxel, vasos y sombras, coroides, cabeza del nervio, fallas, granulado y piso de ruido |
 | `src/instrument/slo.ts`, `font.ts`, `texture.ts` | Fondo de ojo, tipografía de mapa de bits propia, ruido suave determinista |
 | `../validation/src/preview.ts` | Programa `preview` (imágenes en `.tmp/preview/`) |
+| `src/engine/path.ts` | Camino de menor costo columna por columna (equivalente al grafo de Chiu) |
+| `src/engine/segment.ts` | Un corte: calidad, ILM, BM, puntos de la abertura, movimiento y controles (6.1 a 6.3) |
+| `src/engine/measure.ts` | Elipse, anillos, MRW y rugosidad (6.4, 6.5) |
+| `src/engine/analyze.ts` | `analyzeExamSteps`, `analyzeExam`, `summarize`, `compareWithBaseline`, límites del examen (6.4, 6.6, 6.7) |
 
 ## Decisiones
 
@@ -116,7 +120,52 @@ anillo el día 150 (P3: +50 con +38 en promedio); D OD +186 µm con +203 µm el 
 20. **Copa:** el calibrado prueba primero `p = 4` (paredes más suaves, más parecidas a un nervio real)
     y sube hasta 8 solo si hace falta. Con `p = 4` o 5 se cumplen volumen y MRW exactos en los 8 ojos
     (A OD quedó con `p = 6`).
-21. **Rendimiento:** un corte tarda ~75 ms y el fondo de ojo ~0,7 s en esta máquina (Node 22, un hilo).
+21. **Rendimiento:** un corte tarda ~60 ms en dibujarse y ~60 ms en analizarse, y el fondo de ojo
+    ~0,7 s en esta máquina (Node 22, un hilo, máquina compartida con otros agentes). Para eso: filtros
+    binomiales desenrollados en vez de gaussianos genéricos ([1 4 6 4 1] a lo ancho, σ = 1 px ≈ 13 µm;
+    [1 2 1] en profundidad que, con la integración por píxel, da σ = 0,77 px = 7 µm), atenuación
+    acumulada por multiplicación, `exp` del granulado y `ln` del motor por tabla. El movimiento leve
+    (< 0,2) corre bloques de columnas pero no agrega desenfoque.
+
+### Motor
+
+22. **Camino de menor costo** (6.2): se resuelve columna por columna (programación dinámica), que da
+    el mismo óptimo que el grafo de 8 vecinos de Chiu para un borde que cruza cada columna una vez.
+    Paso de ±1 fila entre columnas y, para la ILM, movimiento vertical libre dentro de la columna
+    pagando cada píxel: así baja por las paredes de la copa. Imagen: logaritmo, suavizado binomial
+    σ = 1 px. Las columnas sin señal se cruzan con el peso mínimo (paso 8 de Chiu).
+23. **ILM:** primero una estimación gruesa del techo del tejido (cruce de la mitad, en escala log, entre
+    el piso de ruido y el máximo de la columna) y el camino se busca ±12 filas alrededor (paso 7).
+24. **BM:** camino global sobre "caída de brillo × brillo relativo" (el epitelio es la franja más
+    brillante y termina en una caída). Junto al nervio ese camino abandonaba la franja ~15 columnas
+    antes del borde, para bajar hacia estructuras de adentro; por eso, desde cada extremo del corte la
+    franja se sigue columna por columna (±1 fila) y la BM final sale de ese seguimiento.
+25. **Refinamiento sub-píxel en escala lineal:** el máximo del gradiente del logaritmo se corre hacia el
+    lado oscuro (1,5 a 2 píxeles en la ILM): el TRT salía ~10 µm alto. Cada borde se ubica donde la
+    intensidad lineal (promedio de ±3 columnas, 0 en paredes empinadas) cruza la mitad entre los niveles
+    de cada lado. Con un desenfoque simétrico, ese cruce cae sobre el borde verdadero.
+26. **Puntos de la abertura (6.3):** contraste de la franja (logaritmo arriba menos logaritmo abajo de la
+    BM). Una sombra de vaso oscurece toda la columna y el contraste en logaritmos sobrevive; el final de
+    la membrana lo mata. El punto es donde el contraste suavizado cae a la mitad del de afuera, si sigue
+    bajo las 25 columnas siguientes (~140 µm). Fila: recta por las últimas 12 columnas de BM,
+    evaluada en el punto. Confianza: caída relativa del contraste.
+27. **Movimiento:** desplazamiento que mejor alinea dos columnas vecinas en la retina externa y la franja
+    (horizontales fuera de la abertura); un salto de 3 filas o más es un escalón; 3 escalones rechazan
+    el corte. La ILM no sirve para esto: en las paredes de la copa salta varias filas por columna.
+28. **Señal:** una columna tiene señal si su máximo supera el piso de ruido en 1,5 (logaritmo natural,
+    ~6,5 dB). `validColumnFraction` se cuenta sobre las columnas fuera de la abertura (adentro no hay BM
+    por definición).
+29. **Radios usados:** un medio corte cuenta para un anillo si tiene válidas al menos la mitad de sus
+    columnas en ese anillo. La cobertura por cuadrante se mide en el anillo 0–250.
+30. **Rugosidad:** la BM se suaviza ±2 columnas antes de restar el polinomio (saca ruido de píxel sin
+    tocar pliegues de 420 µm); la posición a lo largo del medio corte es la distancia al centro del
+    patrón.
+31. **Elipse:** ajuste geométrico (Levenberg–Marquardt) a partir del algebraico; se descartan los puntos
+    a más de máx(3 desvíos robustos, 20 µm) y se repite.
+32. **`bmo` informado** es la elipse de este examen aunque los anillos usen la forma de referencia
+    (`bmoSource`), así `compareWithBaseline` puede dar el cambio de área como control. Con
+    `cannot-measure`, `bmo`, `trtRingUm`, `mrwUm` y `bmRoughnessUm` son `null` y `rings` y
+    `mrwSectors` quedan vacíos.
 
 ## Cambios respecto de la especificación
 
@@ -131,6 +180,14 @@ anillo el día 150 (P3: +50 con +38 en promedio); D OD +186 µm con +203 µm el 
    medido que se escribe en `Quality` queda unos 5 dB más bajo; la falla guionada de 18 dB deja ~7 dB en
    vez de ~12 (igual es "señal pobre"). La prueba lo marca en vez de ajustarse. **Hay que decidir** si
    se prefiere cambiar la definición de Q o los grises.
+2. **Peso de cada muestra en los anillos (6.5):** la especificación dice "según su distancia al centro
+   de la elipse". Uso la distancia al punto donde se cruzan los cortes (el centro del patrón): es el
+   jacobiano del muestreo radial, y con el error de centrado (~100 µm) los dos centros no coinciden.
+3. **MRW (6.5):** "la distancia más corta dentro del plano del corte" se mide con la escala lateral
+   multiplicada por cos β (β: ángulo entre el corte y la normal de la elipse en el punto). Sin esa
+   corrección, un patrón descentrado (normal: 70 µm por eje) ve el anillo neural estirado y el MRW salía
+   5 a 11 µm alto; sin ruido, D OS daba 11,2 µm de error (límite de la prueba 5: 10 µm). Con la
+   corrección, 1,7 a 6 µm.
 
 ## Supuestos nuevos
 
@@ -151,6 +208,10 @@ coordinador lo indique.
    los grises no listados en 3.7: huecos entre las franjas externas 0,37 y 0,42, tejido retrolaminar
    0,22, pared del vaso 0,70.
 9. Coeficientes de atenuación por tejido (`optics.ts`).
+10. Límites internos del motor sin fuente: señal 1,5 sobre el ruido, escalón de movimiento de 3 filas y 3
+    escalones por corte, contraste mínimo de la franja 0,8, confirmación de 25 columnas, rechazo de
+    puntos de la elipse a 20 µm, mitad de columnas para contar un radio (decisiones 26 a 31).
+11. Corrección de oblicuidad del MRW (cambio 3) y peso por distancia al centro del patrón (cambio 2).
 
 ## Pendientes
 

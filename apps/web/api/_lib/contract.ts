@@ -93,7 +93,8 @@ export interface ContextEye {
  */
 export interface AssistantContext {
   flightDay: number;
-  level: AssistantLevel;
+  /** Null when no eye could be measured and there is no acute finding: the session has no level. */
+  level: AssistantLevel | null;
   alert: AssistantAlert;
   eyes: { OD: ContextEye; OS: ContextEye };
   findings: readonly AssistantFinding[];
