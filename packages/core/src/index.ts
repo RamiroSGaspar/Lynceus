@@ -13,7 +13,7 @@ export { groundTruth } from './eye/groundTruth';
 export { SECTORS, sectorOf } from './sectors';
 
 // Virtual instrument
-export { acquire, type AcquireOptions } from './instrument/acquire';
+export { acquire, INSTRUMENT_VERSION, type AcquireOptions } from './instrument/acquire';
 export { SCRIPTED_EVENTS } from './instrument/capture';
 export { qualityDb } from './quality';
 

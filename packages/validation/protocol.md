@@ -30,19 +30,26 @@ describe.
 
 **Ojos:** los 8 (A, B, C y D; OD y OS).
 
-**Días por ojo.** Los días 0 (repetición del examen previo), 30, 90 y 150, más los días enteros
+**Días por ojo.** Los días 0 (repetición del examen previo), 30, 60, 90, 120, 150 y 180, más los días enteros
 cuyo cambio verdadero queda más cerca de cada umbral que el ojo llega a cruzar antes del día 180:
 19,4 µm y 55 µm de TRT, y 2,8 µm de rugosidad (pliegues). El valor verdadero se usa solo para
 elegir esos días; el motor no lo ve.
 
 **Referencias.** Dos exámenes previos al vuelo por ojo, con las condiciones que da la semilla:
-R1 es el primero aceptado de los intentos 1 a 3 del día 0 (lo que hace la aplicación) y R2 el
-primero aceptado de los intentos 4 a 6. Cada captura de seguimiento se analiza contra una de las
-dos, alternando, con la forma de la abertura de esa referencia (como en la aplicación). Así hay 16
-errores de referencia distintos y no 8.
+R1 es el intento 1 del día 0 (el que usa la aplicación) y R2 el intento 9 del día 0. Si el motor
+rechaza una de las dos, ese ojo queda con una sola referencia y sus pares pasan a la otra. Cada
+captura de seguimiento se analiza contra una de las dos, alternando, con la forma de la abertura de
+esa referencia (como en la aplicación). Así hay hasta 16 errores de referencia distintos y no 8.
 
-**Capturas por ojo y día** (números de intento desde 11, para no repetir semillas de la
-aplicación ni los eventos guionados):
+**Capturas por ojo y día.** El instrumento acepta intentos del 1 al 9 (el número va en el
+identificador del examen) y cada intento tiene su propia semilla: cada captura de un ojo y día
+lleva un intento distinto, para que no compartan ruido ni encuadre. Limpias: intentos 2 y 3 (los
+eventos guionados de la aplicación son todos del intento 1 y solo valen sin condiciones). Señal,
+movimiento, parpadeo, truncamiento, descentrado, borde apagado y combinación: intentos 1, 4, 5, 6,
+7, 8 y 9, en ese orden. Una captura con condiciones explícitas apunta a 30 dB sin variación entre
+cortes y sin el movimiento leve de la semilla (así está escrito el instrumento). El día 0 los
+intentos 1 y 9 son las referencias: las repeticiones usan los intentos 2 a 8, con las dos limpias y
+las cinco familias de desarrollo, sin borde apagado ni combinación.
 
 | Familia | Uso | Niveles (uno por ojo y día, rotando) |
 |---|---|---|
@@ -61,8 +68,12 @@ propósito: se quiere ver el error de las capturas deterioradas que el motor tod
 frecuencia de cada falla en esta matriz es una elección del experimento y no representa la
 frecuencia de fallas en astronautas.**
 
-Tamaño esperado: 46 ojos-día × 9 capturas, más 16 a 48 referencias: unas 430 capturas. Con ~5 s
-por captura y dos trabajos simultáneos, unos 20 minutos.
+Tamaño esperado: 69 ojos-día (8 de ellos el día 0, con 7 capturas; 61 con 9) y 16 referencias:
+621 capturas: 362 de desarrollo (6 ojos), 171 de P1 (2 ojos) y 88 de P2 (los mismos 6 ojos de
+desarrollo). El tamaño sale de pedir al menos 50 pares aceptados en cada partición de prueba (sección
+6) con familias que el motor a veces rechaza: con 50 pares, una cobertura real del 95 % deja el
+límite inferior de Wilson cerca del 86 %. Con ~5 s
+por captura y dos trabajos simultáneos, unos 25 minutos.
 
 ## 3. Particiones
 
