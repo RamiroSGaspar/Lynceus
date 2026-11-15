@@ -6,10 +6,10 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { toDisplayGray, type CaptureConditions, type CaptureRequest, type ExamSource, type ScanAnalysis } from '@app/core';
+import { analyzeExam, toDisplayGray, type CaptureConditions, type CaptureRequest, type ExamSource, type ScanAnalysis } from '@app/core';
 import { acquire } from '@app/core/instrument/acquire';
 import { CREW_IDS } from '@app/core/eye/crew';
-import { ellipseFrame } from '@app/core/math/ellipse';
+import { ellipseFrame, ellipseSignedDistance } from '@app/core/math/ellipse';
 import { RINGS_UM, SCALE_X_MM, SCAN_COLUMNS, SCAN_ROWS, SLO_SIZE_PX, SLO_SCALE_MM } from '@app/core/constants';
 import { Canvas, COLORS } from './draw';
 
@@ -46,14 +46,7 @@ function overlay(canvas: Canvas, exam: ExamSource, scan: ScanAnalysis, ellipse: 
 }
 
 function distanceToEllipseUm(e: { cx: number; cy: number; a: number; b: number; angle: number }, x: number, y: number): number {
-  // Radial approximation, enough to draw ring limits.
-  const dx = x - e.cx;
-  const dy = y - e.cy;
-  const r = Math.hypot(dx, dy);
-  const t = Math.atan2(dy, dx) - e.angle;
-  const c = Math.cos(t) / e.a;
-  const s = Math.sin(t) / e.b;
-  return (r - 1 / Math.sqrt(c * c + s * s)) * 1000;
+  return ellipseSignedDistance(e, x, y) * 1000;
 }
 
 function fundusCanvas(exam: ExamSource, withScans: boolean, ellipse: { cx: number; cy: number; a: number; b: number; angle: number } | null): Canvas {
@@ -73,9 +66,14 @@ function fundusCanvas(exam: ExamSource, withScans: boolean, ellipse: { cx: numbe
   return c;
 }
 
-// The engine arrives in step 4 of the specification; until then nothing is marked.
-function engineEllipse(_exam: ExamSource): { ellipse: { cx: number; cy: number; a: number; b: number; angle: number } | null; scans: (ScanAnalysis | undefined)[] } {
-  return { ellipse: null, scans: [] };
+/** What the engine found: its ellipse of the opening and the per-scan marking. */
+function engineEllipse(exam: ExamSource): { ellipse: { cx: number; cy: number; a: number; b: number; angle: number } | null; scans: (ScanAnalysis | undefined)[] } {
+  const a = analyzeExam(exam);
+  const e = a.bmo;
+  return {
+    ellipse: e ? { cx: e.centerXMm, cy: e.centerYMm, a: e.semiMajorMm, b: e.semiMinorMm, angle: (e.angleDeg * Math.PI) / 180 } : null,
+    scans: a.scans,
+  };
 }
 
 function main(): void {
@@ -118,8 +116,12 @@ function main(): void {
   ];
   for (const [name, conditions] of failures) {
     const exam = acquire({ crewId: 'B', eye: 'OD', flightDay: 30, attempt: 1, conditions });
-    write(`failure_${name}.png`, scanCanvas(exam, 12));
-    if (name === 'decentration') write(`failure_${name}_fundus.png`, fundusCanvas(exam, true, null));
+    const c = scanCanvas(exam, 12);
+    if (name === 'decentration') {
+      const { ellipse } = engineEllipse(exam);
+      write(`failure_${name}_fundus.png`, fundusCanvas(exam, true, ellipse));
+    }
+    write(`failure_${name}.png`, c);
   }
   // 4. Crew member D on day 120 next to the reference exam.
   const pre = acquire({ crewId: 'D', eye: 'OD', flightDay: 0, attempt: 1 });

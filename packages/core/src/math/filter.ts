@@ -26,24 +26,21 @@ export function convolveRows(src: Float32Array, width: number, height: number, k
     return dst;
   }
   const taps = kernel.length;
+  const k = Float64Array.from(kernel);
+  // One padded row at a time (edges repeated), so the inner loop has no branches.
+  const buf = new Float64Array(width + 2 * r);
   for (let y = 0; y < height; y++) {
     const off = y * width;
+    const first = src[off]!;
+    const last = src[off + width - 1]!;
+    for (let i = 0; i < r; i++) {
+      buf[i] = first;
+      buf[r + width + i] = last;
+    }
+    for (let x = 0; x < width; x++) buf[r + x] = src[off + x]!;
     for (let x = 0; x < width; x++) {
-      if (x >= r && x < width - r) {
-        // Interior: no clamping.
-        let s = 0;
-        const start = off + x - r;
-        for (let k = 0; k < taps; k++) s += kernel[k]! * src[start + k]!;
-        dst[off + x] = s;
-        continue;
-      }
       let s = 0;
-      for (let k = -r; k <= r; k++) {
-        let xx = x + k;
-        if (xx < 0) xx = 0;
-        else if (xx >= width) xx = width - 1;
-        s += kernel[k + r]! * src[off + xx]!;
-      }
+      for (let t = 0; t < taps; t++) s += k[t]! * buf[x + t]!;
       dst[off + x] = s;
     }
   }
@@ -58,40 +55,73 @@ export function convolveColumns(src: Float32Array, width: number, height: number
     return dst;
   }
   const taps = kernel.length;
+  const k = Float64Array.from(kernel);
+  // Row-wise accumulation: each output row is a weighted sum of whole input rows.
+  const acc = new Float64Array(width);
   for (let y = 0; y < height; y++) {
-    const off = y * width;
-    if (y >= r && y < height - r) {
-      // Interior: one accumulator per pixel, rows above and below read with a stride.
-      const base = (y - r) * width;
-      for (let x = 0; x < width; x++) {
-        let s = 0;
-        let idx = base + x;
-        for (let k = 0; k < taps; k++) {
-          s += kernel[k]! * src[idx]!;
-          idx += width;
-        }
-        dst[off + x] = s;
-      }
-      continue;
+    acc.fill(0);
+    for (let t = 0; t < taps; t++) {
+      let yy = y + t - r;
+      if (yy < 0) yy = 0;
+      else if (yy >= height) yy = height - 1;
+      const w = k[t]!;
+      const so = yy * width;
+      for (let x = 0; x < width; x++) acc[x] = acc[x]! + w * src[so + x]!;
     }
+    const off = y * width;
+    for (let x = 0; x < width; x++) dst[off + x] = acc[x]!;
+  }
+  return dst;
+}
+
+/**
+ * Binomial [1 4 6 4 1]/16 along rows (σ = 1 px), unrolled; edges repeat the border.
+ * Same result as `convolveRows` with that kernel, several times faster.
+ */
+export function binomial5Rows(src: Float32Array, width: number, height: number, dst = new Float32Array(src.length)): Float32Array {
+  for (let y = 0; y < height; y++) {
+    const o = y * width;
+    const e = o + width - 1;
     for (let x = 0; x < width; x++) {
-      let s = 0;
-      for (let k = -r; k <= r; k++) {
-        let yy = y + k;
-        if (yy < 0) yy = 0;
-        else if (yy >= height) yy = height - 1;
-        s += kernel[k + r]! * src[yy * width + x]!;
-      }
-      dst[off + x] = s;
+      const i = o + x;
+      const a = src[i - 2 < o ? o : i - 2]!;
+      const b = src[i - 1 < o ? o : i - 1]!;
+      const d = src[i + 1 > e ? e : i + 1]!;
+      const f = src[i + 2 > e ? e : i + 2]!;
+      dst[i] = (a + f + 4 * (b + d) + 6 * src[i]!) * 0.0625;
     }
   }
   return dst;
 }
 
-/** Gaussian blur with separate σ along x and y, in pixels. */
-export function gaussianBlur(src: Float32Array, width: number, height: number, sigmaX: number, sigmaY: number): Float32Array {
-  const tmp = convolveRows(src, width, height, gaussianKernel(sigmaX));
-  return convolveColumns(tmp, width, height, gaussianKernel(sigmaY));
+/** Binomial [1 4 6 4 1]/16 along columns (σ = 1 px), row-wise; edges repeat the border. */
+export function binomial5Columns(src: Float32Array, width: number, height: number, dst = new Float32Array(src.length)): Float32Array {
+  for (let y = 0; y < height; y++) {
+    const a = Math.max(0, y - 2) * width;
+    const b = Math.max(0, y - 1) * width;
+    const c = y * width;
+    const d = Math.min(height - 1, y + 1) * width;
+    const f = Math.min(height - 1, y + 2) * width;
+    for (let x = 0; x < width; x++) dst[c + x] = (src[a + x]! + src[f + x]! + 4 * (src[b + x]! + src[d + x]!) + 6 * src[c + x]!) * 0.0625;
+  }
+  return dst;
+}
+
+/** Binomial [1 2 1]/4 along columns (σ = 0.71 px), row-wise; edges repeat the border. */
+export function binomial3Columns(src: Float32Array, width: number, height: number, dst = new Float32Array(src.length)): Float32Array {
+  for (let y = 0; y < height; y++) {
+    const b = Math.max(0, y - 1) * width;
+    const c = y * width;
+    const d = Math.min(height - 1, y + 1) * width;
+    for (let x = 0; x < width; x++) dst[c + x] = (src[b + x]! + src[d + x]! + 2 * src[c + x]!) * 0.25;
+  }
+  return dst;
+}
+
+/** Gaussian blur with separate σ along x and y, in pixels; kernels cut at `truncate`·σ. */
+export function gaussianBlur(src: Float32Array, width: number, height: number, sigmaX: number, sigmaY: number, truncate = 3): Float32Array {
+  const tmp = convolveRows(src, width, height, gaussianKernel(sigmaX, truncate));
+  return convolveColumns(tmp, width, height, gaussianKernel(sigmaY, truncate));
 }
 
 /** 1-D Gaussian smoothing of a signal that may contain NaN (NaN samples are skipped and stay NaN). */
