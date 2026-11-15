@@ -99,10 +99,11 @@ interface GrowOptions {
   y: number;
   /** Heading, radians in the anatomical frame. */
   heading: number;
+  /** Heading the vessel bends toward, and the length over which it does. */
+  targetHeading: number;
+  bendUm: number;
   diameter: number;
   length: number;
-  /** Turn per µm of length, radians. */
-  curvature: number;
   artery: boolean;
   branchesLeft: number;
 }
@@ -111,45 +112,50 @@ const STEP_UM = 60;
 
 function grow(o: GrowOptions, rng: Rng, out: VesselSegment[]): void {
   let { x, y, heading, diameter } = o;
-  const branchAt = o.branchesLeft > 0 ? rng.uniform(0.25, 0.55) * o.length : Infinity;
-  let branched = false;
+  const branchPoints: number[] = [];
+  for (let b = 0; b < o.branchesLeft; b++) branchPoints.push(rng.uniform(0.2, 0.8) * o.length);
+  branchPoints.sort((a, b) => a - b);
+  let nextBranch = 0;
   for (let s = 0; s < o.length; s += STEP_UM) {
-    heading += o.curvature * STEP_UM + rng.normal(0, 0.035);
-    const nd = Math.max(18, diameter * Math.exp(-STEP_UM / 9000));
+    heading += ((o.targetHeading - heading) * STEP_UM) / o.bendUm + rng.normal(0, 0.05);
+    const nd = Math.max(16, diameter * Math.exp(-STEP_UM / 12000));
     const nx = x + STEP_UM * Math.cos(heading);
     const ny = y + STEP_UM * Math.sin(heading);
     out.push({ x0: x, y0: y, x1: nx, y1: ny, r0: diameter / 2, r1: nd / 2, artery: o.artery });
     x = nx;
     y = ny;
     diameter = nd;
-    if (!branched && s >= branchAt) {
-      branched = true;
+    if (nextBranch < branchPoints.length && s >= branchPoints[nextBranch]!) {
+      nextBranch++;
       const side = rng.next() < 0.5 ? -1 : 1;
+      const childHeading = heading + side * rng.uniform(30, 55) * DEG;
       grow(
         {
           x,
           y,
-          heading: heading + side * rng.uniform(25, 45) * DEG,
-          diameter: diameter * 0.72,
-          length: (o.length - s) * rng.uniform(0.5, 0.8),
-          curvature: -side * rng.uniform(0, 4e-5),
+          heading: childHeading,
+          targetHeading: childHeading + side * rng.uniform(0, 20) * DEG,
+          bendUm: 2000,
+          diameter: diameter * 0.7,
+          length: (o.length - s) * rng.uniform(0.4, 0.8),
           artery: o.artery,
-          branchesLeft: o.branchesLeft - 1,
+          branchesLeft: o.branchesLeft > 1 ? 1 : 0,
         },
         rng,
         out,
       );
-      diameter *= 0.85;
+      diameter *= 0.86;
     }
   }
 }
 
 /**
- * Builds the tree: four arcades (superotemporal, inferotemporal, superonasal,
- * inferonasal; ±12°), each with an artery (90–110 µm at the opening edge) and a
- * vein (120–140 µm) that taper and branch once or twice, plus two or three small
- * vessels. Inside the opening they converge on a central trunk shifted nasally.
- * `bmoRadius(θ)` gives the opening edge in µm.
+ * Builds the tree (spec 3.8): four arcades (superotemporal, inferotemporal,
+ * superonasal, inferonasal; ±12°), each with an artery (90–110 µm at the opening
+ * edge) and a vein (120–140 µm) that taper and branch, plus two or three small
+ * vessels. As in a real fundus, the arcades leave the nerve head near its upper and
+ * lower poles and bend toward their direction; inside the opening they converge on
+ * a central trunk shifted nasally. `bmoRadius(θ)` gives the opening edge in µm.
  */
 export function buildVesselTree(rng: Rng, bmoRadius: (theta: number) => number): VesselTree {
   const segments: VesselSegment[] = [];
@@ -157,25 +163,30 @@ export function buildVesselTree(rng: Rng, bmoRadius: (theta: number) => number):
   const trunkX = -0.25 * bmoRadius(Math.PI);
   const trunkY = rng.normal(0, 30);
   const arcades = [
-    { base: 45, temporal: true },
-    { base: -45, temporal: true },
-    { base: 135, temporal: false },
-    { base: 225, temporal: false },
+    { direction: 45, exit: 78 },
+    { direction: -45, exit: -78 },
+    { direction: 135, exit: 102 },
+    { direction: 225, exit: 258 },
   ];
   for (const arc of arcades) {
-    const dir = (arc.base + rng.uniform(-12, 12)) * DEG;
+    const direction = (arc.direction + rng.uniform(-12, 12)) * DEG;
     for (const artery of [true, false]) {
-      const exit = dir + (artery ? -1 : 1) * rng.uniform(3, 7) * DEG;
+      const exit = (arc.exit + rng.uniform(-8, 8) + (artery ? -4 : 4)) * DEG;
       const r = bmoRadius(exit);
       const ex = r * Math.cos(exit);
       const ey = r * Math.sin(exit);
       const diameter = artery ? rng.uniform(90, 110) : rng.uniform(120, 140);
-      // Inside the opening: straight to the trunk, slightly thicker.
+      // Inside the opening: from the trunk to the edge, slightly thicker.
       segments.push({ x0: trunkX, y0: trunkY, x1: ex, y1: ey, r0: (diameter * 1.08) / 2, r1: diameter / 2, artery });
-      // Temporal arcades bend toward the horizontal temporal axis, around the macula.
-      const sign = Math.sin(exit) >= 0 ? -1 : 1;
-      const curvature = arc.temporal ? sign * rng.uniform(5e-5, 9e-5) : -sign * rng.uniform(0, 3e-5);
-      grow({ x: ex, y: ey, heading: exit, diameter, length: rng.uniform(6500, 7500), curvature, artery, branchesLeft: 1 + rng.int(2) }, rng, segments);
+      // Leaves nearly along the radius, then bends toward the arcade direction; the
+      // temporal arcades overshoot it a little, curving around the macula.
+      const temporal = Math.cos(direction) > 0;
+      const target = temporal ? direction - Math.sign(Math.sin(direction)) * rng.uniform(10, 25) * DEG : direction;
+      grow(
+        { x: ex, y: ey, heading: exit, targetHeading: target, bendUm: rng.uniform(1200, 2200), diameter, length: rng.uniform(6500, 7500), artery, branchesLeft: 2 + rng.int(2) },
+        rng,
+        segments,
+      );
     }
   }
   const small = 2 + rng.int(2);
@@ -187,7 +198,7 @@ export function buildVesselTree(rng: Rng, bmoRadius: (theta: number) => number):
     const ey = r * Math.sin(dir);
     const diameter = rng.uniform(35, 55);
     segments.push({ x0: 0.6 * ex, y0: 0.6 * ey, x1: ex, y1: ey, r0: diameter / 2, r1: diameter / 2, artery: rng.next() < 0.5 });
-    grow({ x: ex, y: ey, heading: dir, diameter, length: rng.uniform(1500, 3000), curvature: rng.normal(0, 5e-5), artery: false, branchesLeft: 0 }, rng, segments);
+    grow({ x: ex, y: ey, heading: dir, targetHeading: dir + rng.normal(0, 0.3), bendUm: 2000, diameter, length: rng.uniform(1500, 3000), artery: false, branchesLeft: 1 }, rng, segments);
   }
   return new VesselTree(segments);
 }

@@ -10,7 +10,7 @@ especificación y qué falta.
 |---|---|
 | 1. Azar, matemática y formato `.vol` | Hecho |
 | 2. Ojo virtual, tripulación y valor verdadero | Hecho |
-| 3. Instrumento virtual y `preview` | Pendiente |
+| 3. Instrumento virtual y `preview` | Hecho |
 | 4. Motor | Pendiente |
 | 5. `accuracy`, precisión, rechazo y rendimiento | Pendiente |
 
@@ -30,6 +30,14 @@ especificación y qué falta.
 | `src/eye/vessels.ts` | Árbol de vasos en el plano de frente, con grilla para consultas rápidas |
 | `src/eye/groundTruth.ts` | `groundTruth(crew, eye, day)`: valor verdadero por integración densa |
 | `src/sectors.ts` | Sectores del borde de la abertura (compartido por el valor verdadero y el motor) |
+| `src/quality.ts` | Índice de calidad de la sección 5.4 (lo usan el instrumento y el motor) |
+| `src/instrument/acquire.ts` | `acquire(request, {speckle})`: cabecera, fondo de ojo perezoso y cada corte cuando se pide |
+| `src/instrument/capture.ts` | Ubicación del patrón, fallas (de la semilla, del pedido o guionadas) y variaciones de cada corte |
+| `src/instrument/geometry.ts` | Marco de frente ↔ marco anatómico; extremos de cada corte radial |
+| `src/instrument/optics.ts` | Tejidos: retrodispersión calibrada a los grises de 3.7, atenuación, caída con la profundidad, granulado, desenfoque |
+| `src/instrument/bscan.ts` | Dibujo de un corte: capas por columna integradas por píxel, vasos y sombras, coroides, cabeza del nervio, fallas, granulado y piso de ruido |
+| `src/instrument/slo.ts`, `font.ts`, `texture.ts` | Fondo de ojo, tipografía de mapa de bits propia, ruido suave determinista |
+| `../validation/src/preview.ts` | Programa `preview` (imágenes en `.tmp/preview/`) |
 
 ## Decisiones
 
@@ -85,9 +93,44 @@ especificación y qué falta.
 Con la hinchazón, el MRW verdadero sube de forma parecida a lo publicado: B OD +58 µm con +31 µm de
 anillo el día 150 (P3: +50 con +38 en promedio); D OD +186 µm con +203 µm el día 90 (P5: +158 con +212).
 
+14. **Instrumento, ubicación (5.1):** el centro del patrón cae en el centro de la imagen de fondo más un
+    corrimiento de encuadre normal de 0,12 mm por eje (cada captura encuadra distinto; el motor tiene que
+    leer las coordenadas de la cabecera). Error de centrado del operador: normal 70 µm por eje, fijo por
+    ojo. Exámenes de seguimiento (vuelo, o un segundo intento del día 0): registro normal 12 µm y giro
+    0,3°. El corte `k` va a `k·3,75°` del eje x, medido en sentido antihorario tal como se ve en pantalla.
+15. **`ReferenceID`** es siempre el `ID` del intento 1 del día 0; un segundo examen previo al vuelo
+    también lo apunta (así se puede comparar una repetición del día 0 con la referencia).
+16. **Inclinación de cada corte:** pendiente física `dz/dx` normal con desvío 0,015; curvatura: 15 µm
+    de desvío en los extremos; posición vertical: el punto más alto de la ILM en la fila 60 ± 12, corrida
+    hacia arriba si hace falta para que entren la lámina y la coroides.
+17. **Cabeza del nervio en el dibujo** (la especificación no la detalla): las fibras del anillo continúan
+    las de afuera y se afinan hacia la copa; debajo, tejido prelaminar; la lámina cribosa se curva hacia
+    atrás en el medio y se apaga donde toca la pared del canal escleral, que se inclina hacia adentro con
+    la profundidad. Las capas internas se funden con el anillo en los últimos 150 µm antes del borde; la
+    franja del epitelio y la BM sigue brillante hasta el borde (es lo que marca la abertura).
+18. **Coroides:** luces de vasos con ruido celular (Worley): chicas arriba (celdas de 50 µm), grandes
+    abajo (120 µm); la coriocapilar (7 % superior) sin luces.
+19. **Árbol de vasos:** las arcadas salen cerca de los polos superior e inferior del nervio y se curvan
+    hacia su dirección (45° ± 12° de los ejes, como pide 3.8); así se ve como un fondo de ojo y no como
+    una "X". Ramifican 2 o 3 veces.
+20. **Copa:** el calibrado prueba primero `p = 4` (paredes más suaves, más parecidas a un nervio real)
+    y sube hasta 8 solo si hace falta. Con `p = 4` o 5 se cumplen volumen y MRW exactos en los 8 ojos
+    (A OD quedó con `p = 6`).
+21. **Rendimiento:** un corte tarda ~75 ms y el fondo de ojo ~0,7 s en esta máquina (Node 22, un hilo).
+
 ## Cambios respecto de la especificación
 
-(ninguno todavía)
+1. **Índice de calidad de una captura limpia: ~25 dB, no 27–33 (sección 5.4).** Con los grises de la
+   tabla 3.7 (que el instrumento cumple: fibras 0,66–0,70, epitelio 0,86–0,90, nuclear externa 0,33,
+   zona elipsoide 0,72) y el vítreo en 0,10, la definición `Q = 10·log10((p99 − N)/N)` da unos 25 dB:
+   el percentil 99 cae en el brillo del epitelio y de la capa de fibras (~0,1), y el piso de ruido es
+   3,2·10⁻⁴. Para llegar a 30 dB habría que subir todos los tejidos ~5 dB (≈ +0,14 de gris: el epitelio
+   se saturaría). Los dos son supuestos nuestros y no se pueden cumplir juntos; elegí los grises (lo que
+   se ve). Consecuencias: la calidad "objetivo" que sale de la semilla sigue siendo normal(30; 1,5) como
+   pide la especificación, pero funciona como ganancia relativa (30 dB = grises de la tabla) y el valor
+   medido que se escribe en `Quality` queda unos 5 dB más bajo; la falla guionada de 18 dB deja ~7 dB en
+   vez de ~12 (igual es "señal pobre"). La prueba lo marca en vez de ajustarse. **Hay que decidir** si
+   se prefiere cambiar la definición de Q o los grises.
 
 ## Supuestos nuevos
 
@@ -101,8 +144,13 @@ coordinador lo indique.
 3. Irregularidad natural de la BM con ondas de 220 a 520 µm (decisión 10).
 4. Afinamiento de la coroides en 400 µm junto al borde (decisión 12).
 5. Fecha del examen de referencia: el día anterior al lanzamiento (decisión 13).
-6. Forma del árbol de vasos: arcadas que salen a 45° ± 12° de los ejes, las temporales se curvan
-   hacia el eje temporal; se afinan 0,7 % cada 60 µm y se ramifican con hijos de 0,72 del calibre.
+6. Forma del árbol de vasos (decisión 19): salen cerca de los polos y se curvan hacia su dirección; se
+   afinan 0,5 % cada 60 µm y se ramifican con hijos de 0,7 del calibre.
+7. Encuadre de cada captura, convención del ángulo de los cortes y posición vertical (decisiones 14 y 16).
+8. Aspecto de la cabeza del nervio, de la coroides y de la esclera en el dibujo (decisiones 17 y 18), y
+   los grises no listados en 3.7: huecos entre las franjas externas 0,37 y 0,42, tejido retrolaminar
+   0,22, pared del vaso 0,70.
+9. Coeficientes de atenuación por tejido (`optics.ts`).
 
 ## Pendientes
 

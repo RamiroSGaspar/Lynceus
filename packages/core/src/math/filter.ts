@@ -3,10 +3,10 @@
  * Edges are handled by repeating the border pixel.
  */
 
-/** Normalised Gaussian kernel with radius ceil(3σ). σ ≤ 0 gives the identity. */
-export function gaussianKernel(sigma: number): Float32Array {
+/** Normalised Gaussian kernel with radius ceil(truncate·σ). σ ≤ 0 gives the identity. */
+export function gaussianKernel(sigma: number, truncate = 3): Float32Array {
   if (!(sigma > 0)) return Float32Array.of(1);
-  const radius = Math.max(1, Math.ceil(3 * sigma));
+  const radius = Math.max(1, Math.ceil(truncate * sigma));
   const k = new Float32Array(2 * radius + 1);
   let s = 0;
   for (let i = -radius; i <= radius; i++) {
@@ -25,9 +25,18 @@ export function convolveRows(src: Float32Array, width: number, height: number, k
     dst.set(src);
     return dst;
   }
+  const taps = kernel.length;
   for (let y = 0; y < height; y++) {
     const off = y * width;
     for (let x = 0; x < width; x++) {
+      if (x >= r && x < width - r) {
+        // Interior: no clamping.
+        let s = 0;
+        const start = off + x - r;
+        for (let k = 0; k < taps; k++) s += kernel[k]! * src[start + k]!;
+        dst[off + x] = s;
+        continue;
+      }
       let s = 0;
       for (let k = -r; k <= r; k++) {
         let xx = x + k;
@@ -48,16 +57,32 @@ export function convolveColumns(src: Float32Array, width: number, height: number
     dst.set(src);
     return dst;
   }
+  const taps = kernel.length;
   for (let y = 0; y < height; y++) {
     const off = y * width;
-    for (let x = 0; x < width; x++) dst[off + x] = 0;
-    for (let k = -r; k <= r; k++) {
-      let yy = y + k;
-      if (yy < 0) yy = 0;
-      else if (yy >= height) yy = height - 1;
-      const w = kernel[k + r]!;
-      const soff = yy * width;
-      for (let x = 0; x < width; x++) dst[off + x] = dst[off + x]! + w * src[soff + x]!;
+    if (y >= r && y < height - r) {
+      // Interior: one accumulator per pixel, rows above and below read with a stride.
+      const base = (y - r) * width;
+      for (let x = 0; x < width; x++) {
+        let s = 0;
+        let idx = base + x;
+        for (let k = 0; k < taps; k++) {
+          s += kernel[k]! * src[idx]!;
+          idx += width;
+        }
+        dst[off + x] = s;
+      }
+      continue;
+    }
+    for (let x = 0; x < width; x++) {
+      let s = 0;
+      for (let k = -r; k <= r; k++) {
+        let yy = y + k;
+        if (yy < 0) yy = 0;
+        else if (yy >= height) yy = height - 1;
+        s += kernel[k + r]! * src[yy * width + x]!;
+      }
+      dst[off + x] = s;
     }
   }
   return dst;

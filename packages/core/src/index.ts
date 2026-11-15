@@ -10,6 +10,11 @@ export { MISSION, CREW } from './eye/crew';
 export { groundTruth } from './eye/groundTruth';
 export { SECTORS, sectorOf } from './sectors';
 
+// Virtual instrument
+export { acquire, type AcquireOptions } from './instrument/acquire';
+export { SCRIPTED_EVENTS } from './instrument/capture';
+export { qualityDb } from './quality';
+
 // Exam file format
 export { readVol, writeVol, writeVolBlocks } from './vol/io';
 export { toDisplayGray, displayGray } from './vol/display';

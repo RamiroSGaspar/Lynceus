@@ -565,7 +565,8 @@ export class EyeModel {
     };
 
     let best: CupParameters | null = null;
-    for (const p of [6, 5, 7, 4, 8]) {
+    // Gentle walls first: p = 4 is the softest the specification allows.
+    for (const p of [4, 5, 6, 7, 8]) {
       const ws: number[] = [];
       for (let w = 0.2; w <= 0.951; w += 0.025) ws.push(w);
       const evals = ws.map((w) => ({ w, ...evaluate(w, p) }));
