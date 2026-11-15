@@ -32,7 +32,7 @@ export const RULE_SOURCES = {
   },
   brunstetter2024: {
     id: 'brunstetter2024',
-    citation: 'Brunstetter 2024, JAMA Ophthalmology: the most severe published case, followed in flight',
+    citation: 'Brunstetter 2024, JAMA Ophthalmology: case report of one astronaut followed in flight with extra exams',
     url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC11273286/',
   },
   nguyen2025: {
