@@ -129,7 +129,8 @@ export function renderBScan(input: ScanRenderInput): Float32Array {
     let j = 0;
     while (j < W) {
       const width = 30 + mr.int(70);
-      const shift = mr.normal(0, 7 * motion) * SCALE_Z_UM;
+      // Shift of each block: standard deviation 14 rows (54 µm) at the most severe motion.
+      const shift = mr.normal(0, 14 * motion) * SCALE_Z_UM;
       for (let k = j; k < Math.min(W, j + width); k++) blockShiftUm[k] = shift;
       j += width;
     }
@@ -332,11 +333,11 @@ export function renderBScan(input: ScanRenderInput): Float32Array {
     for (let j = 0; j < W; j++) colFactor[j] = colFactor[j]! * (1 - smoothstep(a - 4, a + 4, j) * (1 - smoothstep(b - 4, b + 4, j)));
   }
   if (affected && conditions.edgeFade) {
+    // Loss growing linearly in dB toward the end, 40 dB at the last column (signal gone).
     const width = Math.max(1, conditions.edgeFade.widthFraction * W);
     for (let j = 0; j < W; j++) {
       const d = conditions.edgeFade.side === 'start' ? j : W - 1 - j;
-      const f = Math.min(1, d / width);
-      colFactor[j] = colFactor[j]! * f * f;
+      if (d < width) colFactor[j] = colFactor[j]! * Math.pow(10, (-40 * (1 - d / width)) / 10);
     }
   }
 
