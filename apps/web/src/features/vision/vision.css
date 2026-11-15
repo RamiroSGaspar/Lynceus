@@ -1,0 +1,331 @@
+/* Vision tests. Colours and sizes come from tokens.css; the test surfaces use testSurface.ts. */
+
+.vt-root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 48rem;
+}
+.vt-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.vt-title {
+  font-size: var(--text-xl);
+  margin: 0;
+}
+.vt-heading {
+  font-size: var(--text-lg);
+}
+.vt-heading:focus {
+  outline: none;
+}
+.vt-heading:focus-visible {
+  outline: 3px solid var(--color-focus);
+}
+.vt-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+.vt-panel > * {
+  margin: 0;
+}
+.vt-panel h3 {
+  font-size: var(--text-md);
+  margin-top: var(--space-2);
+}
+.vt-lead {
+  font-size: var(--text-md);
+}
+.vt-note {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+.vt-reference {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--color-border-strong);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+.vt-reference p:last-child {
+  margin-bottom: 0;
+}
+.vt-caution {
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--level-caution);
+  border-radius: var(--radius-md);
+  background: var(--level-caution-bg);
+  color: var(--color-text);
+}
+.vt-warning {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--level-warning);
+  border-radius: var(--radius-md);
+  background: var(--level-warning-bg);
+  color: var(--level-warning);
+}
+.vt-warning p {
+  color: var(--color-text);
+  margin: 0;
+}
+.vt-warning .vt-warning__title {
+  color: var(--level-warning);
+  font-weight: 700;
+  font-size: var(--text-md);
+}
+.vt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.vt-actions--nav {
+  justify-content: space-between;
+}
+.vt-skip {
+  display: flex;
+  justify-content: flex-end;
+}
+.vt-measure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.vt-number {
+  font-variant-numeric: tabular-nums;
+}
+.vt-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--space-4);
+}
+.vt-result__value {
+  font-size: var(--text-xl);
+}
+.vt-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Choices: large radio buttons */
+.vt-choice {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.vt-choice__legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+}
+.vt-choice__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.vt-choice--inline .vt-choice__options {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.vt-choice__option {
+  position: relative;
+  display: flex;
+}
+.vt-choice__option input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.vt-choice__option span {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  min-width: 5rem;
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+.vt-choice__option input:checked + span {
+  border-color: var(--color-accent);
+  background: var(--color-surface-raised);
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+.vt-choice__option input:checked + span::before {
+  content: '✓';
+  margin-right: var(--space-2);
+  color: var(--color-accent);
+}
+.vt-choice__option input:focus-visible + span {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.vt-question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.vt-question:last-of-type {
+  border-bottom: 0;
+}
+.vt-review {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+/* ---- Calibration */
+.vt-card-area {
+  overflow-x: auto;
+  padding: 0;
+}
+.vt-card-box {
+  border: 2px solid var(--color-accent);
+  border-radius: 3.18mm;
+  background: var(--color-surface-raised);
+  box-sizing: border-box;
+}
+.vt-calibration-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.vt-slider {
+  flex: 1 1 10rem;
+  display: flex;
+}
+.vt-slider input {
+  width: 100%;
+  min-height: 2.75rem;
+  accent-color: var(--color-accent);
+}
+
+/* ---- Acuity */
+.vt-counter {
+  font-weight: 600;
+}
+.vt-test-area {
+  display: flex;
+  justify-content: center;
+}
+.vt-optotype {
+  display: block;
+  border-radius: var(--radius-md);
+}
+.vt-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(3.5rem, 5rem));
+  gap: var(--space-2);
+  justify-content: center;
+}
+.vt-pad__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  min-height: 3.5rem;
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.vt-pad__button:hover {
+  border-color: var(--color-accent);
+}
+.vt-pad__button:active {
+  background: var(--color-border);
+}
+
+/* ---- Amsler */
+.vt-amsler-panel {
+  align-items: stretch;
+}
+.vt-amsler-wrap {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+  border-radius: var(--radius-sm);
+}
+.vt-amsler-wrap:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+.vt-amsler {
+  display: block;
+  flex: none;
+  user-select: none;
+}
+.vt-amsler__cursor {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 3;
+}
+.vt-mark rect {
+  opacity: 0.45;
+}
+.vt-mark path {
+  fill: none;
+  stroke-linecap: round;
+}
+.vt-mark--wavy rect {
+  fill: var(--level-caution);
+}
+.vt-mark--wavy path {
+  stroke: var(--level-caution);
+}
+.vt-mark--blurred rect {
+  fill: var(--level-advisory);
+}
+.vt-mark--blurred path {
+  stroke: var(--level-advisory);
+}
+.vt-mark--missing rect {
+  fill: var(--level-warning);
+  opacity: 0.7;
+}
+.vt-mark--missing path {
+  stroke: var(--color-text);
+}
+
+/* ---- Development page */
+.vt-dev-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.vt-dev-output {
+  overflow-x: auto;
+  max-height: 24rem;
+  padding: var(--space-3);
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 30rem) {
+  .vt-panel {
+    padding: var(--space-4);
+  }
+}
