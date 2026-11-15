@@ -2,7 +2,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 // Relative import on purpose: the config is bundled before workspace packages resolve.
 import { PRODUCT } from '../../packages/core/src/product.ts';
-import { handleAssistant } from './api/_lib/handler.ts';
+import { diagnosticLine, handleAssistant, type AssistantDiagnostic } from './api/_lib/handler.ts';
 import { RateLimiter } from './api/_lib/rate-limit.ts';
 
 /** Injects the product name into index.html so the name stays defined in one place. */
@@ -24,6 +24,10 @@ function assistantApi(): Plugin {
     apply: 'serve',
     configureServer(server) {
       const limiter = new RateLimiter();
+      const report = (d: AssistantDiagnostic) => {
+        const line = diagnosticLine(d);
+        if (line) server.config.logger.warn(line);
+      };
       const fileEnv = loadEnv(server.config.mode, server.config.envDir || server.config.root, 'ANTHROPIC_');
       server.middlewares.use('/api/assistant', async (req, res) => {
         const chunks: Buffer[] = [];
@@ -43,6 +47,7 @@ function assistantApi(): Plugin {
           fetch: (url, init) => fetch(url, init),
           now: () => Date.now(),
           limiter,
+          report,
         });
         res.statusCode = response.status;
         response.headers.forEach((value, name) => res.setHeader(name, value));
