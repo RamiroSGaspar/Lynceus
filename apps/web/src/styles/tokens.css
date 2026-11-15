@@ -74,3 +74,37 @@
   --series-od: #f2f5f8;
   --series-os: #f5a3e6;
 }
+
+/*
+ * On paper: dark text on white. The same names, so every screen prints with the
+ * same rules it is drawn with.
+ */
+@media print {
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-surface-raised: #f1f3f5;
+    --color-border: #8a96a3;
+    --color-border-strong: #3e4c59;
+    --color-text: #000000;
+    --color-text-secondary: #1f2933;
+    --color-text-muted: #3e4c59;
+    --color-accent: #003e7e;
+    --color-accent-contrast: #ffffff;
+    --color-focus: #000000;
+    --level-none: #1f2933;
+    --level-none-bg: #ffffff;
+    --level-advisory: #003e7e;
+    --level-advisory-bg: #ffffff;
+    --level-caution: #6b4e00;
+    --level-caution-bg: #ffffff;
+    --level-warning: #8a1c12;
+    --level-warning-bg: #ffffff;
+    --origin-measured: #0b5a2b;
+    --origin-estimated: #6b4e00;
+    --origin-reported: #3b2a8c;
+    --origin-unavailable: #3e4c59;
+    --series-od: #000000;
+    --series-os: #8a1c6f;
+  }
+}

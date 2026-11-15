@@ -26,8 +26,6 @@ export const appMessages = defineMessages(
       'What you can do: reload the page. If it happens again, delete what is saved in this browser. The crew history that comes with the application stays.',
     'error.reload': 'Reload the page',
     'error.clear': 'Delete what is saved in this browser',
-    'pending.title': 'Screen under construction',
-    'pending.text': 'This screen is not built yet.',
   },
   {
     'skip': 'Saltar al contenido',
@@ -53,7 +51,5 @@ export const appMessages = defineMessages(
       'Qué podés hacer: recargar la página. Si vuelve a pasar, borrá lo guardado en este navegador. La historia de la tripulación que viene con la aplicación queda.',
     'error.reload': 'Recargar la página',
     'error.clear': 'Borrar lo guardado en este navegador',
-    'pending.title': 'Pantalla en construcción',
-    'pending.text': 'Esta pantalla todavía no está construida.',
   },
 );

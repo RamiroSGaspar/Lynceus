@@ -11,7 +11,7 @@ import { HistoryScreen } from './screens/HistoryScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { HowScreen } from './screens/HowScreen';
 import { NotFoundScreen } from './screens/NotFoundScreen';
-import { PendingScreen } from './screens/PendingScreen';
+import { ReportScreen } from './screens/ReportScreen';
 import { ResultScreen } from './screens/ResultScreen';
 import { SessionScreen } from './screens/SessionScreen';
 import { AppFooter } from './shell/AppFooter';
@@ -36,10 +36,10 @@ function Screen({ route }: { route: Route }) {
     case 'dev':
       if (route.page === 'charts') return <ChartsGallery />;
       return <NotFoundScreen message={t('notFound.text', { path: `/dev/${route.page}` })} />;
+    case 'report':
+      return <ReportScreen crewId={route.crewId} flightDay={route.flightDay} />;
     case 'not-found':
       return <NotFoundScreen message={t('notFound.text', { path: route.path })} />;
-    default:
-      return <PendingScreen />;
   }
 }
 

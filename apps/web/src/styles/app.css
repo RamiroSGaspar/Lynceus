@@ -974,3 +974,99 @@ a.btn {
 .how__step dd {
   margin: var(--space-1) 0 0;
 }
+
+/* ---- Medical conference */
+.print-only {
+  display: none;
+}
+.report .simulated-notice {
+  max-width: 48rem;
+}
+.questions {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: 0;
+  padding-left: var(--space-5);
+}
+.questions__item {
+  max-width: 48rem;
+}
+.questions__item,
+.questions__add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-2) var(--space-3);
+}
+.questions__add {
+  max-width: 48rem;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.questions__label {
+  flex-basis: 100%;
+  font-weight: 700;
+}
+.questions__input {
+  flex: 1 1 18rem;
+  min-height: 3.25rem;
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+  resize: vertical;
+}
+.questions__suggested {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.questions__suggested li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  max-width: 48rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+/* ---- Printing: white background, no navigation */
+@media print {
+  .app-top,
+  .app-footer,
+  .skip-link,
+  .no-print,
+  .assistant {
+    display: none !important;
+  }
+  .print-only {
+    display: block;
+  }
+  ol.print-only {
+    padding-left: var(--space-5);
+  }
+  .app-main {
+    max-width: none;
+    padding: 0;
+  }
+  .screen > .screen__section {
+    margin-top: var(--space-5);
+  }
+  .report__section {
+    break-inside: avoid-page;
+  }
+  .table-scroll {
+    overflow: visible;
+  }
+  a {
+    text-decoration: none;
+  }
+}
