@@ -53,8 +53,9 @@ describe('an eye that could not be measured', () => {
     // "Too few usable scans" is replaced by what spoiled most of them.
     expect(assessment.eyes.OS.notMeasuredReasons).toEqual(['signal-dropout']);
     expect(assessment.findings).toEqual(['eye-not-measured']);
-    // The contract has no session level for "nothing measured": the eyes say it.
-    expect(assessment.level).toBe('no-detectable-change');
+    // Nothing was read: the session has no level. "No detectable change" would reassure without a measurement.
+    expect(assessment.level).toBeNull();
+    expect(assessment.alert).toBe('none');
     expect(assessment.contact).toBe('routine-report');
     expect(assessment.nextOct).toEqual({ flightDay: 97, reason: 'not-measured' });
     expect(assessment.nextSteps[0]).toMatchObject({ id: 'oct-repeat-soon', params: { flightDay: 97, inDays: 7, eyes: 'both' } });
@@ -97,6 +98,39 @@ describe('an eye that could not be measured', () => {
     const assessment = assessSession({ crewId: 'B', flightDay: 30, eyes: eyesWithChange({ OD: 30, OS: 0 }), vision: null, history: [preWithoutOs] });
     expect(assessment.eyes.OD.level).toBe('first-sign');
     expect(assessment.eyes.OS).toMatchObject({ measured: false, notMeasuredReasons: ['no-baseline'] });
+  });
+
+  it('the session has a level as soon as one eye is measured, and none before the flight without a measured eye', () => {
+    const oneEye = assessSession({
+      crewId: 'B',
+      flightDay: 30,
+      eyes: { OD: notMeasured('OD'), OS: measured('OS', { trt: BASE.OS.trt + 3 }) },
+      vision: null,
+      history: [pre],
+    });
+    expect(oneEye.level).toBe('no-detectable-change');
+
+    const reference = assessSession({
+      crewId: 'B',
+      flightDay: 0,
+      eyes: { OD: notMeasured('OD', undefined, undefined, 0), OS: notMeasured('OS', undefined, undefined, 0) },
+      vision: null,
+      history: [],
+    });
+    expect(reference.level).toBeNull();
+    expect(reference.findings).toEqual(['eye-not-measured']);
+
+    // Findings that are not acute do not give the session a level either.
+    const withHeadache = assessSession({
+      crewId: 'B',
+      flightDay: 30,
+      eyes: { OD: notMeasured('OD'), OS: notMeasured('OS') },
+      vision: vision({ symptoms: symptoms({ headache: { severity: 'severe' }, distortion: {} }) }),
+      history: [pre],
+    });
+    expect(withHeadache.level).toBeNull();
+    expect(withHeadache.contact).toBe('without-delay');
+    expect(withHeadache.findings).toEqual(['symptom-other', 'eye-not-measured', 'symptom-headache']);
   });
 
   it('an acute symptom still makes the session acute when nothing could be measured', () => {

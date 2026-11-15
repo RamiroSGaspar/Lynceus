@@ -1,3 +1,4 @@
+import type { SessionRecord } from '@app/core';
 import { describe, expect, it } from 'vitest';
 import { validateContext } from '../../../api/_lib/validate';
 import { buildAssistantContext } from './context';
@@ -88,5 +89,42 @@ describe('buildAssistantContext', () => {
 
   it('passes the server input validation unchanged', () => {
     expect(validateContext(JSON.parse(json))).toEqual(context);
+  });
+});
+
+describe('buildAssistantContext: a session where no eye could be measured', () => {
+  // The session then has no level: the rules do not call it "no detectable change".
+  const record: SessionRecord = {
+    ...TEST_RECORD,
+    eyes: { OD: { ...TEST_RECORD.eyes.OS, eye: 'OD' }, OS: TEST_RECORD.eyes.OS },
+    assessment: {
+      ...TEST_RECORD.assessment,
+      eyes: { OD: { ...TEST_RECORD.assessment.eyes.OS, eye: 'OD' }, OS: TEST_RECORD.assessment.eyes.OS },
+      level: null,
+      alert: 'none',
+      findings: ['eye-not-measured'],
+      nextOct: { flightDay: 97, reason: 'not-measured' },
+      nextSteps: [
+        { id: 'oct-repeat-soon', params: { flightDay: 97 }, basis: 'assumption', sources: [] },
+        { id: 'report-routine', params: {}, basis: 'nasa', sources: [] },
+      ],
+    },
+  };
+  const context = buildAssistantContext(record);
+
+  it('sends a null level and no numbers for either eye', () => {
+    expect(context.level).toBeNull();
+    expect(context.alert).toBe('none');
+    for (const eye of ['OD', 'OS'] as const) {
+      expect(context.eyes[eye]).toMatchObject({ measured: false, level: null, changes: [], thresholds: [] });
+    }
+    expect(context.findings).toEqual(['eye-not-measured']);
+    expect(context.nextSteps).toEqual(['oct-repeat-soon', 'report-routine']);
+    expect(context.nextOctFlightDay).toBe(97);
+    expect(JSON.stringify(context)).not.toContain('no-detectable-change');
+  });
+
+  it('passes the server input validation unchanged', () => {
+    expect(validateContext(JSON.parse(JSON.stringify(context)))).toEqual(context);
   });
 });

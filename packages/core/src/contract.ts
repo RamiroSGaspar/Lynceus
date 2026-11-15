@@ -605,8 +605,12 @@ export interface SessionAssessment {
   crewId: CrewId;
   flightDay: number;
   eyes: { OD: EyeAssessment; OS: EyeAssessment };
-  /** Highest level of both eyes, or `acute-visual-symptom` when the functional tests demand it. */
-  level: Level;
+  /**
+   * Highest level of both eyes, or `acute-visual-symptom` when the functional tests demand it.
+   * Null when no eye could be measured and there is no acute finding: nothing was read,
+   * so the session cannot be said to show no change.
+   */
+  level: Level | null;
   alert: AlertClass;
   findings: FindingId[];
   contact: ContactUrgency;
