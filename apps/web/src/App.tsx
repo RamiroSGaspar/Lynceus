@@ -5,9 +5,11 @@ import { useRoute } from './app/useRoute';
 import { DevVisionPage } from './features/vision';
 import { useMessages } from './i18n';
 import { appMessages } from './i18n/app';
+import { BrainScreen } from './screens/BrainScreen';
 import { ChartsGallery } from './screens/dev/ChartsGallery';
 import { HistoryScreen } from './screens/HistoryScreen';
 import { HomeScreen } from './screens/HomeScreen';
+import { HowScreen } from './screens/HowScreen';
 import { NotFoundScreen } from './screens/NotFoundScreen';
 import { PendingScreen } from './screens/PendingScreen';
 import { ResultScreen } from './screens/ResultScreen';
@@ -27,6 +29,10 @@ function Screen({ route }: { route: Route }) {
       return <ResultScreen crewId={route.crewId} flightDay={route.flightDay} />;
     case 'history':
       return <HistoryScreen crewId={route.crewId} />;
+    case 'brain':
+      return <BrainScreen />;
+    case 'how':
+      return <HowScreen />;
     case 'dev':
       if (route.page === 'charts') return <ChartsGallery />;
       return <NotFoundScreen message={t('notFound.text', { path: `/dev/${route.page}` })} />;

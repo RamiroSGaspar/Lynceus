@@ -816,3 +816,161 @@ a.btn {
   border: 2px solid var(--color-accent);
   color: var(--color-text);
 }
+
+/* ---- What is known about the brain */
+.certainty {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border: 2px solid currentColor;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  cursor: help;
+}
+.certainty--established {
+  color: var(--color-text);
+}
+.certainty--limited-evidence {
+  border-style: dashed;
+  color: var(--origin-estimated);
+}
+.certainty--unknown {
+  border-style: dotted;
+  color: var(--color-text-secondary);
+}
+.certainty--not-measurable-on-board {
+  border-style: double;
+  border-width: 4px;
+  color: var(--color-text-secondary);
+}
+.brain__legend-title {
+  font-size: var(--text-lg);
+}
+.brain__legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-3) var(--space-5);
+  margin-bottom: 0;
+}
+.brain__legend dd {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+}
+.brain__columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--space-5);
+  align-items: start;
+  margin-top: var(--space-7);
+}
+.brain__column > h2 {
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-border-strong);
+  font-size: var(--text-lg);
+}
+.brain__statements {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.statement {
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.statement > * {
+  margin: 0;
+}
+.statement > * + * {
+  margin-top: var(--space-2);
+}
+.statement__sources-label {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.statement__sources {
+  padding-left: var(--space-5);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.statement__sources li + li {
+  margin-top: var(--space-2);
+}
+
+/* ---- How it works */
+.how__split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-4);
+}
+.how__side {
+  padding: var(--space-4);
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.how__side--fictional {
+  border-style: dashed;
+}
+.how__side h3 {
+  margin-bottom: var(--space-2);
+}
+.how__side ul,
+.how__assumptions {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+.how__side li + li,
+.how__assumptions li + li {
+  margin-top: var(--space-2);
+}
+.how__steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: var(--space-4);
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+.how__step {
+  max-width: none;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.how__step h3 {
+  margin-bottom: var(--space-3);
+}
+.how__number {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: var(--space-1);
+  border: 2px solid var(--color-text-secondary);
+  border-radius: 50%;
+  font-size: var(--text-sm);
+}
+.how__step dl {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+.how__step dt {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.how__step dd {
+  margin: var(--space-1) 0 0;
+}
