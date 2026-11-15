@@ -32,10 +32,17 @@ Las pruebas de visión se pueden hacer o saltear y quedan registradas según eso
 
 ### Pendientes de entrega
 
-1. README en inglés y español, fuentes y supuestos centrales.
-2. Siete diapositivas y texto del formulario a partir de `producto.md`.
-3. Clave del asistente y tope de gasto a cargo de Ramiro; luego prueba breve de la API.
-4. Publicación cuando Ramiro la autorice y defina el destino.
+La documentación ya está escrita: [README](../README.es.md), guías públicas en
+`docs/es/` y `docs/en/`, [supuestos centrales](../docs/assumptions.md) y
+[guía personal](guia-para-defender-el-proyecto.md).
+
+1. Siete diapositivas y texto del formulario a partir de `producto.md`.
+2. Clave del asistente y tope de gasto a cargo de Ramiro; luego prueba breve de la API.
+   La preparación de Opus (`38a4faa`) incluye `assistant:smoke`: seis casos.
+   `pnpm --filter @app/web assistant:smoke -- --check` comprueba configuración
+   sin llamadas; `NO KEY` no demuestra que la API funcione. Reiniciar Vite
+   después de cargar la clave.
+3. Publicación cuando Ramiro la autorice y defina el destino.
 
 Sonnet 5.5 High en Devin para tareas directas; Opus 5.5 High para las que lo
 requieran. Claude Code solo por indicación de Ramiro. Worktrees nuevos: hijos de

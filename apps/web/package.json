@@ -10,7 +10,8 @@
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json && tsc -p api/tsconfig.json",
     "knowledge:generate": "tsx api/_lib/generate-knowledge.ts",
-    "assistant:redteam": "tsx api/_lib/redteam.ts"
+    "assistant:redteam": "tsx api/_lib/redteam.ts",
+    "assistant:smoke": "tsx api/_lib/redteam.ts --smoke"
   },
   "dependencies": {
     "@app/core": "workspace:*",

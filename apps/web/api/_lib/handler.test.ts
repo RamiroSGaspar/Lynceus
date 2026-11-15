@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { API_URL, API_VERSION, MODEL } from './anthropic';
+import { API_URL, API_VERSION, MODEL, isConfigurationFailure } from './anthropic';
 import type { AssistantResponse } from './contract';
-import { handleAssistant, type HandlerDeps } from './handler';
+import { diagnosticLine, handleAssistant, type AssistantDiagnostic, type HandlerDeps } from './handler';
 import { RateLimiter } from './rate-limit';
 import { SAMPLE_CONTEXT, answer, apiMessage, fakeApi, type ModelOutput } from './test-fixtures';
 
@@ -317,5 +317,58 @@ describe('barrier 8: failures', () => {
     const response = await handleAssistant(request(body), 'ip', deps(hanging, { timeoutMs: 50 }));
     expect(await response.json()).toEqual({ status: 'unavailable', reason: 'upstream-error' });
     expect(Date.now() - started).toBeLessThan(2000);
+  });
+});
+
+describe('server-side diagnosis', () => {
+  const body = { question: 'What is SANS? my-question-text', locale: 'en', context: null };
+
+  async function diagnose(api: ReturnType<typeof fakeApi>): Promise<{ json: AssistantResponse; seen: AssistantDiagnostic[] }> {
+    const seen: AssistantDiagnostic[] = [];
+    const response = await handleAssistant(request(body), 'ip', deps(api.fetch, { report: (d) => seen.push(d) }));
+    return { json: (await response.json()) as AssistantResponse, seen };
+  }
+
+  it.each([
+    [401, 'authentication_error', true],
+    [402, 'billing_error', true],
+    [404, 'not_found_error', true],
+    [400, 'invalid_request_error', true],
+    [529, 'overloaded_error', false],
+  ])('reports HTTP %i as %s, without the message, and says whether retrying can help', async (status, type, configuration) => {
+    const api = fakeApi({ status, body: { type: 'error', error: { type, message: 'secret detail sk-ant-xxx' }, request_id: 'req_1' } });
+    const { json, seen } = await diagnose(api);
+    expect(json).toEqual({ status: 'unavailable', reason: 'upstream-error' });
+    expect(seen).toEqual([{ model: 'error', failure: { cause: 'http', httpStatus: status, errorType: type } }]);
+    expect(isConfigurationFailure(seen[0]!.failure!)).toBe(configuration);
+    const line = diagnosticLine(seen[0]!)!;
+    expect(line).toBe(`[assistant] error: HTTP ${status} ${type}`);
+    for (const leak of ['secret', 'req_1', FAKE_KEY, 'my-question-text']) expect(JSON.stringify(seen) + line).not.toContain(leak);
+  });
+
+  it('reports an undocumented error type as unknown and a network failure as such', async () => {
+    const odd = await diagnose(fakeApi({ status: 418, body: { error: { type: 'sk-ant-leak' } } }));
+    expect(odd.seen[0]!.failure).toEqual({ cause: 'http', httpStatus: 418, errorType: 'unknown' });
+    const down = await diagnose(fakeApi(() => Promise.reject(new TypeError('fetch failed'))));
+    expect(down.seen[0]!.failure).toEqual({ cause: 'network' });
+  });
+
+  it('reports token usage of an answer, and the reason and draft of a blocked one without logging the draft', async () => {
+    const good = await diagnose(fakeApi({ body: apiMessage(GOOD_ANSWER) }));
+    expect(good.seen).toEqual([
+      { model: 'text', review: 'answered', usage: { inputTokens: 10, outputTokens: 10, cacheReadTokens: 0, cacheWriteTokens: 0 } },
+    ]);
+    expect(diagnosticLine(good.seen[0]!)).toBeNull();
+    const drug = answer({ answer: 'Take 250 mg of acetazolamide.', source_ids: ['sans.how-common'] });
+    const blocked = await diagnose(fakeApi({ body: apiMessage(drug) }));
+    expect(blocked.json).toEqual({ status: 'refused', reason: 'unsafe-output' });
+    expect(blocked.seen[0]).toMatchObject({ model: 'text', review: 'unsafe', why: 'medication', draft: JSON.stringify(drug) });
+    expect(diagnosticLine(blocked.seen[0]!)).toBe('[assistant] answer blocked by the review: medication');
+  });
+
+  it('reports a model refusal apart from a review block', async () => {
+    const refusal = await diagnose(fakeApi({ body: apiMessage('', 'refusal') }));
+    expect(refusal.json).toEqual({ status: 'refused', reason: 'out-of-scope' });
+    expect(refusal.seen[0]!.model).toBe('refusal');
   });
 });

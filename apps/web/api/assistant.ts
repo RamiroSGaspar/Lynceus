@@ -4,7 +4,7 @@
  * never leaves the server. Everything else lives in `_lib/`, which Vercel does not
  * expose as functions.
  */
-import { clientIp, handleAssistant } from './_lib/handler.js';
+import { clientIp, diagnosticLine, handleAssistant } from './_lib/handler.js';
 import { RateLimiter } from './_lib/rate-limit.js';
 
 const limiter = new RateLimiter();
@@ -15,6 +15,10 @@ async function handler(request: Request): Promise<Response> {
     fetch: (url, init) => fetch(url, init),
     now: () => Date.now(),
     limiter,
+    report: (diagnostic) => {
+      const line = diagnosticLine(diagnostic);
+      if (line) console.warn(line);
+    },
   });
 }
 

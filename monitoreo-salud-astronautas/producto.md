@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Proyecto** | NASA Space Apps Challenge 2026 — *Create Health Monitoring Software for Astronauts on Space Missions* |
-| **Fecha** | Domingo 15 de noviembre de 2026, 06:10. La entrega cierra hoy a las 23:59 |
+| **Fecha** | Domingo 15 de noviembre de 2026. Actualizado tras cerrar la documentación pública y personal |
 | **Para qué es** | Decir en lenguaje llano qué es el producto, para el equipo y como base de la descripción del formulario y de las diapositivas. |
 | **Qué no es** | No explica código ni arquitectura: eso está en [arquitectura.md](arquitectura.md) y en [especificaciones/](especificaciones/). |
 | **Nombre** | *Lynceus* es provisorio: el argonauta de vista más aguda, vigía de la nave Argo. |
@@ -172,7 +172,13 @@ Al domingo 15 de noviembre de 2026, después de cerrar la validación sintética
 | Pantalla de captura y visor de la tomografía | Integrados; muestran el análisis y permiten repetir capturas rechazadas |
 | Historia y examen de antes del vuelo | Medidos con el mismo motor: 27 sesiones de los cuatro tripulantes, con sus pedidos y reintentos registrados |
 | Medición del error del análisis | Evaluadas 621 capturas simuladas; informe y explicación bilingüe disponibles. El modelo ajustado no cumplió sus criterios y se conserva el provisorio |
-| Documentación en inglés y español, publicación, diapositivas y formulario | Falta |
+| Documentación pública y guía personal | README y guías en inglés/español disponibles; supuestos centrales y guía para defender el proyecto escritos |
+| Publicación, diapositivas y formulario | Pendientes |
+
+Entradas: [README en español](../README.es.md), [README en inglés](../README.md)
+y [guía personal para defender el proyecto](guia-para-defender-el-proyecto.md).
+El asistente tiene una prueba breve de seis casos y diagnóstico de fallos de API;
+su comprobación real sigue pendiente de la clave y el tope de gasto.
 
 La entrega reúne 672 pruebas automáticas comprobadas, además de compilación y control
 de credenciales. En el cierre se corrigió una prueba que modificaba por igual el examen
