@@ -12,7 +12,7 @@ export const appMessages = defineMessages(
     'footer.limits':
       'A first read on board. It is not a diagnosis: the flight surgeon on the ground confirms and decides.',
     'footer.nav': 'About this tool',
-    'nav.home': 'Start',
+    'nav.home': 'Start screen',
     'nav.brain': 'What is known about the brain',
     'nav.how': 'How it works',
     'notFound.title': 'This page does not exist',
@@ -39,7 +39,7 @@ export const appMessages = defineMessages(
     'footer.limits':
       'Una primera lectura a bordo. No es un diagnóstico: el médico de vuelo en Tierra confirma y decide.',
     'footer.nav': 'Sobre esta herramienta',
-    'nav.home': 'Inicio',
+    'nav.home': 'Pantalla de inicio',
     'nav.brain': 'Qué se sabe del cerebro',
     'nav.how': 'Cómo funciona',
     'notFound.title': 'Esta página no existe',

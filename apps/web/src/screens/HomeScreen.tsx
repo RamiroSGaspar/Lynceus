@@ -63,12 +63,13 @@ function CrewCard({ member }: { member: CrewMember }) {
   const draft = findDraft(state, member.id, state.missionDay);
   const headingId = useId();
 
-  const status = done
-    ? t('card.status.done')
-    : draft
-      ? t('card.status.inProgress', { step: draft.stepIndex + 1, total: STEP_IDS.length })
+  // A control in progress comes first: also when it repeats one that is already saved.
+  const status = draft
+    ? t('card.status.inProgress', { step: draft.stepIndex + 1, total: STEP_IDS.length })
+    : done
+      ? t('card.status.done')
       : t('card.status.notStarted');
-  const action = done ? t('card.result') : draft ? t('card.resume') : t('card.start');
+  const action = draft ? t('card.resume') : done ? t('card.result') : t('card.start');
 
   return (
     <Card as="article" className="crew-card" eyebrow={member.role[locale]}>
@@ -104,13 +105,25 @@ function CrewCard({ member }: { member: CrewMember }) {
       </dl>
       <div className="actions">
         <LinkButton
-          to={done ? { name: 'result', crewId: member.id, flightDay: state.missionDay } : { name: 'session', crewId: member.id }}
+          to={
+            done && !draft
+              ? { name: 'result', crewId: member.id, flightDay: state.missionDay }
+              : { name: 'session', crewId: member.id }
+          }
           variant="primary"
           size="lg"
           aria-label={t('card.for', { action, name: member.name })}
         >
           {action}
         </LinkButton>
+        {done && draft && (
+          <LinkButton
+            to={{ name: 'result', crewId: member.id, flightDay: state.missionDay }}
+            aria-label={t('card.for', { action: t('card.result'), name: member.name })}
+          >
+            {t('card.result')}
+          </LinkButton>
+        )}
         <LinkButton
           to={{ name: 'history', crewId: member.id }}
           aria-label={t('card.for', { action: t('card.history'), name: member.name })}
