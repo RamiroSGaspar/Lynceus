@@ -1,0 +1,23 @@
+<!-- @dsCard group="Fundamentos" -->
+<!-- Muestra con datos simulados: tripulante ficticio C, día de vuelo 118. No son datos de una persona. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Líneas y marco</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../bundle.css">
+<style>html,body{margin:0}body{padding:28px 28px 32px}.lineas{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:40px 32px;align-items:end}.lineas>div{display:grid;gap:14px}</style>
+</head>
+<body class="co">
+<div class="lineas">
+<div><div class="co-lectura co-lectura--sm"><p class="co-lectura__valor">22.8 <span class="co-lectura__unidad">dB</span></p><p class="co-lectura__rotulo"><svg class="co-origen" aria-hidden="true"><use href="#o-measured"/></svg><span class="co-oculto">Measured</span><span>Quality</span></p></div><p class="co-micro">Línea de lectura</p></div>
+<div><hr class="co-regla" style="width:100%"><p class="co-micro">Separador</p></div>
+<div><div class="co-marco" style="--_marco:0.75rem;width:9rem;height:4rem;margin:0.75rem"></div><p class="co-micro">Marco: en foco</p></div>
+<div><div class="co-fila" style="gap:12px"><span class="co-ficha co-ficha--simulado">Simulated</span><span class="co-nivel co-nivel--unmeasured co-nivel--forma" role="img" aria-label="Could not be measured"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-unmeasured"/></svg></span><span class="co-base co-base--assumption">This tool’s own rule, not NASA’s</span></div><p class="co-micro">Trazos: lo que no es firme</p></div>
+</div>
+<script src="../../assets/iconos/sprite.js"></script>
+<script>(function(){function avisar(){parent.postMessage({coAlto:document.documentElement.scrollHeight},'*');}addEventListener('load',avisar);addEventListener('resize',avisar);setTimeout(avisar,400);})();</script>
+</body>
+</html>

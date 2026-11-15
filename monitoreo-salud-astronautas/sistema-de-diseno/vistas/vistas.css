@@ -1,0 +1,75 @@
+/* Campo oscuro — vistas/vistas.css — v2.0 — 15/11/2026
+   Cómo se arma una pantalla con los componentes: el marco, la cabina y las secciones de detalle.
+   Igual que bundle.css: ni un color escrito, todo sale de tokens.css.
+   La regla de composición: el borde es de la interfaz, el centro es de la imagen. */
+html, body { margin: 0; }
+html { scroll-padding-top: var(--hud-height); }
+
+/* ── Marco de toda pantalla: franja arriba, contenido, navegación fija abajo ── */
+.co-pantalla { min-height: 100vh; padding-bottom: var(--nav-height); }
+
+/* ── Cabina: la primera vista ─────────────────────────────────────────── */
+/* En una columna va en orden de lectura: qué pasó, cuánto, qué tan seguro. */
+.co-cabina { display: grid; grid-template-columns: minmax(0, 1fr); }
+.co-cabina__lado { padding: var(--space-6) var(--space-5); }
+.co-cabina__lado:first-child { padding-top: calc(var(--hud-height) + var(--space-5)); }
+.co-cabina__lado::after { display: none; }
+.co-cabina__escena { display: flex; flex-direction: column; align-items: center; gap: var(--space-6); min-width: 0; padding: var(--space-7) var(--space-4) var(--space-6); --ocular-size: min(17rem, 36vw); }
+.co-cabina__ojos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-items: center; align-items: start; gap: var(--space-5); width: 100%; max-width: 50rem; }
+.co-cabina__mision { width: 100%; max-width: 46rem; }
+/* Cuando el centro es un gráfico y no una imagen: a lo ancho, alineado a la izquierda. */
+.co-cabina__escena--ancha { align-items: stretch; }
+.co-cabina__escena--ancha > * { width: 100%; max-width: 60rem; }
+/* Lo que sólo entra cuando hay un velo lateral: la lista de pasos de la sesión. */
+@media (max-width: 79.9375rem) { .co-cabina__solo-ancho { display: none; } }
+.co-cabina__selector { display: none; }
+/* Teléfono: un ojo por vez, con selector. */
+@media (max-width: 40rem) {
+  .co-cabina__escena { --ocular-size: min(19rem, 70vw); }
+  .co-cabina__selector { display: inline-flex; }
+  .co-cabina__ojos { grid-template-columns: minmax(0, 1fr); }
+  .co-cabina__ojos .co-ocular:not(.is-elegido) { display: none; }
+}
+/* Desde 1280 px: un velo a cada lado, de arriba abajo, y el campo al centro.
+   El ocular sigue el alto de la pantalla para que la primera vista entre completa. */
+@media (min-width: 80rem) {
+  .co-cabina { grid-template-columns: var(--panel-width) minmax(0, 1fr) var(--panel-width); min-height: 100vh; }
+  .co-cabina--dos { grid-template-columns: var(--panel-width) minmax(0, 1fr); }
+  .co-cabina__lado, .co-cabina__lado:first-child { padding: calc(var(--hud-height) + var(--space-6)) var(--space-6) var(--space-7); }
+  .co-cabina__lado::after { display: block; }
+  .co-cabina__escena { gap: var(--space-5); padding: calc(var(--hud-height) + var(--space-5)) var(--space-5) calc(var(--nav-height) + var(--space-4)); --ocular-size: clamp(12.5rem, 29vh, 22rem); }
+  .co-cabina__escena--ancha { padding-inline: clamp(var(--space-6), 5vw, var(--space-9)); }
+  .co-cabina__mision { margin-top: auto; }
+}
+/* El centro queda fijo a la vista mientras los velos se desplazan: la imagen y la línea de la misión no se van. */
+@media (min-width: 80rem) and (min-height: 44rem) {
+  .co-cabina__escena:not(.co-cabina__escena--ancha) { position: sticky; top: 0; align-self: start; height: 100vh; }
+}
+/* Pantalla baja: la primera vista se queda con lo esencial. La leyenda de los trazos está también en el visor. */
+@media (min-width: 80rem) and (max-height: 53rem) {
+  .co-cabina__escena { gap: var(--space-4); padding-top: calc(var(--hud-height) + var(--space-2)); padding-bottom: var(--nav-height); --ocular-size: clamp(11rem, 26vh, 22rem); }
+  .co-cabina__leyenda { display: none; }
+  .co-cabina__escena .co-ocular__cabeza { margin-bottom: var(--space-6); }
+  .co-cabina__escena .co-lectura--heroe .co-lectura__valor { font-size: var(--text-3xl); }
+}
+
+/* ── Secciones de detalle, debajo de la primera vista ─────────────────── */
+.co-detalle { position: relative; }
+.co-detalle::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--line-fade-h); }
+.co-seccion { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); width: min(100% - 2 * var(--space-5), var(--content-width)); margin: 0 auto; padding: var(--space-8) 0; }
+.co-seccion + .co-seccion, .co-pie { border-top: 1px solid; border-image: var(--line-fade-h) 1; }
+@media (min-width: 64rem) { .co-seccion { grid-template-columns: 18rem minmax(0, 1fr); gap: var(--space-8); } .co-seccion--apilada { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); } }
+.co-seccion__cabeza { display: grid; gap: var(--space-3); align-content: start; }
+.co-columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--space-7) var(--space-6); align-items: start; }
+.co-columnas--dos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+.co-columnas > .co-grupo { margin-top: 0; }
+.co-limites { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--space-4) var(--space-7); margin: 0; padding: 0; list-style: none; font-size: var(--text-sm); color: var(--color-text-secondary); }
+.co-limites li { display: flex; gap: var(--space-3); align-items: baseline; }
+.co-pie { display: grid; gap: var(--space-4); width: min(100% - 2 * var(--space-5), var(--content-width)); margin: 0 auto; padding: var(--space-6) 0 var(--space-7); }
+
+/* ── Inicio ───────────────────────────────────────────────────────────── */
+.co-portada { display: grid; justify-items: center; gap: var(--space-5); padding: calc(var(--hud-height) + var(--space-7)) var(--space-4) var(--space-6); text-align: center; }
+.co-portada__pregunta { margin-top: var(--space-6); }
+.co-tripulacion { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--space-7) var(--space-6); }
+.co-tripulacion > * { padding-top: var(--space-5); border-top: 1px solid var(--color-border-strong); }
+.co-bloque { width: min(100% - 2 * var(--space-5), var(--content-width)); margin: 0 auto; padding: var(--space-6) 0; }

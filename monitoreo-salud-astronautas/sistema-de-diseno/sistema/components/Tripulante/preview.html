@@ -1,0 +1,18 @@
+<!-- @dsCard group="Estructura" -->
+<!-- Muestra con datos simulados: tripulante ficticio C, día de vuelo 118. No son datos de una persona. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tripulante</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../bundle.css">
+<style>html,body{margin:0}body{padding:28px 28px 32px}.tripulacion{display:grid;grid-template-columns:repeat(2,minmax(0,17rem));gap:48px}.tripulacion>*{padding-top:24px;border-top:1px solid var(--color-border-strong)}</style>
+</head>
+<body class="co">
+<div class="tripulacion"><article class="co-tripulante"><div class="co-sujeto"><h3 class="co-sujeto__nombre">Ravi Anand</h3><p class="co-sujeto__rol">Flight engineer</p></div><div class="co-tripulante__estado"><span class="co-par" role="img" aria-label="Right eye: Clinically concerning. Left eye: First sign."><span class="co-par__ojo co-par__ojo--caution"><span class="co-par__disco"></span>OD</span><span class="co-par__ojo co-par__ojo--advisory"><span class="co-par__disco"></span>OS</span></span><span class="co-nivel co-nivel--caution"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-caution"/></svg><span class="co-nivel__clase">Caution</span><span class="co-nivel__nombre">Clinically concerning</span></span><p class="co-rotulo">Last control · FD139</p></div><div class="co-lectura co-lectura--palabras"><p class="co-lectura__valor">Not started.</p><p class="co-lectura__rotulo"><span>Today’s control · FD150</span></p></div><div class="co-fila"><a class="co-boton co-boton--principal" href="#">Start today’s control</a><a class="co-accion co-accion--sm" href="#"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-chart-line"/></svg></span>History</a></div></article><article class="co-tripulante"><div class="co-sujeto"><h3 class="co-sujeto__nombre">Kofi Mensah</h3><p class="co-sujeto__rol">Flight engineer</p></div><div class="co-tripulante__estado"><span class="co-par" role="img" aria-label="Right eye: No detectable change. Left eye: No detectable change."><span class="co-par__ojo co-par__ojo--none"><span class="co-par__disco"></span>OD</span><span class="co-par__ojo co-par__ojo--none"><span class="co-par__disco"></span>OS</span></span><span class="co-nivel co-nivel--none"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-none"/></svg><span class="co-nivel__nombre">No detectable change</span></span><p class="co-rotulo">Last control · FD90</p></div><div class="co-lectura co-lectura--palabras"><p class="co-lectura__valor">Done in this browser.</p><p class="co-lectura__rotulo"><span>Today’s control · FD150</span></p></div><div class="co-fila"><a class="co-boton co-boton--principal" href="#">See the result</a><a class="co-accion co-accion--sm" href="#"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-chart-line"/></svg></span>History</a></div></article></div>
+<script src="../../assets/iconos/sprite.js"></script>
+<script>(function(){function avisar(){parent.postMessage({coAlto:document.documentElement.scrollHeight},'*');}addEventListener('load',avisar);addEventListener('resize',avisar);setTimeout(avisar,400);})();</script>
+</body>
+</html>

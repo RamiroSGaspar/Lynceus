@@ -1,0 +1,78 @@
+<!-- Muestra con datos simulados: tripulación ficticia. No son datos de una persona. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who are you, and which control is due today?</title>
+<link rel="icon" href="../sistema/assets/marca/favicon.svg">
+<link rel="stylesheet" href="../sistema/tokens.css">
+<link rel="stylesheet" href="../sistema/components/bundle.css">
+<link rel="stylesheet" href="vistas.css">
+</head>
+<body class="co co-campo">
+<div class="co-pantalla" style="padding-bottom:0">
+<header class="co-hud">
+<a class="co-marca" href="./inicio.html" aria-label="Lynceus: start"><span class="co-marca__iso" data-co-marca="mini"></span><span class="co-marca__nombre">Lynceus</span></a>
+<div class="co-hud__centro"><span class="co-hud__fecha"><svg class="co-ic" aria-hidden="true"><use href="#i-calendar-days"/></svg>Oct 16, 2026</span><span class="co-ficha">FD150</span><span class="co-ficha co-ficha--simulado"><svg class="co-ic" aria-hidden="true"><use href="#i-flask-conical"/></svg>Simulated<span class="co-ficha__resto">&#160;data</span></span></div>
+<div class="co-hud__lado"><div class="co-segmento" role="group" aria-label="Language"><button type="button" aria-pressed="true">EN</button><button type="button" aria-pressed="false">ES</button></div></div>
+</header>
+<main>
+<section class="co-portada">
+<span class="co-marca co-marca--portada is-trazando"><span class="co-marca__iso" data-co-marca></span><span class="co-marca__nombre co-halo">Lynceus</span></span>
+<div class="co-halo" style="padding:0 var(--space-4)"><p class="co-texto">On-board first read of spaceflight eye changes</p></div>
+<div class="co-halo co-portada__pregunta" style="padding:0 var(--space-4)"><h1 class="co-titulo" tabindex="-1">Who are you, and which control is due today?</h1></div>
+</section>
+<section class="co-bloque" aria-labelledby="dia-titulo" style="max-width:56rem">
+<div class="co-halo" style="display:grid;gap:var(--space-5);padding:var(--space-3) 0">
+<div style="display:grid;gap:var(--space-2);justify-items:center;text-align:center"><h2 class="co-micro" id="dia-titulo">Mission day</h2><p class="co-nota">NASA’s routine eye controls for a mission of this length fall on flight days 30, 90 and 150. Choosing another day travels to that control: the history shows only what came before it.</p></div>
+<div class="co-desliza"><nav class="co-mision" aria-label="Mission timeline">
+<ol class="co-mision__linea">
+<li style="--x:0%"><a class="co-mision__control" href="#" aria-label="Pre-flight exam, on record"><span class="co-mision__marca">Pre-flight</span><span class="co-mision__punto co-mision__punto--dia"></span></a></li>
+<li style="--x:16.7%"><a class="co-mision__control" href="#" aria-label="Flight day 30, June 18: routine control"><span class="co-mision__punto co-mision__punto--dia"></span><span class="co-mision__dia">FD30 · Jun 18</span></a></li>
+<li style="--x:50%"><a class="co-mision__control" href="#" aria-label="Flight day 90, August 17: routine control"><span class="co-mision__punto co-mision__punto--dia"></span><span class="co-mision__dia">FD90 · Aug 17</span></a></li>
+<li style="--x:83.3%" aria-current="step"><a class="co-mision__control" href="#" aria-label="Flight day 150, October 16: routine control, chosen"><span class="co-mision__marca">today</span><span class="co-mision__punto co-mision__punto--dia"></span><span class="co-mision__dia">FD150 · Oct 16</span></a></li>
+<li style="--x:100%"><a class="co-mision__control" href="#" aria-label="Flight day 180: return"><span class="co-mision__marca">Return</span><span class="co-mision__punto co-mision__punto--tope"></span></a></li>
+</ol>
+</nav></div>
+</div>
+</section>
+<div class="co-detalle co-velo" style="margin-top:var(--space-6)">
+<section class="co-seccion co-seccion--apilada" aria-labelledby="crew-titulo">
+<div class="co-seccion__cabeza"><h2 class="co-titulo" id="crew-titulo">Crew</h2><p class="co-nota">Fictional crew: the names, the exams and the histories are invented.</p><p class="co-nota">Routine control: symptoms, near vision, Amsler grid and a tomography of each eye, compared with the pre-flight exam.</p></div>
+<div class="co-tripulacion">
+<article class="co-tripulante"><div class="co-sujeto"><h3 class="co-sujeto__nombre">Kofi Mensah</h3><p class="co-sujeto__rol">Flight engineer</p></div><div class="co-tripulante__estado"><span class="co-par" role="img" aria-label="Right eye: No detectable change. Left eye: No detectable change."><span class="co-par__ojo co-par__ojo--none"><span class="co-par__disco"></span>OD</span><span class="co-par__ojo co-par__ojo--none"><span class="co-par__disco"></span>OS</span></span><span class="co-nivel co-nivel--none"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-none"/></svg><span class="co-nivel__nombre">No detectable change</span></span><p class="co-rotulo">Last control · FD90</p></div><div class="co-lectura co-lectura--palabras"><p class="co-lectura__valor">Done in this browser.</p><p class="co-lectura__rotulo"><span>Today’s control · FD150</span></p></div><div class="co-pila" style="gap:var(--space-3);justify-items:start"><a class="co-boton" href="#">See the result</a><a class="co-accion co-accion--sm" href="historia.html"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-chart-line"/></svg></span>History</a></div></article>
+<article class="co-tripulante"><div class="co-sujeto"><h3 class="co-sujeto__nombre">Elena Voss</h3><p class="co-sujeto__rol">Commander</p></div><div class="co-tripulante__estado"><span class="co-par" role="img" aria-label="Right eye: First sign. Left eye: First sign."><span class="co-par__ojo co-par__ojo--advisory"><span class="co-par__disco"></span>OD</span><span class="co-par__ojo co-par__ojo--advisory"><span class="co-par__disco"></span>OS</span></span><span class="co-nivel co-nivel--advisory"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-advisory"/></svg><span class="co-nivel__clase">Advisory</span><span class="co-nivel__nombre">First sign</span></span><p class="co-rotulo">Last control · FD118</p></div><div class="co-lectura co-lectura--palabras"><p class="co-lectura__valor">In progress: step 3 of 7.</p><p class="co-lectura__rotulo"><span>Today’s control · FD150</span></p></div><div class="co-pila" style="gap:var(--space-3);justify-items:start"><a class="co-boton co-boton--principal" href="#">Resume today’s control</a><a class="co-accion co-accion--sm" href="historia.html"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-chart-line"/></svg></span>History</a></div></article>
+<article class="co-tripulante"><div class="co-sujeto"><h3 class="co-sujeto__nombre">Ravi Anand</h3><p class="co-sujeto__rol">Flight engineer</p></div><div class="co-tripulante__estado"><span class="co-par" role="img" aria-label="Right eye: Clinically concerning. Left eye: First sign."><span class="co-par__ojo co-par__ojo--caution"><span class="co-par__disco"></span>OD</span><span class="co-par__ojo co-par__ojo--advisory"><span class="co-par__disco"></span>OS</span></span><span class="co-nivel co-nivel--caution"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-caution"/></svg><span class="co-nivel__clase">Caution</span><span class="co-nivel__nombre">Clinically concerning</span></span><p class="co-rotulo">Last control · FD139</p></div><div class="co-lectura co-lectura--palabras"><p class="co-lectura__valor">Not started.</p><p class="co-lectura__rotulo"><span>Today’s control · FD150</span></p></div><div class="co-pila" style="gap:var(--space-3);justify-items:start"><a class="co-boton co-boton--principal" href="captura.html">Start today’s control</a><a class="co-accion co-accion--sm" href="historia.html"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-chart-line"/></svg></span>History</a></div></article>
+<article class="co-tripulante"><div class="co-sujeto"><h3 class="co-sujeto__nombre">Lucía Ferreyra</h3><p class="co-sujeto__rol">Mission specialist</p></div><div class="co-tripulante__estado"><span class="co-par" role="img" aria-label="Right eye: Clinically concerning. Left eye: Clinically concerning."><span class="co-par__ojo co-par__ojo--caution"><span class="co-par__disco"></span>OD</span><span class="co-par__ojo co-par__ojo--caution"><span class="co-par__disco"></span>OS</span></span><span class="co-nivel co-nivel--caution"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-caution"/></svg><span class="co-nivel__clase">Caution</span><span class="co-nivel__nombre">Clinically concerning</span></span><p class="co-rotulo">Last control · FD132</p></div><div class="co-lectura co-lectura--palabras"><p class="co-lectura__valor">Not started.</p><p class="co-lectura__rotulo"><span>Today’s control · FD150</span></p></div><div class="co-pila" style="gap:var(--space-3);justify-items:start"><a class="co-boton co-boton--principal" href="#">Start today’s control</a><a class="co-accion co-accion--sm" href="historia.html"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-chart-line"/></svg></span>History</a></div></article>
+</div>
+</section>
+<section class="co-seccion" aria-labelledby="antes-titulo">
+<div class="co-seccion__cabeza"><h2 class="co-titulo" id="antes-titulo">Before you start</h2></div>
+<div class="co-columnas co-columnas--dos">
+<div class="co-pila"><a class="co-accion" href="#"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-brain"/></svg></span>What is known about the brain</a><p class="co-nota">What is known, what only an MRI before and after the flight shows, and what cannot be known during a mission.</p></div>
+<div class="co-pila"><a class="co-accion" href="#"><span class="co-accion__icono"><svg class="co-ic" aria-hidden="true"><use href="#i-book-open"/></svg></span>How it works</a><p class="co-nota">The process step by step, with its sources, its assumptions and its validation.</p></div>
+</div>
+</section>
+<section class="co-seccion" aria-labelledby="guardado-titulo">
+<div class="co-seccion__cabeza"><h2 class="co-titulo" id="guardado-titulo">Saved in this browser</h2><p class="co-nota">Health data stay in this browser. Nothing is sent over the network.</p></div>
+<div class="co-pila" style="gap:var(--space-6);justify-items:start"><div class="co-lecturas" style="width:100%;max-width:26rem"><div class="co-lectura"><p class="co-lectura__valor">1</p><p class="co-lectura__rotulo"><span>Controls done here</span></p></div><div class="co-lectura"><p class="co-lectura__valor">1</p><p class="co-lectura__rotulo"><span>Controls in progress</span></p></div></div><button type="button" class="co-boton"><svg class="co-ic" aria-hidden="true"><use href="#i-trash-2"/></svg>Delete what is saved in this browser</button></div>
+</section>
+<footer class="co-pie">
+<ul class="co-leyenda" aria-label="How each value was obtained"><li><svg class="co-origen" aria-hidden="true"><use href="#o-measured"/></svg>Measured</li><li><svg class="co-origen" aria-hidden="true"><use href="#o-derived"/></svg>Calculated</li><li><svg class="co-origen" aria-hidden="true"><use href="#o-estimated"/></svg>Estimated</li><li><svg class="co-origen" aria-hidden="true"><use href="#o-self-reported"/></svg>Reported by you</li><li><svg class="co-origen" aria-hidden="true"><use href="#o-reference"/></svg>Reference</li><li><svg class="co-origen" aria-hidden="true"><use href="#o-not-measurable"/></svg>Cannot be measured on board</li></ul>
+<p class="co-nota">Simulated data. Not a medical device. Not validated on people.</p>
+<p class="co-rotulo" lang="es">Muestra del sistema de diseño «Campo oscuro» v2.0 · <a href="../sistema/muestrario.html">muestrario</a> · <a href="inicio.html">inicio</a> · <a href="captura.html">captura</a> · <a href="resultado.html">resultado</a> · <a href="historia.html">historia</a></p>
+</footer>
+</div>
+</main>
+</div>
+<script src="../sistema/assets/iconos/sprite.js"></script>
+<script>
+// En pantalla angosta la línea de la misión se desplaza de lado: el control actual queda a la vista.
+document.querySelectorAll('.co-desliza > .co-mision').forEach(function (linea) {
+  var caja = linea.parentElement, actual = linea.querySelector('[aria-current]');
+  if (actual) caja.scrollLeft = linea.querySelector('ol').offsetLeft + actual.offsetLeft - caja.clientWidth / 2;
+});
+</script>
+</body>
+</html>

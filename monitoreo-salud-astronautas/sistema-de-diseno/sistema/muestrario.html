@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lynceus · Campo oscuro, muestrario</title>
+<link rel="icon" href="assets/marca/favicon.svg">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components/bundle.css">
+<style>
+html, body { margin: 0; }
+html { scroll-padding-top: var(--hud-height); }
+.muestrario { display: grid; gap: var(--space-7); width: min(100% - 2 * var(--space-5), 80rem); margin: 0 auto; padding: calc(var(--hud-height) + var(--space-7)) 0 var(--space-9); }
+.muestrario__intro { display: grid; gap: var(--space-4); padding: var(--space-5); margin: 0 calc(-1 * var(--space-5)); }
+.muestrario__grupo { display: grid; gap: var(--space-2); margin: var(--space-7) 0 calc(-1 * var(--space-4)); padding: var(--space-3) var(--space-5); margin-inline: calc(-1 * var(--space-5)); width: fit-content; }
+.muestra { display: grid; margin: 0 calc(-1 * var(--space-5)); border-top: 1px solid var(--color-border-strong); }
+.muestra__cabeza { display: flex; align-items: baseline; gap: var(--space-5); padding: var(--space-4) var(--space-5) 0; }
+.muestra__cabeza h3 { margin-right: auto; }
+.muestra__cabeza a { color: var(--color-text); text-decoration: none; }
+.muestra__cabeza a:hover { text-decoration: underline; text-underline-offset: 0.3em; }
+.muestra iframe { display: block; width: 100%; height: 240px; border: 0; background: var(--color-bg); }
+.indice { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); margin: var(--space-3) 0 0; padding: 0; list-style: none; }
+.indice a { color: var(--color-text); text-decoration: none; }
+.indice a:hover { text-decoration: underline; text-underline-offset: 0.3em; }
+</style>
+</head>
+<body class="co co-campo">
+<header class="co-hud">
+<a class="co-marca" href="#" aria-label="Lynceus"><span class="co-marca__iso" data-co-marca="mini"></span><span class="co-marca__nombre">Lynceus</span></a>
+<div class="co-hud__centro"><span class="co-hud__fecha">Sistema de diseño</span><span class="co-ficha">Campo oscuro</span><span class="co-ficha">v2.0</span></div>
+<div class="co-hud__lado"><a class="co-boton" href="README.md">Libro de marca</a><a class="co-boton co-boton--principal" href="../vistas/resultado.html">Ver las pantallas</a></div>
+</header>
+<main class="muestrario">
+<div class="muestrario__intro co-halo">
+<p class="co-micro">Muestrario</p>
+<h1 class="co-titulo">Sobre un campo oscuro sólo brilla lo que importa</h1>
+<p class="co-texto">Cada componente del sistema, con datos del tripulante ficticio C en el día de vuelo 118, medidos por el motor. Las reglas de cada uno están en su guía; las del conjunto, en el <a href="README.md">libro de marca</a>. Los textos de interfaz van en inglés, como en la entrega.</p>
+<ul class="indice co-micro"><li><a href="#Marca">Marca</a></li><li><a href="#Fundamentos">Fundamentos</a></li><li><a href="#Datos">Datos</a></li><li><a href="#Estructura">Estructura</a></li><li><a href="../vistas/resultado.html">Pantallas</a></li></ul>
+</div>
+<section class="muestra co-velo" aria-label="Portada">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Portada</h3><a class="co-micro" href="components/Cover/preview.html">Abrir sola</a></header>
+<iframe src="components/Cover/preview.html" title="Portada"></iframe>
+</section>
+<div class="muestrario__grupo co-halo" id="Marca"><h2 class="co-titulo">Marca</h2></div>
+<section class="muestra co-velo" aria-label="Marca">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Marca</h3><a class="co-micro" href="components/Marca/README.md">Guía</a><a class="co-micro" href="components/Marca/preview.html">Abrir sola</a></header>
+<iframe src="components/Marca/preview.html" title="Marca"></iframe>
+</section>
+<div class="muestrario__grupo co-halo" id="Fundamentos"><h2 class="co-titulo">Fundamentos</h2></div>
+<section class="muestra co-velo" aria-label="Campo y velo">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Campo y velo</h3><a class="co-micro" href="components/Campo/README.md">Guía</a><a class="co-micro" href="components/Campo/preview.html">Abrir sola</a></header>
+<iframe src="components/Campo/preview.html" title="Campo y velo"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Color">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Color</h3><a class="co-micro" href="components/Color/README.md">Guía</a><a class="co-micro" href="components/Color/preview.html">Abrir sola</a></header>
+<iframe src="components/Color/preview.html" title="Color"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Tipografía">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Tipografía</h3><a class="co-micro" href="components/Tipografia/README.md">Guía</a><a class="co-micro" href="components/Tipografia/preview.html">Abrir sola</a></header>
+<iframe src="components/Tipografia/preview.html" title="Tipografía"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Líneas y marco">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Líneas y marco</h3><a class="co-micro" href="components/Lineas/README.md">Guía</a><a class="co-micro" href="components/Lineas/preview.html">Abrir sola</a></header>
+<iframe src="components/Lineas/preview.html" title="Líneas y marco"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Íconos">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Íconos</h3><a class="co-micro" href="components/Iconos/README.md">Guía</a><a class="co-micro" href="components/Iconos/preview.html">Abrir sola</a></header>
+<iframe src="components/Iconos/preview.html" title="Íconos"></iframe>
+</section>
+<div class="muestrario__grupo co-halo" id="Datos"><h2 class="co-titulo">Datos</h2></div>
+<section class="muestra co-velo" aria-label="Lectura">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Lectura</h3><a class="co-micro" href="components/Lectura/README.md">Guía</a><a class="co-micro" href="components/Lectura/preview.html">Abrir sola</a></header>
+<iframe src="components/Lectura/preview.html" title="Lectura"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Origen">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Origen</h3><a class="co-micro" href="components/Origen/README.md">Guía</a><a class="co-micro" href="components/Origen/preview.html">Abrir sola</a></header>
+<iframe src="components/Origen/preview.html" title="Origen"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Nivel">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Nivel</h3><a class="co-micro" href="components/Nivel/README.md">Guía</a><a class="co-micro" href="components/Nivel/preview.html">Abrir sola</a></header>
+<iframe src="components/Nivel/preview.html" title="Nivel"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Ocular">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Ocular</h3><a class="co-micro" href="components/Ocular/README.md">Guía</a><a class="co-micro" href="components/Ocular/preview.html">Abrir sola</a></header>
+<iframe src="components/Ocular/preview.html" title="Ocular"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Corte">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Corte</h3><a class="co-micro" href="components/Corte/README.md">Guía</a><a class="co-micro" href="components/Corte/preview.html">Abrir sola</a></header>
+<iframe src="components/Corte/preview.html" title="Corte"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Escala de cambio">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Escala de cambio</h3><a class="co-micro" href="components/Escala/README.md">Guía</a><a class="co-micro" href="components/Escala/preview.html">Abrir sola</a></header>
+<iframe src="components/Escala/preview.html" title="Escala de cambio"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Certeza y medidor">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Certeza y medidor</h3><a class="co-micro" href="components/Certeza/README.md">Guía</a><a class="co-micro" href="components/Certeza/preview.html">Abrir sola</a></header>
+<iframe src="components/Certeza/preview.html" title="Certeza y medidor"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Línea de la misión">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Línea de la misión</h3><a class="co-micro" href="components/Mision/README.md">Guía</a><a class="co-micro" href="components/Mision/preview.html">Abrir sola</a></header>
+<iframe src="components/Mision/preview.html" title="Línea de la misión"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Gráfico de historia">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Gráfico de historia</h3><a class="co-micro" href="components/Historia/README.md">Guía</a><a class="co-micro" href="components/Historia/preview.html">Abrir sola</a></header>
+<iframe src="components/Historia/preview.html" title="Gráfico de historia"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Par de ojos">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Par de ojos</h3><a class="co-micro" href="components/Par/README.md">Guía</a><a class="co-micro" href="components/Par/preview.html">Abrir sola</a></header>
+<iframe src="components/Par/preview.html" title="Par de ojos"></iframe>
+</section>
+<div class="muestrario__grupo co-halo" id="Estructura"><h2 class="co-titulo">Estructura</h2></div>
+<section class="muestra co-velo" aria-label="Franja superior">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Franja superior</h3><a class="co-micro" href="components/Franja/README.md">Guía</a><a class="co-micro" href="components/Franja/preview.html">Abrir sola</a></header>
+<iframe src="components/Franja/preview.html" title="Franja superior"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Velo y grupo">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Velo y grupo</h3><a class="co-micro" href="components/Velo/README.md">Guía</a><a class="co-micro" href="components/Velo/preview.html">Abrir sola</a></header>
+<iframe src="components/Velo/preview.html" title="Velo y grupo"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Navegación y acción">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Navegación y acción</h3><a class="co-micro" href="components/Navegacion/README.md">Guía</a><a class="co-micro" href="components/Navegacion/preview.html">Abrir sola</a></header>
+<iframe src="components/Navegacion/preview.html" title="Navegación y acción"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Botón, ficha y segmento">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Botón, ficha y segmento</h3><a class="co-micro" href="components/Boton/README.md">Guía</a><a class="co-micro" href="components/Boton/preview.html">Abrir sola</a></header>
+<iframe src="components/Boton/preview.html" title="Botón, ficha y segmento"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Próximo paso">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Próximo paso</h3><a class="co-micro" href="components/Paso/README.md">Guía</a><a class="co-micro" href="components/Paso/preview.html">Abrir sola</a></header>
+<iframe src="components/Paso/preview.html" title="Próximo paso"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Aviso">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Aviso</h3><a class="co-micro" href="components/Aviso/README.md">Guía</a><a class="co-micro" href="components/Aviso/preview.html">Abrir sola</a></header>
+<iframe src="components/Aviso/preview.html" title="Aviso"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Pasos de la sesión">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Pasos de la sesión</h3><a class="co-micro" href="components/Sesion/README.md">Guía</a><a class="co-micro" href="components/Sesion/preview.html">Abrir sola</a></header>
+<iframe src="components/Sesion/preview.html" title="Pasos de la sesión"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Tabla">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Tabla</h3><a class="co-micro" href="components/Tabla/README.md">Guía</a><a class="co-micro" href="components/Tabla/preview.html">Abrir sola</a></header>
+<iframe src="components/Tabla/preview.html" title="Tabla"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Tripulante">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Tripulante</h3><a class="co-micro" href="components/Tripulante/README.md">Guía</a><a class="co-micro" href="components/Tripulante/preview.html">Abrir sola</a></header>
+<iframe src="components/Tripulante/preview.html" title="Tripulante"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Opción y entrada">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Opción y entrada</h3><a class="co-micro" href="components/Opcion/README.md">Guía</a><a class="co-micro" href="components/Opcion/preview.html">Abrir sola</a></header>
+<iframe src="components/Opcion/preview.html" title="Opción y entrada"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Captura">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Captura</h3><a class="co-micro" href="components/Captura/README.md">Guía</a><a class="co-micro" href="components/Captura/preview.html">Abrir sola</a></header>
+<iframe src="components/Captura/preview.html" title="Captura"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Hoja del asistente">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Hoja del asistente</h3><a class="co-micro" href="components/Asistente/README.md">Guía</a><a class="co-micro" href="components/Asistente/preview.html">Abrir sola</a></header>
+<iframe src="components/Asistente/preview.html" title="Hoja del asistente"></iframe>
+</section>
+<section class="muestra co-velo" aria-label="Sello de datos simulados">
+<header class="muestra__cabeza"><h3 class="co-subtitulo">Sello de datos simulados</h3><a class="co-micro" href="components/Sello/README.md">Guía</a><a class="co-micro" href="components/Sello/preview.html">Abrir sola</a></header>
+<iframe src="components/Sello/preview.html" title="Sello de datos simulados"></iframe>
+</section>
+</main>
+<script src="assets/iconos/sprite.js"></script>
+<script>
+// Cada vista previa avisa su alto y el marco se ajusta.
+addEventListener('message', function (evento) {
+  if (!evento.data || typeof evento.data.coAlto !== 'number') return;
+  document.querySelectorAll('iframe').forEach(function (marco) {
+    if (marco.contentWindow === evento.source) marco.style.height = Math.ceil(evento.data.coAlto) + 'px';
+  });
+});
+</script>
+</body>
+</html>

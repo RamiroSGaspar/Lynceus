@@ -1,0 +1,19 @@
+<!-- @dsCard group="Estructura" -->
+<!-- Muestra con datos simulados: tripulante ficticio C, día de vuelo 118. No son datos de una persona. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Botón, ficha y segmento</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../bundle.css">
+<style>html,body{margin:0}body{padding:28px 28px 32px}</style>
+</head>
+<body class="co">
+<div class="co-pila" style="gap:32px"><div class="co-fila"><button type="button" class="co-boton co-boton--principal co-boton--lg">Start today’s control<svg class="co-ic" aria-hidden="true"><use href="#i-arrow-right"/></svg></button><button type="button" class="co-boton co-boton--principal">See the result</button><a class="co-boton" href="#"><svg class="co-ic" aria-hidden="true"><use href="#i-chart-line"/></svg>History</a><button type="button" class="co-boton" disabled>Delete saved data</button><a href="#">What is known about the brain</a></div>
+<div class="co-fila"><span class="co-ficha">FD118</span><span class="co-ficha">OD</span><span class="co-ficha co-ficha--llena">Today</span><span class="co-ficha co-ficha--simulado"><svg class="co-ic" aria-hidden="true"><use href="#i-flask-conical"/></svg>Simulated data</span><div class="co-segmento" role="group" aria-label="Eye"><button type="button" aria-pressed="true">Right eye</button><button type="button" aria-pressed="false">Left eye</button></div></div></div>
+<script src="../../assets/iconos/sprite.js"></script>
+<script>(function(){function avisar(){parent.postMessage({coAlto:document.documentElement.scrollHeight},'*');}addEventListener('load',avisar);addEventListener('resize',avisar);setTimeout(avisar,400);})();</script>
+</body>
+</html>

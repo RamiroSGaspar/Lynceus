@@ -1,0 +1,24 @@
+<!-- @dsCard group="Estructura" -->
+<!-- Muestra con datos simulados: tripulante ficticio C, día de vuelo 118. No son datos de una persona. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aviso</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../bundle.css">
+<style>html,body{margin:0}body{padding:28px 28px 32px}</style>
+</head>
+<body class="co">
+<div class="co-pila" style="max-width:40rem;gap:28px">
+<div class="co-aviso"><span class="co-aviso__forma"><svg class="co-ic co-ic--lg" aria-hidden="true"><use href="#i-info"/></svg></span><p class="co-aviso__titulo">These ranges are provisional.</p><p class="co-aviso__texto">They come from an error model that has not been measured yet.</p></div>
+<div class="co-aviso co-aviso--sin-medida" role="status"><svg class="co-aviso__forma" aria-hidden="true"><use href="#l-unmeasured"/></svg><p class="co-aviso__titulo">I cannot measure this eye today.</p><p class="co-aviso__texto">Too few usable scans after 3 attempts. It is written in the report.</p></div>
+<div class="co-aviso co-aviso--advisory"><svg class="co-aviso__forma" aria-hidden="true"><use href="#l-advisory"/></svg><p class="co-aviso__titulo">The scan indicates new folds in both eyes.</p><p class="co-aviso__texto">NASA counts any fold as a first sign.</p></div>
+<div class="co-aviso co-aviso--caution"><svg class="co-aviso__forma" aria-hidden="true"><use href="#l-caution"/></svg><p class="co-aviso__titulo">This result was not measured from an image.</p><p class="co-aviso__texto">It comes from a provisional calculation.</p></div>
+<div class="co-aviso co-aviso--warning" role="alert"><svg class="co-aviso__forma" aria-hidden="true"><use href="#l-warning"/></svg><p class="co-aviso__titulo">Contact your flight surgeon now.</p><p class="co-aviso__texto">You reported a sudden loss of vision. This does not depend on the image.</p></div>
+</div>
+<script src="../../assets/iconos/sprite.js"></script>
+<script>(function(){function avisar(){parent.postMessage({coAlto:document.documentElement.scrollHeight},'*');}addEventListener('load',avisar);addEventListener('resize',avisar);setTimeout(avisar,400);})();</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!-- @dsCard group="Estructura" -->
+<!-- Muestra con datos simulados: tripulante ficticio C, día de vuelo 118. No son datos de una persona. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velo y grupo</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../bundle.css">
+<style>html,body{margin:0}body{padding:28px 28px 32px}body{padding:0}.velo-demo{display:grid;grid-template-columns:21rem;min-height:30rem}.velo-demo .co-velo{padding:32px}</style>
+</head>
+<body class="co">
+<div class="velo-demo"><aside class="co-velo co-velo--izq"><div class="co-sujeto"><p class="co-sujeto__nombre">Ravi Anand</p><p class="co-sujeto__rol">Flight engineer</p><p class="co-sujeto__estado"><svg class="co-origen" aria-hidden="true"><use href="#o-measured"/></svg>Control that comes with the application.</p></div>
+<div class="co-grupo" style="margin-top:var(--space-6)"><h2 class="co-grupo__cabeza"><svg class="co-ic" aria-hidden="true"><use href="#i-gauge"/></svg>Today’s scan</h2><div class="co-lecturas"><div class="co-lectura"><p class="co-lectura__valor">22.8 <span class="co-lectura__unidad">dB</span></p><p class="co-lectura__rotulo"><svg class="co-origen" aria-hidden="true"><use href="#o-measured"/></svg><span class="co-oculto">Measured</span><span>Quality</span></p></div><div class="co-lectura"><p class="co-lectura__valor">48 of 48</p><p class="co-lectura__rotulo"><svg class="co-origen" aria-hidden="true"><use href="#o-measured"/></svg><span class="co-oculto">Measured</span><span>Usable scans</span></p></div><div class="co-lectura"><p class="co-lectura__valor">72 <span class="co-lectura__unidad">µm</span></p><p class="co-lectura__rotulo"><svg class="co-origen" aria-hidden="true"><use href="#o-measured"/></svg><span class="co-oculto">Measured</span><span>Off centre</span></p></div><div class="co-lectura"><p class="co-lectura__valor">1 of 3</p><p class="co-lectura__rotulo"><svg class="co-origen" aria-hidden="true"><use href="#o-measured"/></svg><span class="co-oculto">Measured</span><span>Attempts</span></p></div></div><p class="co-grupo__fuente">Limit for an off-centre scan: 438 µm.</p></div>
+<div class="co-grupo"><h2 class="co-grupo__cabeza"><svg class="co-ic" aria-hidden="true"><use href="#i-calendar-days"/></svg>Next</h2><div class="co-lecturas"><div class="co-lectura"><p class="co-lectura__valor">FD139</p><p class="co-lectura__sub">in 21 days</p><p class="co-lectura__rotulo"><svg class="co-origen" aria-hidden="true"><use href="#o-derived"/></svg><span class="co-oculto">Calculated</span><span>Next scan</span></p></div></div></div></aside></div>
+<script src="../../assets/iconos/sprite.js"></script>
+<script>(function(){function avisar(){parent.postMessage({coAlto:document.documentElement.scrollHeight},'*');}addEventListener('load',avisar);addEventListener('resize',avisar);setTimeout(avisar,400);})();</script>
+</body>
+</html>
