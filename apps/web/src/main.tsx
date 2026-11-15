@@ -7,6 +7,8 @@ import { AppStoreProvider } from './app/StoreContext';
 import { I18nProvider } from './i18n';
 import './styles/tokens.css';
 import './styles/base.css';
+import './styles/system.css';
+import './styles/layout.css';
 import './styles/ui.css';
 import './styles/app.css';
 import './styles/charts.css';

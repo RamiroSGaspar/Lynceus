@@ -1,47 +1,72 @@
 /*
- * Design tokens. Generic on purpose: the visual identity comes later and should
- * only need to change this file.
+ * Design tokens of the "Campo oscuro" design system (v2.0). Same values as
+ * monitoreo-salud-astronautas/sistema-de-diseno/sistema/tokens.json: if one changes, so does the other.
  *
  * Alert colours follow the NASA display convention (NASA-STD-3001 vol. 2):
- * red = warning, yellow = caution, blue = advisory. Colour is never the only
- * signal: every level also has a shape, an icon and a word.
+ * red = warning, yellow = caution, blue = advisory, grey = not available. Colour is never the
+ * only signal: every level also has a shape and a word. Outside the levels the interface is
+ * white on black.
+ *
+ * Text, surface, level and series colours are six-digit hex (guards.test.ts reads them);
+ * veils and glows carry transparency, are written in rgba and live in this file only.
+ *
+ * Typeface: Atkinson Hyperlegible Next (SIL Open Font License 1.1), served from this site.
  */
+@font-face { font-family: 'Atkinson Hyperlegible Next'; src: url('../assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2') format('woff2-variations'), url('../assets/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; font-style: normal; font-display: swap; unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: 'Atkinson Hyperlegible Next'; src: url('../assets/fonts/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2') format('woff2-variations'), url('../assets/fonts/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2') format('woff2'); font-weight: 200 800; font-style: normal; font-display: swap; unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF; }
+
 :root {
-  /* Surfaces */
-  --color-bg: #0b0f14;
-  --color-surface: #131a22;
-  --color-surface-raised: #1a232e;
-  --color-border: #2c3947;
-  --color-border-strong: #4a5b6e;
+  color-scheme: dark;
 
-  /* Text: contrast against --color-bg is above 10:1 for the first two */
-  --color-text: #f2f5f8;
-  --color-text-secondary: #c4ced9;
-  --color-text-muted: #94a3b3;
-
-  /* Interaction */
-  --color-accent: #7cc4ff;
-  --color-accent-contrast: #06131f;
+  /* Colour */
+  --color-bg: #000000;
+  --color-surface: #000000;
+  --color-surface-raised: #161616;
+  --color-border: #3a3a3a;
+  --color-border-strong: #a3a3a3;
+  --color-text: #ffffff;
+  --color-text-secondary: #c6c9ce;
+  --color-text-muted: #9fa3a9;
+  --color-accent: #ffffff;
+  --color-accent-contrast: #000000;
   --color-focus: #ffffff;
-
-  /* Result levels */
-  --level-none: #c4ced9;
-  --level-none-bg: #1d2630;
+  --level-none: #e8e8e8;
+  --level-none-bg: #161616;
   --level-advisory: #6cb6ff;
-  --level-advisory-bg: #10263c;
+  --level-advisory-bg: #0c1823;
   --level-caution: #ffd84d;
-  --level-caution-bg: #33290a;
+  --level-caution-bg: #211c08;
   --level-warning: #ff756c;
-  --level-warning-bg: #3a1512;
+  --level-warning-bg: #230e0c;
+  --level-unmeasured: #9fa3a9;
+  --origin-measured: #c6c9ce;
+  --origin-estimated: #c6c9ce;
+  --origin-reported: #c6c9ce;
+  --origin-unavailable: #9fa3a9;
+  --series-od: #ffffff;
+  --series-os: #c6c9ce;
+  --overlay-line: #ffffff;
 
-  /* Data provenance labels */
-  --origin-measured: #8fe3b0;
-  --origin-estimated: #e3c58f;
-  --origin-reported: #b9a6ff;
-  --origin-unavailable: #94a3b3;
+  /* Veil, lines, glow and marks drawn over an image */
+  --overlay-casing: rgba(0, 0, 0, 0.65);
+  --veil: rgba(0, 0, 0, 0.88);
+  --veil-filter: blur(6px);
+  --veil-solid: rgba(0, 0, 0, 0.94);
+  --veil-halo: 0 0 1.25rem 0.75rem rgba(0, 0, 0, 0.94);
+  --fade-top: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 66%, rgba(0, 0, 0, 0) 100%);
+  --line-fade-v: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.34) 14%, rgba(255, 255, 255, 0.34) 86%, rgba(255, 255, 255, 0) 100%);
+  --line-fade-h: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.34) 14%, rgba(255, 255, 255, 0.34) 86%, rgba(255, 255, 255, 0) 100%);
+  --glow-none: rgba(255, 255, 255, 0.18);
+  --glow-advisory: rgba(108, 182, 255, 0.55);
+  --glow-caution: rgba(255, 216, 77, 0.5);
+  --glow-warning: rgba(255, 117, 108, 0.55);
+  --ocular-corona: 0 0 3.5rem rgba(255, 255, 255, 0.14);
+  --ocular-vignette: inset 0 0 1rem 0.2rem rgba(0, 0, 0, 0.7);
+  --scrim: rgba(0, 0, 0, 0.72);
+  --mask-solid: linear-gradient(#000, #000);
 
   /* Type: sized for reading at arm's length with degraded near vision */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
   --text-xs: 0.875rem;
   --text-sm: 1rem;
@@ -50,10 +75,18 @@
   --text-xl: 1.75rem;
   --text-2xl: 2.25rem;
   --text-3xl: 3rem;
-  --leading-tight: 1.2;
+  --text-4xl: 4.5rem;
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
   --leading-normal: 1.5;
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --tracking-caps: 0.12em;
+  --tracking-brand: 0.26em;
 
-  /* Space and shape */
+  /* Space, shape and measures */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -62,25 +95,32 @@
   --space-6: 2rem;
   --space-7: 3rem;
   --space-8: 4rem;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 14px;
-  --content-width: 72rem;
+  --space-9: 6rem;
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-round: 50%;
+  --content-width: 80rem;
+  --panel-width: 21rem;
+  --reading-width: 62ch;
+  --ocular-size: clamp(12.5rem, 29vh, 22rem);
+  --target-min: 2.75rem;
+  --hud-height: 4.5rem;
+  --nav-height: 5.5rem;
 
+  /* Motion */
   --duration-fast: 120ms;
   --duration-normal: 240ms;
-
-  /* Chart series: one colour per eye. The marks and the lines also differ in shape. */
-  --series-od: #f2f5f8;
-  --series-os: #f5a3e6;
+  --duration-slow: 600ms;
+  --duration-sweep: 2400ms;
+  --stagger: 60ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/*
- * On paper: dark text on white. The same names, so every screen prints with the
- * same rules it is drawn with.
- */
+/* On paper: dark ink on white, with the same names. The field, the veil and the glow are not printed. */
 @media print {
   :root {
+    color-scheme: light;
     --color-bg: #ffffff;
     --color-surface: #ffffff;
     --color-surface-raised: #f1f3f5;
@@ -89,7 +129,7 @@
     --color-text: #000000;
     --color-text-secondary: #1f2933;
     --color-text-muted: #3e4c59;
-    --color-accent: #003e7e;
+    --color-accent: #000000;
     --color-accent-contrast: #ffffff;
     --color-focus: #000000;
     --level-none: #1f2933;
@@ -100,11 +140,29 @@
     --level-caution-bg: #ffffff;
     --level-warning: #8a1c12;
     --level-warning-bg: #ffffff;
-    --origin-measured: #0b5a2b;
-    --origin-estimated: #6b4e00;
-    --origin-reported: #3b2a8c;
+    --level-unmeasured: #3e4c59;
+    --origin-measured: #1f2933;
+    --origin-estimated: #1f2933;
+    --origin-reported: #1f2933;
     --origin-unavailable: #3e4c59;
     --series-od: #000000;
-    --series-os: #8a1c6f;
+    --series-os: #3e4c59;
+    --overlay-line: #ffffff;
+    --veil: transparent;
+    --veil-filter: none;
+    --veil-solid: transparent;
+    --veil-halo: none;
+    --fade-top: none;
+    --glow-none: transparent;
+    --glow-advisory: transparent;
+    --glow-caution: transparent;
+    --glow-warning: transparent;
+    --ocular-corona: none;
+    --ocular-vignette: none;
   }
+}
+
+/* Whoever asks for less motion sees everything complete from the start. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --duration-fast: 0ms; --duration-normal: 0ms; --duration-slow: 0ms; --duration-sweep: 0ms; --stagger: 0ms; }
 }

@@ -1,0 +1,454 @@
+/*
+ * Components of the "Campo oscuro" design system (v2.0), as plain CSS: each one is HTML markup plus
+ * these classes. Taken from monitoreo-salud-astronautas/sistema-de-diseno/sistema/components/bundle.css;
+ * the guide of every component is next to it there. The class names are the ones of the design system
+ * (prefix `co-`, states with `is-`), kept as they are so that a screen can be read against its guide.
+ *
+ * Every value comes from tokens.css: there is not one colour written in this file. There are no
+ * cards, pills or shadows: there are thin lines, discs and figures over black.
+ */
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+.co { margin: 0; background-color: var(--color-bg); color: var(--color-text); font-family: var(--font-sans); font-size: var(--text-md); line-height: var(--leading-normal);
+  font-variant-numeric: tabular-nums lining-nums; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+.co *, .co *::before, .co *::after { box-sizing: border-box; }
+.co :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+.co a:not([class]) { color: var(--color-text); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.co a:not([class]):hover { text-decoration-thickness: 2px; }
+.co-oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* What does not fit across scrolls inside its own box, never the page. It is `relative` so it also clips the hidden text it may hold. */
+.co-desliza { position: relative; overflow-x: auto; }
+/* `--_minimo` is the width under which something stops shrinking and starts to scroll. */
+.co-desliza > .co-mision, .co-desliza > .co-tabla { min-width: var(--_minimo); }
+
+
+/* ── Field: the sky. Two tiles of different sizes, so the repetition does not show ── */
+.co-campo { background-image: url("../assets/campo/campo-cerca.svg"), url("../assets/campo/campo-lejos.svg"); background-size: 1700px 1300px, 1200px 1200px; background-position: 0 0, 340px 180px; background-attachment: fixed; }
+
+/* ── Veil: where something is read, the field goes dark ───────────────── */
+.co-velo { position: relative; background: var(--veil); -webkit-backdrop-filter: var(--veil-filter); backdrop-filter: var(--veil-filter); }
+.co-velo--izq::after, .co-velo--der::after { content: ""; position: absolute; top: 0; bottom: 0; width: 1px; background: var(--line-fade-v); pointer-events: none; }
+.co-velo--izq::after { right: 0; }
+.co-velo--der::after { left: 0; }
+/* Halo: the veil of a group that floats on the field, without an edge. */
+.co-halo { position: relative; isolation: isolate; }
+.co-halo::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: var(--space-4); background: var(--veil-solid); box-shadow: var(--veil-halo); pointer-events: none; }
+.co-regla { height: 1px; margin: 0; border: 0; background: var(--line-fade-h); }
+
+/* ── Type voices ──────────────────────────────────────────────────────── */
+.co-titulo { margin: 0; font-size: var(--text-2xl); font-weight: var(--weight-light); line-height: var(--leading-tight); letter-spacing: -0.015em; text-wrap: balance; }
+.co-subtitulo { margin: 0; font-size: var(--text-lg); font-weight: var(--weight-regular); line-height: var(--leading-snug); text-wrap: balance; }
+.co-texto { margin: 0; max-width: var(--reading-width); font-size: var(--text-md); font-weight: var(--weight-regular); line-height: var(--leading-normal); }
+.co-nota { margin: 0; max-width: var(--reading-width); font-size: var(--text-sm); line-height: var(--leading-normal); color: var(--color-text-secondary); }
+.co-rotulo { margin: 0; font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-micro { margin: 0; font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: var(--leading-snug); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--color-text-secondary); }
+.co-fila { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
+.co-pila { display: grid; gap: var(--space-4); min-width: 0; }
+
+/* ── Icon: line icon, thin stroke ─────────────────────────────────────── */
+.co-ic { flex: none; width: 1.25em; height: 1.25em; vertical-align: -0.25em; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.co-ic--lg { width: 1.5rem; height: 1.5rem; }
+
+/* ── Brand ────────────────────────────────────────────────────────────── */
+.co-marca { display: inline-flex; align-items: center; gap: var(--space-3); color: var(--color-text); text-decoration: none; }
+.co-marca__iso { display: block; flex: none; width: 2.25rem; }
+.co-marca__svg { display: block; width: 100%; height: auto; overflow: visible; }
+.co-marca__nombre { font-size: var(--text-sm); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-brand); text-transform: uppercase; }
+.co-marca--portada { flex-direction: column; gap: var(--space-6); }
+.co-marca--portada .co-marca__iso { width: min(13rem, 52vw); }
+.co-marca--portada .co-marca__nombre { margin-right: -0.42em; font-size: var(--text-xl); font-weight: var(--weight-regular); letter-spacing: 0.42em; }
+/* Trace: the lines are drawn from top to bottom, once, and the pupil appears at the end. */
+.co-marca.is-trazando .co-marca__linea { stroke-dasharray: 240; stroke-dashoffset: 240; animation: co-trazo var(--duration-slow) var(--ease-out) forwards; animation-delay: calc(var(--i) * var(--stagger)); }
+.co-marca.is-trazando .co-marca__pupila { opacity: 0; animation: co-aparece var(--duration-normal) var(--ease-out) forwards; animation-delay: calc(14 * var(--stagger)); }
+/* Sweep: a band of light runs down the lines. It is the only sign of "I am working". */
+.co-marca.is-barriendo .co-marca__linea { opacity: 0.3; animation: co-barrido var(--duration-sweep) linear infinite; animation-delay: calc(var(--i) * var(--duration-sweep) / 16); }
+@keyframes co-trazo { to { stroke-dashoffset: 0; } }
+@keyframes co-aparece { to { opacity: 1; } }
+@keyframes co-barrido { 0%, 34%, 100% { opacity: 0.3; } 12% { opacity: 1; } }
+
+/* ── Tag: one word in a thin frame ────────────────────────────────────── */
+.co-ficha { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 1.625rem; padding: 0 var(--space-2); border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm);
+  color: var(--color-text); font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: 1; letter-spacing: var(--tracking-caps); text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+.co-ficha--llena { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-accent-contrast); }
+/* Simulated data: dashed edge. It informs, it does not alarm. */
+.co-ficha--simulado { border-style: dashed; color: var(--color-text-secondary); }
+/* The same notice inside an image. */
+.co-sello { position: absolute; left: 50%; top: 8%; transform: translateX(-50%); padding: 0.125rem var(--space-2); border-radius: var(--radius-sm); background: var(--scrim); color: var(--color-text);
+  font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: 1.3; letter-spacing: var(--tracking-caps); text-transform: uppercase; white-space: nowrap; pointer-events: none; }
+
+/* ── Segment: choosing between two or three (language, eye) ───────────── */
+.co-segmento { display: inline-flex; gap: var(--space-1); }
+.co-segmento button { position: relative; min-width: var(--target-min); min-height: var(--target-min); padding: 0 var(--space-3); border: 0; background: none; color: var(--color-text-secondary);
+  font: inherit; font-size: var(--text-xs); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-caps); text-transform: uppercase; cursor: pointer; }
+.co-segmento button:hover { color: var(--color-text); }
+.co-segmento button[aria-pressed="true"] { color: var(--color-text); }
+.co-segmento button[aria-pressed="true"]::after { content: ""; position: absolute; left: var(--space-3); right: var(--space-3); bottom: 0.5rem; height: 2px; background: var(--color-text); }
+
+/* ── Top strip: brand, when and with which data, language ─────────────── */
+.co-hud { position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--space-4);
+  min-height: var(--hud-height); padding: var(--space-3) var(--space-6) var(--space-5); background: var(--fade-top); pointer-events: none; }
+.co-hud > * { pointer-events: auto; }
+.co-hud > .co-marca { justify-self: start; }
+.co-hud__centro { display: flex; align-items: center; justify-content: center; gap: var(--space-3); }
+.co-hud__fecha { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); font-weight: var(--weight-medium); white-space: nowrap; }
+.co-hud__lado { justify-self: end; display: flex; align-items: center; gap: var(--space-2); }
+@media (max-width: 48rem) {
+  .co-hud { grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-2); padding: var(--space-2) var(--space-3) var(--space-4); }
+  .co-hud .co-marca__nombre, .co-hud__fecha, .co-hud .co-ficha .co-ic, .co-hud .co-ficha__resto { display: none; }
+  .co-hud__centro { justify-content: flex-start; gap: var(--space-2); min-width: 0; }
+  .co-hud .co-segmento { gap: 0; }
+  .co-hud .co-segmento button { min-width: 2.25rem; padding: 0 var(--space-2); }
+  .co-hud .co-segmento button[aria-pressed="true"]::after { left: var(--space-2); right: var(--space-2); }
+}
+
+/* ── Subject: whose data is shown ─────────────────────────────────────── */
+.co-sujeto { display: grid; gap: var(--space-1); }
+.co-sujeto__nombre { margin: 0; font-size: var(--text-xl); font-weight: var(--weight-semibold); line-height: var(--leading-tight); letter-spacing: -0.01em; }
+.co-sujeto__rol { margin: 0; font-size: var(--text-sm); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-sujeto__estado { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-2) 0 0; font-size: var(--text-xs); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+
+/* ── Group: an icon, a title and its readouts ─────────────────────────── */
+.co-grupo { display: grid; gap: var(--space-4); min-width: 0; }
+.co-grupo + .co-grupo { margin-top: var(--space-6); }
+/* Side by side, groups are separated by the gap of their grid, not by a margin. */
+.co-grupos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--space-7) var(--space-6); align-items: start; }
+.co-grupos > .co-grupo { margin-top: 0; }
+.co-grupo__cabeza { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-size: var(--text-sm); font-weight: var(--weight-semibold); line-height: var(--leading-snug); }
+.co-grupo__cabeza .co-ic { width: 1.375rem; height: 1.375rem; }
+.co-grupo__fuente { margin: 0; font-size: var(--text-xs); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-lecturas { display: grid; grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr)); gap: var(--space-5) var(--space-4); align-items: start; }
+/* The readouts of a row share their rows: their lines sit at the same height even when one has a second line and another does not. */
+.co-lecturas > .co-lectura { grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
+.co-lecturas > .co-lectura > .co-lectura__valor:has(+ .co-lectura__rotulo) { grid-row: span 2; align-self: end; }
+
+/* ── Readout: figure, unit, line and label. The smallest unit of the interface ── */
+.co-lectura { display: grid; min-width: 0; margin: 0; }
+.co-lectura__valor { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 0.26em; margin: 0; font-size: var(--text-xl); font-weight: var(--weight-light); line-height: var(--leading-tight); letter-spacing: -0.01em; }
+.co-lectura__unidad { font-size: max(0.4em, var(--text-xs)); font-weight: var(--weight-medium); letter-spacing: 0.04em; color: var(--color-text-secondary); }
+.co-lectura__sub { margin: var(--space-1) 0 0; font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-lectura__rotulo { display: flex; align-items: baseline; gap: var(--space-2); margin: var(--space-2) 0 0; padding-top: var(--space-2); border-top: 1px solid var(--color-border-strong);
+  font-size: var(--text-xs); font-weight: var(--weight-regular); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-lectura--sm .co-lectura__valor { font-size: var(--text-lg); font-weight: var(--weight-regular); }
+.co-lectura--lg .co-lectura__valor { font-size: var(--text-3xl); }
+.co-lectura--heroe { justify-items: center; text-align: center; }
+.co-lectura--heroe .co-lectura__valor { justify-content: center; font-size: var(--text-4xl); letter-spacing: -0.02em; }
+.co-lectura--heroe .co-lectura__sub { font-size: var(--text-sm); font-weight: var(--weight-regular); }
+.co-lectura--heroe .co-lectura__rotulo { justify-content: center; min-width: 12.5rem; margin-top: var(--space-3); }
+.co-lectura--palabras .co-lectura__valor { font-size: var(--text-md); font-weight: var(--weight-regular); line-height: var(--leading-snug); letter-spacing: 0; }
+
+/* ── Origin: how a value was obtained, said with a shape ──────────────── */
+.co-origen { flex: none; align-self: center; width: 0.75rem; height: 0.75rem; color: var(--origin-measured); }
+.co-leyenda { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: 0; padding: 0; list-style: none; font-size: var(--text-xs); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-leyenda li { display: inline-flex; align-items: center; gap: var(--space-2); }
+.co-muestra { flex: none; width: 1.75rem; height: 0.625rem; overflow: visible; }
+
+/* ── Eye: which eye what follows is about ─────────────────────────────── */
+.co-ojo { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: 1; letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+.co-ojo abbr { text-decoration: none; }
+
+/* ── Level: colour, shape and word, always the three. No box ──────────── */
+.co-nivel { --_nivel: var(--level-none); display: inline-flex; align-items: center; flex-wrap: wrap; gap: var(--space-1) var(--space-2); line-height: var(--leading-snug); text-align: left; }
+.co-nivel__forma { flex: none; width: 1.25rem; height: 1.25rem; color: var(--_nivel); }
+.co-nivel__clase { color: var(--_nivel); font-size: var(--text-xs); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-caps); text-transform: uppercase; }
+.co-nivel__nombre { font-size: var(--text-sm); font-weight: var(--weight-medium); }
+.co-nivel--none { --_nivel: var(--level-none); }
+.co-nivel--advisory { --_nivel: var(--level-advisory); }
+.co-nivel--caution { --_nivel: var(--level-caution); }
+.co-nivel--warning { --_nivel: var(--level-warning); }
+.co-nivel--unmeasured { --_nivel: var(--level-unmeasured); }
+.co-nivel--unmeasured .co-nivel__nombre { color: var(--color-text-secondary); }
+/* Large: once per screen, in the answer. */
+.co-nivel--lg { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-2) var(--space-3); align-items: center; }
+.co-nivel--lg .co-nivel__forma { width: 1.75rem; height: 1.75rem; }
+.co-nivel--lg .co-nivel__nombre { grid-column: 1 / -1; font-size: var(--text-xl); font-weight: var(--weight-regular); line-height: var(--leading-tight); letter-spacing: -0.01em; }
+/* The shape alone, where the word is already next to it. */
+.co-nivel--forma { gap: 0; }
+
+/* ── Marks over an image: what the engine measured ────────────────────── */
+.co-trazo { fill: none; stroke: var(--overlay-line); stroke-width: 1.5px; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.co-trazo--base { stroke: var(--overlay-casing); stroke-width: 4.5px; }
+.co-trazo--trazos { stroke-dasharray: 7 5; }
+.co-trazo--puntos { stroke-dasharray: 0.1 6; stroke-width: 2px; stroke-opacity: 0.75; }
+.co-zona { fill: none; stroke: var(--_zona, var(--overlay-line)); stroke-opacity: 0.4; }
+.co-punto { fill: var(--overlay-casing); stroke: var(--overlay-line); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.co-punto--lleno { fill: var(--overlay-line); }
+/* The 48 scans of the capture, one per line. */
+.co-radio { stroke: var(--overlay-line); stroke-width: 1px; stroke-opacity: 0.16; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.co-radio.is-tomado { stroke-opacity: 0.85; }
+.co-radio.is-malo { stroke-opacity: 0.6; stroke-dasharray: 2 5; }
+.co-radio.is-actual { stroke-width: 3px; stroke-opacity: 1; }
+
+/* ── Frame: four corners. It says "this is in focus" ──────────────────── */
+.co-marco { --_marco: 0.5rem; --_esquina: 0.875rem; position: relative; }
+.co-marco::before { content: ""; position: absolute; inset: calc(-1 * var(--_marco)); border: 1px solid var(--color-text); pointer-events: none;
+  -webkit-mask: var(--mask-solid) top left / var(--_esquina) var(--_esquina) no-repeat, var(--mask-solid) top right / var(--_esquina) var(--_esquina) no-repeat, var(--mask-solid) bottom left / var(--_esquina) var(--_esquina) no-repeat, var(--mask-solid) bottom right / var(--_esquina) var(--_esquina) no-repeat;
+  mask: var(--mask-solid) top left / var(--_esquina) var(--_esquina) no-repeat, var(--mask-solid) top right / var(--_esquina) var(--_esquina) no-repeat, var(--mask-solid) bottom left / var(--_esquina) var(--_esquina) no-repeat, var(--mask-solid) bottom right / var(--_esquina) var(--_esquina) no-repeat; }
+
+/* ── Ocular: the eye as a disc of light in the field ──────────────────── */
+.co-ocular { --_nivel: var(--color-border-strong); --_brillo: var(--glow-none); --_zona: var(--overlay-line); display: grid; justify-items: center; min-width: 0; margin: 0; }
+.co-ocular--none { --_nivel: var(--level-none); }
+.co-ocular--advisory { --_nivel: var(--level-advisory); --_brillo: var(--glow-advisory); --_zona: var(--level-advisory); }
+.co-ocular--caution { --_nivel: var(--level-caution); --_brillo: var(--glow-caution); --_zona: var(--level-caution); }
+.co-ocular--warning { --_nivel: var(--level-warning); --_brillo: var(--glow-warning); --_zona: var(--level-warning); }
+.co-ocular__cabeza { display: grid; justify-items: center; gap: var(--space-3); margin: 0 0 var(--space-7); text-align: center; }
+/* Another finding of that eye, besides the thickness: for example, new folds. */
+.co-ocular__hallazgo { display: inline-flex; align-items: center; gap: var(--space-2); margin: calc(-1 * var(--space-1)) 0 0; font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-ocular__campo { position: relative; width: var(--ocular-size); max-width: 100%; aspect-ratio: 1; }
+.co-ocular__lente { position: absolute; inset: 0; display: block; width: 100%; height: 100%; padding: 0; border: 0; border-radius: var(--radius-round); overflow: hidden;
+  background: var(--color-surface-raised); color: inherit; font: inherit; cursor: pointer; box-shadow: var(--ocular-corona); }
+.co-ocular__lente::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-round); box-shadow: var(--ocular-vignette); pointer-events: none; }
+.co-ocular__imagen { display: block; width: 100%; height: 100%; object-fit: cover; }
+.co-ocular__marcas { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* The ring of the level: a thin orbit around the disc. */
+.co-ocular__anillo { position: absolute; inset: -0.625rem; border: 1.5px solid var(--_nivel); border-radius: var(--radius-round); box-shadow: 0 0 1.25rem var(--_brillo), inset 0 0 0.875rem var(--_brillo); pointer-events: none; }
+/* The guide: joins the measured band with its figure. */
+.co-ocular__guia { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.co-ocular__pie { display: grid; justify-items: center; margin-top: calc(var(--ocular-size) * 0.15); text-align: center; }
+/* Chosen: four corners around the disc. */
+.co-ocular.is-elegido .co-ocular__campo::before { content: ""; position: absolute; inset: -1.625rem; border: 1px solid var(--color-text); pointer-events: none;
+  -webkit-mask: var(--mask-solid) top left / 1.125rem 1.125rem no-repeat, var(--mask-solid) top right / 1.125rem 1.125rem no-repeat, var(--mask-solid) bottom left / 1.125rem 1.125rem no-repeat, var(--mask-solid) bottom right / 1.125rem 1.125rem no-repeat;
+  mask: var(--mask-solid) top left / 1.125rem 1.125rem no-repeat, var(--mask-solid) top right / 1.125rem 1.125rem no-repeat, var(--mask-solid) bottom left / 1.125rem 1.125rem no-repeat, var(--mask-solid) bottom right / 1.125rem 1.125rem no-repeat; }
+/* Could not be measured: no image, a dashed disc and the reason in words. */
+.co-ocular--unmeasured .co-ocular__lente { border: 1.5px dashed var(--level-unmeasured); background: var(--color-bg); box-shadow: none; cursor: default; }
+.co-ocular--unmeasured .co-ocular__lente::after { display: none; }
+.co-ocular__vacio { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: var(--space-2); padding: 16%; text-align: center; font-size: var(--text-sm); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+
+/* ── Scan: one tomography scan with the edges the engine marked ───────── */
+.co-corte { display: grid; gap: var(--space-4); min-width: 0; margin: 0; }
+.co-corte__marco { position: relative; background: var(--color-surface-raised); }
+.co-corte__imagen { display: block; width: 100%; height: auto; }
+.co-corte__marcas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ── Change scale: where today's value falls against the thresholds ───── */
+.co-escala { position: relative; height: 5.75rem; }
+.co-escala__zona { position: absolute; left: var(--desde); width: calc(var(--hasta) - var(--desde)); top: 2.5rem; border-top: 2px solid var(--_nivel); }
+.co-escala__zona--none { --_nivel: var(--level-none); }
+.co-escala__zona--advisory { --_nivel: var(--level-advisory); }
+.co-escala__zona--caution { --_nivel: var(--level-caution); }
+/* The name of each band goes under its stretch, on one or two lines. */
+.co-escala__zona > span { position: absolute; left: 0; top: 0.875rem; display: flex; align-items: flex-start; gap: var(--space-1); width: max-content; max-width: 5.75rem; font-size: var(--text-xs); line-height: 1.2; color: var(--color-text-secondary); }
+.co-escala__zona > span svg { flex: none; width: 0.875rem; height: 0.875rem; margin-top: 0.08em; color: var(--_nivel); }
+.co-escala__zona--caution > span { left: auto; right: 0; }
+.co-escala__umbral { position: absolute; left: var(--x); top: 0; height: 3.25rem; border-left: 1px dashed var(--color-text-secondary); }
+.co-escala__umbral > span { position: absolute; top: 0; left: var(--space-1); font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: 1; white-space: nowrap; }
+.co-escala__umbral--cero { top: 1.75rem; height: 1.5rem; border-left-style: solid; border-left-color: var(--color-border-strong); }
+.co-escala__umbral--cero > span { top: -1rem; left: -0.25rem; color: var(--color-text-secondary); }
+.co-escala__rango { position: absolute; left: var(--desde); width: calc(var(--hasta) - var(--desde)); top: calc(2.5rem - 2px); height: 6px; border-radius: 3px; background: var(--color-text); }
+.co-escala__hoy, .co-escala__antes { position: absolute; left: var(--x); top: calc(2.5rem + 1px); transform: translate(-50%, -50%); border-radius: var(--radius-round); }
+.co-escala__hoy { width: 1.125rem; height: 1.125rem; background: var(--color-text); box-shadow: 0 0 0 3px var(--color-bg); }
+.co-escala__antes { width: 0.625rem; height: 0.625rem; border: 1.5px solid var(--color-text); background: var(--color-bg); }
+
+/* ── Certainty: the probability of having passed a threshold, with its word ── */
+.co-certeza { display: grid; gap: var(--space-2); }
+.co-certeza__palabra { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 var(--space-2); margin: 0; font-size: var(--text-xl); font-weight: var(--weight-light); line-height: var(--leading-tight); }
+.co-certeza__palabra small { font-size: var(--text-sm); font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+.co-certeza__tramos { display: grid; grid-template-columns: 10fr 40fr 40fr 10fr; gap: 3px; height: 0.5rem; margin: var(--space-1) 0 0; padding: 0; list-style: none; }
+.co-certeza__tramos li { border: 1px solid var(--color-border-strong); }
+.co-certeza__tramos .is-activo { border-color: var(--color-text); background: var(--color-text); }
+.co-certeza .co-rotulo { display: flex; align-items: baseline; gap: var(--space-2); }
+
+/* ── Meter: one value against its limit ───────────────────────────────── */
+.co-medidor { position: relative; height: 0.375rem; margin: var(--space-3) 0 var(--space-2); background: var(--color-surface-raised); }
+.co-medidor__valor { position: absolute; inset: 0 auto 0 0; width: var(--valor); background: var(--color-text); }
+.co-medidor__limite { position: absolute; left: var(--limite); top: -0.375rem; bottom: -0.375rem; border-left: 1px dashed var(--color-text); }
+/* Bars: one value per scan, against the same limit. */
+.co-barras { position: relative; display: flex; align-items: flex-end; gap: 2px; height: 3.5rem; margin: var(--space-3) 0 var(--space-2); border-bottom: 1px solid var(--color-border-strong); }
+.co-barras > i { flex: 1 1 0; height: var(--v); background: var(--color-text); }
+.co-barras > i.is-pendiente { height: 2px; background: var(--color-border); }
+.co-barras::after { content: ""; position: absolute; left: 0; right: 0; bottom: var(--limite); border-top: 1px dashed var(--color-text-secondary); }
+
+/* ── Mission line ─────────────────────────────────────────────────────── */
+.co-mision { --_minimo: 36rem; position: relative; padding: 0 3.5rem; }
+.co-mision__linea { position: relative; height: 4.75rem; margin: 0; padding: 0; list-style: none; }
+.co-mision__linea::before { content: ""; position: absolute; left: -1.25rem; right: -1.25rem; top: 2.375rem; border-top: 1px solid var(--color-border-strong); }
+.co-mision__linea > li { position: absolute; left: var(--x); top: 0; bottom: 0; transform: translateX(-50%); }
+.co-mision__control { display: grid; grid-template-rows: 1.5rem 1.75rem 1.5rem; justify-items: center; align-items: center; min-width: var(--target-min); height: 100%; padding: 0; border: 0; background: none;
+  color: var(--color-text-secondary); font: inherit; font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: 1; letter-spacing: var(--tracking-caps); text-transform: uppercase; text-decoration: none; white-space: nowrap; cursor: pointer; }
+.co-mision__marca { grid-row: 1; align-self: end; display: grid; justify-items: center; gap: 3px; color: var(--color-text); }
+.co-mision__marca::after { content: ""; width: 0; height: 0; border: 6px solid transparent; border-top-color: currentColor; border-bottom-width: 0; }
+.co-mision__punto { grid-row: 2; display: block; width: 1.25rem; height: 1.25rem; border-radius: var(--radius-round); background: var(--color-bg); box-shadow: 0 0 0 4px var(--color-bg); color: var(--level-none); }
+.co-mision__punto--none { color: var(--level-none); }
+.co-mision__punto--advisory { color: var(--level-advisory); }
+.co-mision__punto--caution { color: var(--level-caution); }
+.co-mision__punto--warning { color: var(--level-warning); }
+.co-mision__punto--unmeasured { color: var(--level-unmeasured); }
+.co-mision__dia { grid-row: 3; align-self: start; padding-top: 0.25rem; letter-spacing: 0.02em; }
+/* A day that can be chosen, when there is no level to show yet. */
+.co-mision__punto--dia { border: 1.5px solid var(--color-text-secondary); }
+.co-mision [aria-current] .co-mision__punto--dia { border-color: var(--color-text); background: var(--color-text); box-shadow: 0 0 0 4px var(--color-bg), 0 0 0 5px var(--color-text); }
+.co-mision__punto--tope { width: 1px; height: 0.875rem; border-radius: 0; background: var(--color-text); box-shadow: none; }
+/* A control right next to its neighbour does not show its day: it appears on focus or under the pointer, over black. */
+.co-mision__control.is-apretado .co-mision__dia { visibility: hidden; }
+.co-mision__control.is-apretado:hover .co-mision__dia, .co-mision__control.is-apretado:focus-visible .co-mision__dia { visibility: visible; position: relative; z-index: 1; background: var(--color-bg); box-shadow: 0 0 0 0.375rem var(--color-bg); }
+.co-mision__control:hover { color: var(--color-text); }
+.co-mision [aria-current] .co-mision__control { color: var(--color-text); font-weight: var(--weight-semibold); }
+.co-mision [aria-current] .co-mision__punto { width: 1.625rem; height: 1.625rem; }
+
+/* ── History chart: points of light joined by lines ───────────────────── */
+.co-grafico { display: block; width: 100%; height: auto; overflow: visible; }
+.co-grafico text { fill: var(--color-text-secondary); font-family: var(--font-sans); font-size: 14px; }
+.co-grafico .es-fuerte { fill: var(--color-text); font-weight: 500; }
+.co-grafico .es-micro { letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+.co-grafico__eje { stroke: var(--color-border-strong); stroke-width: 1; }
+.co-grafico__cero { stroke: var(--color-border); stroke-width: 1; }
+.co-grafico__umbral { stroke-width: 1.5; }
+.co-grafico__umbral--advisory, .co-grafico__forma--advisory { stroke: var(--level-advisory); color: var(--level-advisory); }
+.co-grafico__umbral--caution, .co-grafico__forma--caution { stroke: var(--level-caution); color: var(--level-caution); }
+.co-grafico__forma--none { color: var(--level-none); }
+.co-grafico__forma--unmeasured { color: var(--level-unmeasured); }
+.co-grafico__forma--none, .co-grafico__forma--advisory, .co-grafico__forma--caution, .co-grafico__forma--unmeasured { stroke: none; }
+.co-grafico__bruma--advisory stop { stop-color: var(--level-advisory); }
+.co-grafico__bruma--caution stop { stop-color: var(--level-caution); }
+.co-grafico__hoy { stroke: var(--color-text); stroke-width: 1; stroke-dasharray: 2 5; }
+.co-grafico__hoy-marca { fill: var(--color-text); }
+.co-grafico__serie { fill: none; stroke-width: 1.5; stroke-linejoin: round; }
+.co-grafico__serie--od { stroke: var(--series-od); }
+.co-grafico__serie--os { stroke: var(--series-os); stroke-dasharray: 6 5; }
+.co-grafico__rango--od { stroke: var(--series-od); stroke-width: 1; stroke-linecap: round; }
+.co-grafico__rango--os { stroke: var(--series-os); stroke-width: 1; stroke-linecap: round; }
+.co-grafico__marca--od { fill: var(--series-od); stroke: var(--color-bg); stroke-width: 2.5; }
+.co-grafico__marca--os { fill: var(--color-bg); stroke: var(--series-os); stroke-width: 1.5; }
+
+/* ── Button ───────────────────────────────────────────────────────────── */
+.co-boton { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); max-width: 100%; min-height: var(--target-min); padding: var(--space-2) var(--space-5); border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm);
+  background: var(--color-bg); color: var(--color-text); font: inherit; font-size: var(--text-xs); font-weight: var(--weight-semibold); line-height: 1.25; letter-spacing: var(--tracking-caps); text-transform: uppercase; text-decoration: none; text-align: center; cursor: pointer;
+  transition: background-color var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast); }
+.co-boton .co-ic { flex: none; }
+.co-boton:hover { border-color: var(--color-text); background: var(--color-surface-raised); }
+.co-boton--principal { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-accent-contrast); }
+.co-boton--principal:hover { border-color: var(--color-accent); background: var(--color-text-secondary); }
+.co-boton--lg { min-height: 3.25rem; padding: var(--space-2) var(--space-6); font-size: var(--text-sm); }
+.co-boton:disabled, .co-boton[aria-disabled="true"] { border-style: dashed; border-color: var(--color-border-strong); background: var(--color-bg); color: var(--color-text-muted); cursor: not-allowed; }
+/* Action: a disc with its icon and a word in capitals. This is how one navigates and how something is opened. */
+.co-accion { display: inline-flex; align-items: center; gap: var(--space-3); min-height: var(--target-min); padding: 0; border: 0; background: none; color: var(--color-text-secondary);
+  font: inherit; font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: 1.15; letter-spacing: var(--tracking-caps); text-transform: uppercase; text-decoration: none; text-align: left; cursor: pointer; transition: color var(--duration-fast); }
+.co-accion__icono { flex: none; display: grid; place-items: center; width: var(--target-min); height: var(--target-min); border: 1px solid var(--color-border-strong); border-radius: var(--radius-round); color: var(--color-text);
+  transition: background-color var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast); }
+.co-accion__icono .co-ic { width: 1.25rem; height: 1.25rem; }
+.co-accion:hover { color: var(--color-text); }
+.co-accion:hover .co-accion__icono { border-color: var(--color-text); }
+.co-accion[aria-current="page"] { color: var(--color-text); font-weight: var(--weight-semibold); }
+.co-accion[aria-current="page"] .co-accion__icono, .co-accion--principal .co-accion__icono { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-accent-contrast); }
+.co-accion--principal { color: var(--color-text); font-weight: var(--weight-semibold); }
+.co-accion--sm .co-accion__icono { width: 2.25rem; height: 2.25rem; }
+
+/* ── Navigation: at the bottom, centred ───────────────────────────────── */
+.co-nav { display: flex; justify-content: center; align-items: flex-start; gap: var(--space-6); }
+.co-nav__separador { align-self: center; width: 1px; height: 1.5rem; background: var(--color-border); }
+.co-nav--apilada { gap: var(--space-5); }
+.co-nav--apilada .co-accion { flex-direction: column; gap: var(--space-2); text-align: center; }
+.co-nav--fija { position: fixed; left: 50%; bottom: var(--space-4); z-index: 30; transform: translateX(-50%); padding: var(--space-2) var(--space-5); }
+/* What scrolls under the navigation disappears completely: its halo is solid black. */
+.co-nav--fija::before { background: var(--color-bg); box-shadow: 0 0 1.25rem 1rem var(--color-bg); }
+/* Between the two veils it does not always fit across: under 1400 px the word goes under the disc. */
+@media (max-width: 87.5rem) {
+  .co-nav--fija { gap: var(--space-5); bottom: var(--space-2); padding: var(--space-1) var(--space-4); }
+  .co-nav--fija .co-accion { flex-direction: column; gap: var(--space-1); text-align: center; }
+  .co-nav--fija .co-nav__separador { align-self: flex-start; margin-top: 0.625rem; }
+}
+@media (max-width: 40rem) {
+  .co-nav--fija { left: 0; right: 0; bottom: 0; transform: none; justify-content: space-around; gap: 0; padding: var(--space-2) var(--space-2) var(--space-3); border-top: 1px solid var(--color-border); background: var(--color-bg); }
+  .co-nav--fija::before { display: none; }
+  .co-nav--fija .co-accion { flex-direction: column; gap: var(--space-1); text-align: center; letter-spacing: 0.04em; }
+  .co-nav--fija .co-nav__separador { display: none; }
+}
+
+/* ── Next step ────────────────────────────────────────────────────────── */
+.co-pasos { display: grid; gap: var(--space-5); margin: 0; padding: 0; list-style: none; counter-reset: paso; }
+.co-paso { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); gap: var(--space-2) var(--space-3); counter-increment: paso; }
+.co-paso::before { content: counter(paso); grid-row: 1 / span 3; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border: 1px solid var(--color-border-strong); border-radius: var(--radius-round);
+  font-size: var(--text-xs); font-weight: var(--weight-semibold); line-height: 1; }
+.co-paso > * { grid-column: 2; }
+.co-paso__texto { margin: 0; line-height: var(--leading-snug); }
+.co-paso__porque { font-size: var(--text-sm); color: var(--color-text-secondary); }
+.co-paso__porque summary { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 2rem; color: var(--color-text); font-size: var(--text-xs); font-weight: var(--weight-medium); letter-spacing: var(--tracking-caps); text-transform: uppercase; cursor: pointer; }
+.co-paso__porque p { max-width: var(--reading-width); margin: var(--space-1) 0 0; }
+/* What a step rests on: NASA practice (filled square) or this tool's own rule (dashed square). */
+.co-base { display: inline-flex; align-items: center; gap: var(--space-2); margin: 0; font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: var(--leading-snug); color: var(--color-text-secondary); }
+.co-base::before { content: ""; flex: none; width: 0.625rem; height: 0.625rem; border: 1.5px solid currentColor; }
+.co-base--nasa::before { background: currentColor; }
+.co-base--assumption::before { border-style: dashed; }
+
+/* ── Notice: a line on the left, a shape, a sentence ──────────────────── */
+.co-aviso { --_nivel: var(--color-border-strong); display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: start; gap: var(--space-1) var(--space-3); padding: var(--space-1) 0 var(--space-1) var(--space-4); border-left: 2px solid var(--_nivel); }
+.co-aviso--advisory { --_nivel: var(--level-advisory); }
+.co-aviso--caution { --_nivel: var(--level-caution); }
+.co-aviso--warning { --_nivel: var(--level-warning); }
+.co-aviso--sin-medida { --_nivel: var(--level-unmeasured); border-left-style: dashed; }
+.co-aviso__forma { grid-row: 1 / span 2; width: 1.5rem; height: 1.5rem; color: var(--_nivel); }
+.co-aviso__titulo { margin: 0; font-weight: var(--weight-semibold); line-height: var(--leading-snug); }
+.co-aviso__texto { grid-column: 2; margin: 0; font-size: var(--text-sm); color: var(--color-text-secondary); }
+
+/* ── Session steps: a checklist on a line ─────────────────────────────── */
+.co-sesion { display: grid; margin: 0; padding: 0; list-style: none; }
+.co-sesion__paso { position: relative; display: flex; align-items: center; gap: var(--space-3); min-height: 2.5rem; color: var(--color-text-secondary); font-size: var(--text-sm); line-height: var(--leading-snug); }
+.co-sesion__paso + .co-sesion__paso::before { content: ""; position: absolute; left: calc(0.5rem - 0.5px); top: -0.75rem; height: 1.5rem; border-left: 1px solid var(--color-border-strong); }
+.co-sesion__nodo { position: relative; flex: none; width: 1rem; height: 1rem; border: 1.5px solid var(--color-border-strong); border-radius: var(--radius-round); background: var(--color-bg); }
+.co-sesion__paso.is-hecho { color: var(--color-text); }
+.co-sesion__paso.is-hecho .co-sesion__nodo { border-color: var(--color-text); background: var(--color-text); }
+.co-sesion__paso[aria-current="step"], .co-sesion__paso.is-en-curso { color: var(--color-text); font-weight: var(--weight-semibold); }
+.co-sesion__paso[aria-current="step"] .co-sesion__nodo, .co-sesion__paso.is-en-curso .co-sesion__nodo { border-color: var(--color-text); box-shadow: 0 0 0 3px var(--color-bg), 0 0 0 4px var(--color-text); }
+.co-sesion__paso[aria-current="step"] .co-sesion__nodo::after, .co-sesion__paso.is-en-curso .co-sesion__nodo::after { content: ""; position: absolute; inset: 3px; border-radius: var(--radius-round); background: var(--color-text); }
+
+/* ── Table ────────────────────────────────────────────────────────────── */
+.co-tabla { --_minimo: 40rem; width: 100%; border-collapse: collapse; font-size: var(--text-sm); line-height: var(--leading-snug); }
+.co-tabla caption { padding-bottom: var(--space-3); text-align: left; font-size: var(--text-xs); font-weight: var(--weight-medium); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--color-text-secondary); }
+.co-tabla th, .co-tabla td { padding: var(--space-3) var(--space-5) var(--space-3) 0; border-bottom: 1px solid var(--color-border); text-align: left; vertical-align: middle; }
+.co-tabla thead th { border-bottom-color: var(--color-border-strong); font-size: var(--text-xs); font-weight: var(--weight-medium); color: var(--color-text-secondary); }
+.co-tabla tbody th { font-weight: var(--weight-regular); color: var(--color-text-secondary); }
+/* A row that is a control: its name and, under it, its level. */
+.co-tabla__control { display: grid; gap: var(--space-2); justify-items: start; min-width: 14rem; }
+.co-tabla .es-cifra { text-align: right; white-space: nowrap; }
+.co-tabla .es-entera { white-space: nowrap; }
+.co-tabla td .co-origen { margin-left: var(--space-2); vertical-align: -0.05em; }
+.co-tabla tr.is-hoy > * { color: var(--color-text); font-weight: var(--weight-semibold); }
+.co-tabla tbody tr:hover > * { background: var(--color-surface-raised); }
+
+/* ── Pair of eyes: the state of both eyes at a glance ─────────────────── */
+.co-par { display: inline-flex; gap: var(--space-4); }
+.co-par__ojo { --_nivel: var(--level-none); --_brillo: transparent; display: grid; justify-items: center; gap: var(--space-2); font-size: var(--text-xs); font-weight: var(--weight-medium); line-height: 1; letter-spacing: var(--tracking-caps); color: var(--color-text-secondary); }
+.co-par__disco { position: relative; display: block; width: 3rem; height: 3rem; border: 1px solid var(--color-border-strong); border-radius: var(--radius-round); }
+.co-par__disco::before { content: ""; position: absolute; inset: 22%; border: 0.25rem solid var(--_nivel); border-radius: var(--radius-round); box-shadow: 0 0 0.625rem var(--_brillo); }
+.co-par__disco::after { content: ""; position: absolute; inset: 43%; border-radius: var(--radius-round); background: var(--color-text); }
+.co-par__ojo--none { --_nivel: var(--level-none); }
+.co-par__ojo--advisory { --_nivel: var(--level-advisory); --_brillo: var(--glow-advisory); }
+.co-par__ojo--caution { --_nivel: var(--level-caution); --_brillo: var(--glow-caution); }
+.co-par__ojo--warning { --_nivel: var(--level-warning); --_brillo: var(--glow-warning); }
+.co-par__ojo--unmeasured .co-par__disco { border-style: dashed; }
+.co-par__ojo--unmeasured .co-par__disco::before, .co-par__ojo--unmeasured .co-par__disco::after { display: none; }
+
+/* ── Crew member ──────────────────────────────────────────────────────── */
+.co-tripulante { display: grid; align-content: start; gap: var(--space-5); min-width: 0; }
+.co-tripulante__estado { display: grid; gap: var(--space-3); justify-items: start; }
+
+/* ── Option and input ─────────────────────────────────────────────────── */
+.co-opcion { display: flex; align-items: center; gap: var(--space-3); min-height: 3.25rem; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); cursor: pointer;
+  transition: background-color var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast); }
+.co-opcion input { flex: none; appearance: none; width: 1.125rem; height: 1.125rem; margin: 0; border: 1.5px solid currentColor; border-radius: var(--radius-round); color: inherit; }
+.co-opcion input[type="checkbox"] { border-radius: 0; }
+.co-opcion input:checked { background: currentColor; box-shadow: inset 0 0 0 3px var(--color-accent); }
+.co-opcion:hover { border-color: var(--color-text); background: var(--color-surface-raised); }
+/* Chosen: it inverts. White with black text: there is no way not to see it. */
+.co-opcion:has(input:checked) { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-accent-contrast); font-weight: var(--weight-medium); }
+.co-entrada { width: 100%; min-height: var(--target-min); padding: var(--space-2) 0; border: 0; border-bottom: 1px solid var(--color-border-strong); border-radius: 0; background: none; color: var(--color-text); font: inherit; }
+.co-entrada::placeholder { color: var(--color-text-muted); }
+.co-entrada:focus-visible { outline: 0; border-bottom: 2px solid var(--color-focus); }
+
+/* ── Assistant sheet ──────────────────────────────────────────────────── */
+.co-hoja { display: grid; align-content: start; gap: var(--space-5); width: min(24rem, 100%); padding: var(--space-6); }
+.co-mensaje { margin: 0; padding-left: var(--space-4); border-left: 1px solid var(--color-border-strong); font-size: var(--text-md); line-height: var(--leading-normal); }
+.co-mensaje--propio { justify-self: end; max-width: 90%; padding: 0 var(--space-4) 0 0; border-left: 0; border-right: 1px solid var(--color-border-strong); text-align: right; color: var(--color-text-secondary); }
+.co-mensaje__fuentes { margin: var(--space-3) 0 0; font-size: var(--text-xs); color: var(--color-text-secondary); }
+
+/* ── Reduced motion and print ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .co-marca.is-barriendo .co-marca__linea { animation: none; opacity: 1; }
+  .co-marca.is-trazando .co-marca__linea { animation: none; stroke-dashoffset: 0; }
+  .co-marca.is-trazando .co-marca__pupila { animation: none; opacity: 1; }
+}
+@media print {
+  .co-campo { background-image: none; }
+  .co-hud, .co-nav--fija, .co-hoja { display: none; }
+  .co-ocular__anillo { box-shadow: none; }
+  .co-grupo, .co-lectura, .co-paso { break-inside: avoid; }
+}

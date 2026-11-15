@@ -1,3 +1,7 @@
+/*
+ * Ground rules of every page. The look itself is in system.css (the components of the
+ * design system) and layout.css (how a screen is put together).
+ */
 *,
 *::before,
 *::after {
@@ -5,33 +9,52 @@
 }
 
 html {
-  font-size: 112.5%;
+  /* The design system counts in 16 px rems: reading text is `--text-md`, 18 px. */
+  font-size: 100%;
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  margin: 0;
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-sans);
-  font-size: var(--text-sm);
-  line-height: var(--leading-normal);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
+/* Spacing belongs to the layout (grids and their gaps), never to the element. */
 h1,
 h2,
-h3 {
-  line-height: var(--leading-tight);
-  margin: 0 0 var(--space-3);
+h3,
+h4,
+p,
+figure,
+dl,
+dd,
+blockquote {
+  margin: 0;
 }
 
-p {
-  margin: 0 0 var(--space-3);
+img,
+svg,
+canvas {
+  max-width: 100%;
 }
 
-:focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* A heading that only receives the focus after navigating does not draw a ring. */
+[tabindex='-1']:focus {
+  outline: none;
+}
+
+/* The field goes dark where something is measured with the eyes: the vision tests. */
+.co-campo.is-apagado {
+  background-image: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -39,17 +62,15 @@ p {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-.shell {
-  max-width: var(--content-width);
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-5);
-}
-
-.notice {
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
+@media print {
+  body {
+    min-height: 0;
+    overflow: visible;
+  }
 }

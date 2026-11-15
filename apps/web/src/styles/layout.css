@@ -1,0 +1,79 @@
+/*
+ * How a screen is put together with the components of the "Campo oscuro" design system: the frame,
+ * the cockpit and the detail sections. Taken from
+ * monitoreo-salud-astronautas/sistema-de-diseno/vistas/vistas.css. Like system.css: not one colour
+ * written, everything comes from tokens.css.
+ *
+ * The rule of composition: the edge belongs to the interface, the centre belongs to the image.
+ */
+html, body { margin: 0; }
+html { scroll-padding-top: var(--hud-height); }
+
+/* ── Frame of every screen: strip on top, content, fixed navigation at the bottom ── */
+.co-pantalla { min-height: 100vh; padding-bottom: var(--nav-height); }
+
+/* ── Cockpit: the first view ──────────────────────────────────────────── */
+/* In one column it goes in reading order: what happened, how much, how sure. */
+.co-cabina { display: grid; grid-template-columns: minmax(0, 1fr); }
+.co-cabina__lado { padding: var(--space-6) var(--space-5); }
+.co-cabina__lado:first-child { padding-top: calc(var(--hud-height) + var(--space-5)); }
+.co-cabina__lado::after { display: none; }
+.co-cabina__escena { display: flex; flex-direction: column; align-items: center; gap: var(--space-6); min-width: 0; padding: var(--space-7) var(--space-4) var(--space-6); --ocular-size: min(17rem, 36vw); }
+.co-cabina__ojos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-items: center; align-items: start; gap: var(--space-5); width: 100%; max-width: 50rem; }
+.co-cabina__mision { width: 100%; max-width: 46rem; }
+/* When the centre is a chart and not an image: across, aligned to the left. */
+.co-cabina__escena--ancha { align-items: stretch; }
+.co-cabina__escena--ancha > * { width: 100%; max-width: 60rem; }
+/* What only fits when there is a side veil: the list of steps of the session. */
+@media (max-width: 79.9375rem) { .co-cabina__solo-ancho { display: none; } }
+.co-cabina__selector { display: none; }
+/* Phone: one eye at a time, with a selector. */
+@media (max-width: 40rem) {
+  .co-cabina__escena { --ocular-size: min(19rem, 70vw); }
+  .co-cabina__selector { display: inline-flex; }
+  .co-cabina__ojos { grid-template-columns: minmax(0, 1fr); }
+  .co-cabina__ojos .co-ocular:not(.is-elegido) { display: none; }
+}
+/* From 1280 px: a veil on each side, top to bottom, and the field in the centre.
+   The ocular follows the height of the screen so that the first view fits whole. */
+@media (min-width: 80rem) {
+  .co-cabina { grid-template-columns: var(--panel-width) minmax(0, 1fr) var(--panel-width); min-height: 100vh; }
+  .co-cabina--dos { grid-template-columns: var(--panel-width) minmax(0, 1fr); }
+  .co-cabina__lado, .co-cabina__lado:first-child { padding: calc(var(--hud-height) + var(--space-6)) var(--space-6) var(--space-7); }
+  .co-cabina__lado::after { display: block; }
+  .co-cabina__escena { gap: var(--space-5); padding: calc(var(--hud-height) + var(--space-5)) var(--space-5) calc(var(--nav-height) + var(--space-4)); --ocular-size: clamp(12.5rem, 29vh, 22rem); }
+  .co-cabina__escena--ancha { padding-inline: clamp(var(--space-6), 5vw, var(--space-9)); }
+  .co-cabina__mision { margin-top: auto; }
+}
+/* The centre stays in view while the veils scroll: the image and the mission line do not leave. */
+@media (min-width: 80rem) and (min-height: 44rem) {
+  .co-cabina__escena:not(.co-cabina__escena--ancha) { position: sticky; top: 0; align-self: start; height: 100vh; }
+}
+/* Short screen: the first view keeps the essentials. The legend of the strokes is in the viewer too. */
+@media (min-width: 80rem) and (max-height: 53rem) {
+  .co-cabina__escena { gap: var(--space-4); padding-top: calc(var(--hud-height) + var(--space-2)); padding-bottom: var(--nav-height); --ocular-size: clamp(11rem, 26vh, 22rem); }
+  .co-cabina__leyenda { display: none; }
+  .co-cabina__escena .co-ocular__cabeza { margin-bottom: var(--space-6); }
+  .co-cabina__escena .co-lectura--heroe .co-lectura__valor { font-size: var(--text-3xl); }
+}
+
+/* ── Detail sections, under the first view ────────────────────────────── */
+.co-detalle { position: relative; }
+.co-detalle::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--line-fade-h); }
+.co-seccion { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); width: min(100% - 2 * var(--space-5), var(--content-width)); margin: 0 auto; padding: var(--space-8) 0; }
+.co-seccion + .co-seccion, .co-pie { border-top: 1px solid; border-image: var(--line-fade-h) 1; }
+@media (min-width: 64rem) { .co-seccion { grid-template-columns: 18rem minmax(0, 1fr); gap: var(--space-8); } .co-seccion--apilada { grid-template-columns: minmax(0, 1fr); gap: var(--space-7); } }
+.co-seccion__cabeza { display: grid; gap: var(--space-3); align-content: start; }
+.co-columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--space-7) var(--space-6); align-items: start; }
+.co-columnas--dos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+.co-columnas > .co-grupo { margin-top: 0; }
+.co-limites { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--space-4) var(--space-7); margin: 0; padding: 0; list-style: none; font-size: var(--text-sm); color: var(--color-text-secondary); }
+.co-limites li { display: flex; gap: var(--space-3); align-items: baseline; }
+.co-pie { display: grid; gap: var(--space-4); width: min(100% - 2 * var(--space-5), var(--content-width)); margin: 0 auto; padding: var(--space-6) 0 var(--space-7); }
+
+/* ── Start ────────────────────────────────────────────────────────────── */
+.co-portada { display: grid; justify-items: center; gap: var(--space-5); padding: calc(var(--hud-height) + var(--space-7)) var(--space-4) var(--space-6); text-align: center; }
+.co-portada__pregunta { margin-top: var(--space-6); }
+.co-tripulacion { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--space-7) var(--space-6); }
+.co-tripulacion > * { padding-top: var(--space-5); border-top: 1px solid var(--color-border-strong); }
+.co-bloque { width: min(100% - 2 * var(--space-5), var(--content-width)); margin: 0 auto; padding: var(--space-6) 0; }
