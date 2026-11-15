@@ -4,7 +4,7 @@
  *
  * SIMULATED DATA. The exams are made up here, not measured on any image.
  */
-import type { CrewId, Eye, EyeCaptureResult, SessionRecord, VisionSession } from '@app/core';
+import type { CrewId, ExamSummary, Eye, EyeCaptureResult, SessionRecord, VisionSession } from '@app/core';
 import { assessSession } from '../app/core';
 import { makeExamSummary, makeMeasuredCapture, makeUnmeasuredCapture } from '../sample/exams';
 import { makeVisionSession } from '../sample/vision';
@@ -24,26 +24,37 @@ export interface SampleControl {
 export const SAMPLE_BASELINE_UM: Readonly<Record<Eye, number>> = { OD: 396, OS: 391 };
 const SAMPLE_BASELINE_ROUGHNESS_UM = 2;
 
-function capture(crewId: CrewId, eye: Eye, flightDay: number, changeUm: number | null, roughnessUm: number): EyeCaptureResult {
+function capture(
+  crewId: CrewId,
+  eye: Eye,
+  flightDay: number,
+  changeUm: number | null,
+  roughnessUm: number,
+  reference: ExamSummary | null,
+): EyeCaptureResult {
   if (changeUm === null) return makeUnmeasuredCapture(crewId, eye, flightDay);
+  // The change is counted from the pre-flight exam of the history the control is added to.
   const exam = makeExamSummary({
     crewId,
     eye,
     flightDay,
-    trtRingUm: SAMPLE_BASELINE_UM[eye] + changeUm,
-    bmRoughnessUm: SAMPLE_BASELINE_ROUGHNESS_UM + roughnessUm,
+    trtRingUm: (reference?.trtRingUm?.value ?? SAMPLE_BASELINE_UM[eye]) + changeUm,
+    mrwUm: reference?.mrwUm?.value,
+    bmRoughnessUm: (reference?.bmRoughnessUm?.value ?? SAMPLE_BASELINE_ROUGHNESS_UM) + roughnessUm,
   });
-  return makeMeasuredCapture(crewId, exam, flightDay);
+  return makeMeasuredCapture(crewId, reference ? { ...exam, referenceId: reference.examId } : exam, flightDay);
 }
 
 /** One more control on top of a history, assessed with everything before it. */
 export function sampleRecord(history: readonly SessionRecord[], crewId: CrewId, control: SampleControl): SessionRecord {
+  const earlier = history.filter((record) => record.flightDay < control.flightDay);
+  const reference = (eye: Eye): ExamSummary | null =>
+    earlier.find((record) => record.flightDay === 0)?.eyes[eye].accepted ?? null;
   const eyes = {
-    OD: capture(crewId, 'OD', control.flightDay, control.od, control.roughness ?? 0),
-    OS: capture(crewId, 'OS', control.flightDay, control.os, control.roughness ?? 0),
+    OD: capture(crewId, 'OD', control.flightDay, control.od, control.roughness ?? 0, reference('OD')),
+    OS: capture(crewId, 'OS', control.flightDay, control.os, control.roughness ?? 0, reference('OS')),
   };
   const vision = control.vision === undefined ? makeVisionSession() : control.vision;
-  const earlier = history.filter((record) => record.flightDay < control.flightDay);
   const assessment = assessSession({ crewId, flightDay: control.flightDay, eyes, vision, history: earlier });
   return {
     crewId,

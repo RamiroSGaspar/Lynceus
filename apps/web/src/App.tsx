@@ -9,6 +9,7 @@ import { ChartsGallery } from './screens/dev/ChartsGallery';
 import { HomeScreen } from './screens/HomeScreen';
 import { NotFoundScreen } from './screens/NotFoundScreen';
 import { PendingScreen } from './screens/PendingScreen';
+import { ResultScreen } from './screens/ResultScreen';
 import { SessionScreen } from './screens/SessionScreen';
 import { AppFooter } from './shell/AppFooter';
 import { AppHeader } from './shell/AppHeader';
@@ -21,6 +22,8 @@ function Screen({ route }: { route: Route }) {
       return <HomeScreen />;
     case 'session':
       return <SessionScreen crewId={route.crewId} />;
+    case 'result':
+      return <ResultScreen crewId={route.crewId} flightDay={route.flightDay} />;
     case 'dev':
       if (route.page === 'charts') return <ChartsGallery />;
       return <NotFoundScreen message={t('notFound.text', { path: `/dev/${route.page}` })} />;
