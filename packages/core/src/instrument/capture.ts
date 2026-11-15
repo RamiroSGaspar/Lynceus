@@ -94,7 +94,7 @@ export function captureSetup(request: CaptureRequest): CaptureSetup {
     // scan, slight motion (spec 5.5); scripted events of the scenario override the failures.
     targetQualityDb = clamp(rng.normal(30, 1.5), 26, 34);
     scanQualitySdDb = 0.8;
-    conditions = { motion: rng.uniform(0, 0.15) };
+    conditions = { motion: rng.uniform(0, 0.06) };
     const scripted = SCRIPTED_EVENTS.find((e) => e.crewId === crewId && e.eye === eye && e.flightDay === flightDay && e.attempt === attempt);
     if (scripted) conditions = { ...conditions, ...scripted.conditions };
   }
