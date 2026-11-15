@@ -456,6 +456,9 @@ export type FindingId =
   | 'symptom-headache'
   | 'symptom-other';
 
+/** Why an eye has no result in a session. Scan and exam reasons come from the capture attempts. */
+export type NotMeasuredReason = ExamRejection | ScanRejection | 'not-captured' | 'no-baseline';
+
 export interface EyeAssessment {
   eye: Eye;
   /** False when no attempt could be measured: `level` is then null. */
@@ -469,6 +472,8 @@ export interface EyeAssessment {
   /** Change since the previous control of this eye, when there is one. */
   sincePrevious: { flightDay: number; trtRingUm: Quantity } | null;
   findings: FindingId[];
+  /** Why there is no result, most telling first. Present only when `measured` is false. */
+  notMeasuredReasons?: NotMeasuredReason[];
 }
 
 export type ContactUrgency = 'routine-report' | 'without-delay' | 'now';
@@ -507,6 +512,48 @@ export type LimitationId =
   | 'no-intracranial-pressure'
   | 'ground-confirms';
 
+/** Near acuity of one eye against the pre-flight session. */
+export interface AcuityComparison {
+  /** Today's near acuity. */
+  logMar: Quantity;
+  /** Pre-flight near acuity; null when there is none to compare with. */
+  baselineLogMar: Quantity | null;
+  /** Today minus pre-flight: positive is worse. Null when there is no pre-flight value. */
+  change: Quantity | null;
+  /** Today's result is limited by the screen, so it cannot show a worsening. */
+  atScreenFloor: boolean;
+  /** Both tests were done in the same state: with or without the usual near correction. */
+  sameCorrection: boolean;
+  /** The change counts as real: at or beyond the rule's limit and not limited by the screen. */
+  worse: boolean;
+}
+
+/** What one eye marked on the Amsler grid. */
+export interface AmslerSummary {
+  marked: boolean;
+  /** Fraction of the grid that was marked, 0 to 1. */
+  markedFraction: number;
+  centralMarked: boolean;
+  /** Marked fraction at or beyond the rule's limit for an acute symptom. */
+  extensive: boolean;
+}
+
+/**
+ * Digest of the vision tests and the questionnaire of one session, compared with
+ * the pre-flight session. The rules fill it so that the texts and the report can
+ * state each functional finding with its numbers.
+ */
+export interface FunctionalAssessment {
+  /** Parts of the functional series done in this session. A skipped part can show nothing. */
+  done: { symptoms: boolean; acuity: boolean; amsler: boolean };
+  /** Null when the eye was not tested or the test did not converge. */
+  acuity: { OD: AcuityComparison | null; OS: AcuityComparison | null };
+  /** Null when the eye was not tested. */
+  amsler: { OD: AmslerSummary | null; OS: AmslerSummary | null };
+  /** Symptoms answered as present, in questionnaire order. */
+  symptoms: { id: SymptomId; severity: SymptomSeverity | null; eye: Eye | 'both' | null }[];
+}
+
 export interface SessionAssessment {
   crewId: CrewId;
   flightDay: number;
@@ -525,6 +572,10 @@ export interface SessionAssessment {
   nextSteps: NextStep[];
   limitations: LimitationId[];
   rulesVersion: string;
+  /** What the vision tests and the questionnaire showed, with the values the texts need. */
+  functional?: FunctionalAssessment;
+  /** Version of the error model behind the ranges and the probabilities. */
+  errorModelVersion?: string;
 }
 
 /** One past or present control of one crew member, as stored and shown in the history. */
