@@ -179,7 +179,9 @@ describe('result screen', () => {
     };
     const byEngine: SessionRecord = { ...record, eyes: { OD: measured('OD'), OS: measured('OS') } };
     const text = textOf(renderHtml(<ResultScreen crewId="B" flightDay={150} />, 'en', testStore((state) => withRecord(state, byEngine))));
-    expect(text).not.toContain('were not measured on an image');
+    expect(text).not.toContain('The numbers of this control were not measured on an image');
+    // The engine measured today's exam, but the reference still comes from the scenario tables: that is said too.
+    expect(text).toContain('The pre-flight exam this control is compared with was not measured on an image.');
   });
 
   it('follows the mission day: a control after it is not there yet', () => {

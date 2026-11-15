@@ -14,6 +14,7 @@ export const resultMessages = defineMessages(
     'title': 'Result of flight day {day}: {name}',
     'eyes.heading': 'Each eye',
     'source.notImage': 'The numbers of this control were not measured on an image. Their source says: “{engine}”.',
+    'source.referenceNotImage': 'The pre-flight exam this control is compared with was not measured on an image. Its source says: “{engine}”.',
 
     'sure.heading': 'How sure',
     'sure.lead':
@@ -135,6 +136,7 @@ export const resultMessages = defineMessages(
     'title': 'Resultado del día de vuelo {day}: {name}',
     'eyes.heading': 'Cada ojo',
     'source.notImage': 'Los números de este control no se midieron sobre una imagen. Su origen dice: “{engine}”.',
+    'source.referenceNotImage': 'El examen de antes del vuelo contra el que se compara este control no se midió sobre una imagen. Su origen dice: “{engine}”.',
 
     'sure.heading': 'Qué tan seguro',
     'sure.lead':

@@ -535,9 +535,13 @@ export function ResultScreen({ crewId, flightDay }: { crewId: CrewId; flightDay:
   );
   const baseline = baselineOf(history);
   // An exam says which analysis produced it. Anything other than the measuring engine is said in plain sight.
-  const otherSource = EYES.map((eye) => record.eyes[eye].accepted?.engineVersion).find(
-    (version) => version !== undefined && version !== ENGINE_VERSION,
-  );
+  const sourceOf = (session: SessionRecord | null): string | undefined =>
+    EYES.map((eye) => session?.eyes[eye].accepted?.engineVersion).find(
+      (version) => version !== undefined && version !== ENGINE_VERSION,
+    );
+  const otherSource = sourceOf(record);
+  // The same goes for the reference: a change is only as measured as the exam it is counted from.
+  const referenceSource = flightDay > 0 && !otherSource ? sourceOf(baseline) : undefined;
 
   return (
     <div className="screen result">
@@ -559,6 +563,9 @@ export function ResultScreen({ crewId, flightDay }: { crewId: CrewId; flightDay:
       </div>
 
       {otherSource && <p className="callout callout--caution">{t('source.notImage', { engine: otherSource })}</p>}
+      {referenceSource && (
+        <p className="callout callout--caution">{t('source.referenceNotImage', { engine: referenceSource })}</p>
+      )}
 
       <section className="screen__section" aria-labelledby="eyes-heading">
         <h2 id="eyes-heading">{t('eyes.heading')}</h2>
