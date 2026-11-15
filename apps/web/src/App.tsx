@@ -1,4 +1,6 @@
 import { PRODUCT, type Level } from '@app/core';
+import { useEffect, useState } from 'react';
+import { DevVisionPage } from './features/vision';
 import { useI18n } from './i18n';
 import { Card, LanguageToggle, LevelBadge, QuantityValue, SimulatedNotice } from './ui';
 
@@ -13,6 +15,14 @@ const LEVELS: readonly (Level | null)[] = [
 /** Placeholder screen: shows the shared interface pieces until the real screens replace it. */
 export function App() {
   const { locale } = useI18n();
+  // Temporary mount of the vision tests' development page until the real navigation exists.
+  const [hash, setHash] = useState(() => window.location.hash);
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  if (hash.startsWith('#/dev/vision')) return <DevVisionPage />;
   return (
     <main className="shell">
       <LanguageToggle />
