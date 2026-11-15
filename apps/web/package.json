@@ -8,7 +8,9 @@
     "build": "tsc -p tsconfig.json && vite build",
     "preview": "vite preview",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json && tsc -p api/tsconfig.json",
+    "knowledge:generate": "tsx api/_lib/generate-knowledge.ts",
+    "assistant:redteam": "tsx api/_lib/redteam.ts"
   },
   "dependencies": {
     "@app/core": "workspace:*",
@@ -16,9 +18,11 @@
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.6",
     "vitest": "^5.1.0"

@@ -306,6 +306,50 @@ export interface AnalysisProgress {
   scansTotal?: number;
 }
 
+export interface AnalyzeOptions {
+  /** Summary of the reference exam of the same eye. Lets the engine place its opening shape (spec 01, 6.4). */
+  baseline?: ExamSummary;
+  /** Called after each B-scan has been analysed. */
+  onScan?: (scan: ScanAnalysis) => void;
+}
+
+// ----------------------------------------------------------- Ground truth
+
+/**
+ * True values of a virtual eye on one flight day, computed densely on the noise-free
+ * model. Only tests, validation and the transparency view use them: the engine never
+ * sees them.
+ */
+export interface EyeGroundTruth {
+  crewId: CrewId;
+  eye: Eye;
+  flightDay: number;
+  /**
+   * Ellipse fitted to the true opening edge, in the anatomical frame: origin at the
+   * centre of the opening, x toward temporal, y toward superior, millimetres.
+   */
+  bmo: { centerXMm: number; centerYMm: number; semiMajorMm: number; semiMinorMm: number; angleDeg: number; areaMm2: number };
+  /** Area inside the true edge, which is not exactly an ellipse. */
+  bmoTrueAreaMm2: number;
+  /** Area-weighted total retinal thickness of the four rings. */
+  rings: { innerUm: number; outerUm: number; thicknessUm: number }[];
+  trtRingUm: number;
+  /** Change of the 0–250 µm ring from the reference exam: the swelling E(d). */
+  trtRingChangeUm: number;
+  mrwUm: number;
+  /** MRW at 96 points of the edge, every 3.75° of anatomical angle (0° temporal, 90° superior). */
+  mrwByPoint: { thetaDeg: number; mrwUm: number }[];
+  mrwSectorsUm: Readonly<Record<Sector, number>>;
+  bmRoughnessUm: number;
+  bmRoughnessChangeUm: number;
+  /** NASA definition: between the inner surface and a plane 200 µm above the opening plane. */
+  cupVolumeMm3: number;
+  /** Mean on the 3.5 mm circle centred on the opening. Drawn in the images, never measured. */
+  choroidThicknessUm: number;
+  /** Nerve fibre layer on the same circle. */
+  rnflCircleUm: number;
+}
+
 // --------------------------------------------- Rules (provisional, stage C)
 
 export type Level =
@@ -358,7 +402,10 @@ export interface ScreenCalibration {
   /** Device pixels per millimetre, from the card-matching step. */
   pxPerMm: number;
   viewingDistanceCm: number;
-  /** Smallest logMAR this screen can draw with a stroke of at least one pixel at that distance. */
+  /**
+   * Smallest logMAR this screen can draw at that distance with a stroke of half a device
+   * pixel, anti-aliased, as FrACT accepts (research doc `pruebas-de-vision-en-pantalla.md`, 1.A).
+   */
   floorLogMar: number;
 }
 
@@ -456,6 +503,9 @@ export type FindingId =
   | 'symptom-headache'
   | 'symptom-other';
 
+/** Why an eye has no result in a session. Scan and exam reasons come from the capture attempts. */
+export type NotMeasuredReason = ExamRejection | ScanRejection | 'not-captured' | 'no-baseline';
+
 export interface EyeAssessment {
   eye: Eye;
   /** False when no attempt could be measured: `level` is then null. */
@@ -469,6 +519,8 @@ export interface EyeAssessment {
   /** Change since the previous control of this eye, when there is one. */
   sincePrevious: { flightDay: number; trtRingUm: Quantity } | null;
   findings: FindingId[];
+  /** Why there is no result, most telling first. Present only when `measured` is false. */
+  notMeasuredReasons?: NotMeasuredReason[];
 }
 
 export type ContactUrgency = 'routine-report' | 'without-delay' | 'now';
@@ -507,6 +559,48 @@ export type LimitationId =
   | 'no-intracranial-pressure'
   | 'ground-confirms';
 
+/** Near acuity of one eye against the pre-flight session. */
+export interface AcuityComparison {
+  /** Today's near acuity. */
+  logMar: Quantity;
+  /** Pre-flight near acuity; null when there is none to compare with. */
+  baselineLogMar: Quantity | null;
+  /** Today minus pre-flight: positive is worse. Null when there is no pre-flight value. */
+  change: Quantity | null;
+  /** Today's result is limited by the screen, so it cannot show a worsening. */
+  atScreenFloor: boolean;
+  /** Both tests were done in the same state: with or without the usual near correction. */
+  sameCorrection: boolean;
+  /** The change counts as real: at or beyond the rule's limit and not limited by the screen. */
+  worse: boolean;
+}
+
+/** What one eye marked on the Amsler grid. */
+export interface AmslerSummary {
+  marked: boolean;
+  /** Fraction of the grid that was marked, 0 to 1. */
+  markedFraction: number;
+  centralMarked: boolean;
+  /** Marked fraction at or beyond the rule's limit for an acute symptom. */
+  extensive: boolean;
+}
+
+/**
+ * Digest of the vision tests and the questionnaire of one session, compared with
+ * the pre-flight session. The rules fill it so that the texts and the report can
+ * state each functional finding with its numbers.
+ */
+export interface FunctionalAssessment {
+  /** Parts of the functional series done in this session. A skipped part can show nothing. */
+  done: { symptoms: boolean; acuity: boolean; amsler: boolean };
+  /** Null when the eye was not tested or the test did not converge. */
+  acuity: { OD: AcuityComparison | null; OS: AcuityComparison | null };
+  /** Null when the eye was not tested. */
+  amsler: { OD: AmslerSummary | null; OS: AmslerSummary | null };
+  /** Symptoms answered as present, in questionnaire order. */
+  symptoms: { id: SymptomId; severity: SymptomSeverity | null; eye: Eye | 'both' | null }[];
+}
+
 export interface SessionAssessment {
   crewId: CrewId;
   flightDay: number;
@@ -525,6 +619,10 @@ export interface SessionAssessment {
   nextSteps: NextStep[];
   limitations: LimitationId[];
   rulesVersion: string;
+  /** What the vision tests and the questionnaire showed, with the values the texts need. */
+  functional?: FunctionalAssessment;
+  /** Version of the error model behind the ranges and the probabilities. */
+  errorModelVersion?: string;
 }
 
 /** One past or present control of one crew member, as stored and shown in the history. */
