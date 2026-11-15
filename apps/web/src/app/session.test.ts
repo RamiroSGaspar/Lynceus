@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { makeExamSummary, makeMeasuredCapture, makeUnmeasuredCapture } from '../sample/exams';
 import { SAMPLE_CALIBRATION, makeAcuity, makeAmsler, makeSymptomAnswers } from '../sample/vision';
-import { assessSession, getHistory } from './core';
+import { FIRST_SIGN_CONTROLS, sampleHistory } from '../testing/fixtures';
+import { assessSession } from './core';
 import {
   STEP_IDS,
   applyEvent,
@@ -124,7 +125,7 @@ describe('guided session', () => {
   });
 
   it('builds the record of a control done here, with the eyes that could not be measured too', () => {
-    const history = getHistory('B', 150);
+    const history = sampleHistory('B', FIRST_SIGN_CONTROLS).filter((record) => record.flightDay < 150);
     const draft = run([
       ...COMPLETE.slice(0, 5),
       { type: 'eye', value: makeUnmeasuredCapture('B', 'OS', 150) },

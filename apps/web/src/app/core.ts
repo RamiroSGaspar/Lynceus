@@ -1,9 +1,7 @@
 /**
- * The single place where the application takes the rules, the texts and the crew
- * history from. Screens import from here, never from the provisional stand-in.
- *
- * PROVISIONAL: these come from `provisional/sampleCore` until the real functions
- * of specification 04 are in `@app/core`. Switching is an edit of this file only.
+ * What the application takes from the core: the crew, the mission, NASA's
+ * thresholds, the rules, the texts and the crew history. Screens import these
+ * from here, so the list of what the interface depends on is in one place.
  */
 export {
   CREW,
@@ -11,9 +9,7 @@ export {
   TRT_CLINICALLY_CONCERNING_UM,
   TRT_FIRST_SIGN_UM,
   assessSession,
+  explainAssessment,
   getHistory,
-} from '../provisional/sampleCore';
-export type { AssessmentInput } from '../provisional/sampleCore';
-
-/** True while the rules behind the screens are the provisional stand-in. Shown on screen so nobody mistakes them for the product's rules. */
-export const CORE_IS_PROVISIONAL = true;
+} from '@app/core';
+export type { AssessmentInput, Explanation } from '@app/core';

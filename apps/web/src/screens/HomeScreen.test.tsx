@@ -1,10 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { PRODUCT, type SessionRecord } from '@app/core';
 import { CREW, getHistory } from '../app/core';
+import { lastControl } from '../app/history';
 import { applyEvent, startDraft } from '../app/session';
 import { withDraft, withMissionDay, withRecord } from '../app/store';
 import { LOCALES, renderHtml, testStore, textOf, unfilledPlaceholders } from '../testing/render';
 import { HomeScreen } from './HomeScreen';
+
+const LEVEL_NAMES = {
+  'no-detectable-change': 'No detectable change',
+  'first-sign': 'First sign',
+  'clinically-concerning': 'Clinically concerning',
+  'acute-visual-symptom': 'Acute visual symptom',
+  'not-measured': 'Could not be measured',
+} as const;
 
 /** The value of the radio button that is checked. */
 function checkedRadio(html: string): string | undefined {
@@ -30,20 +39,29 @@ describe('start screen', () => {
     expect(unfilledPlaceholders(html)).toEqual([]);
   });
 
-  it('shows the level of the last control of each crew member, with words', () => {
+  it('shows the level of the last control of each crew member, with words and its day', () => {
     const text = textOf(renderHtml(<HomeScreen />, 'en'));
-    expect(text).toContain('No detectable change');
-    expect(text).toContain('First sign');
-    expect(text).toContain('Clinically concerning');
-    expect(text).toContain('Flight day 90');
+    for (const member of CREW) {
+      const last = lastControl(getHistory(member.id, 150));
+      expect(last).not.toBeNull();
+      if (!last) continue;
+      expect(text).toContain(`Flight day ${last.flightDay}`);
+      expect(text).toContain(LEVEL_NAMES[last.assessment.level ?? 'not-measured']);
+    }
   });
 
   it('travels to another mission day: the last control is the one before it', () => {
     const store = testStore((state) => withMissionDay(state, 90));
     const html = renderHtml(<HomeScreen />, 'en', store);
     expect(checkedRadio(html)).toBe('90');
-    expect(textOf(html)).toContain('Flight day 30');
-    expect(textOf(html)).not.toContain('Flight day 150 ·');
+    const text = textOf(html);
+    for (const member of CREW) {
+      const last = lastControl(getHistory(member.id, 90));
+      expect(last && last.flightDay).toBeLessThan(90);
+      expect(text).toContain(`Flight day ${last?.flightDay}`);
+    }
+    expect(text).toContain('Today’s control · Flight day 90');
+    expect(text).not.toContain('Today’s control · Flight day 150');
   });
 
   it('offers to resume a control in progress and to see the result of one done here', () => {

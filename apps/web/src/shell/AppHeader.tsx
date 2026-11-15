@@ -1,23 +1,20 @@
 import { useLayoutEffect, useRef } from 'react';
 import { PRODUCT, type CrewId } from '@app/core';
-import { CORE_IS_PROVISIONAL } from '../app/core';
 import { crewMember } from '../app/hooks';
 import { formatRoute } from '../app/routes';
 import { useAppState } from '../app/StoreContext';
 import { useI18n, useMessages } from '../i18n';
 import { appMessages } from '../i18n/app';
 import { commonMessages } from '../i18n/common';
-import { Button, LanguageToggle, SimulatedNotice } from '../ui';
+import { LanguageToggle, SimulatedNotice } from '../ui';
 
 interface Props {
   /** The crew member the current screen is about, or the last one chosen. */
   crewId: CrewId | null;
-  assistantOpen: boolean;
-  onToggleAssistant: () => void;
 }
 
 /** The same on every screen: product, crew member, mission day, language and the simulated-data notice. */
-export function AppHeader({ crewId, assistantOpen, onToggleAssistant }: Props) {
+export function AppHeader({ crewId }: Props) {
   const { locale } = useI18n();
   const t = useMessages(appMessages);
   const tc = useMessages(commonMessages);
@@ -74,16 +71,6 @@ export function AppHeader({ crewId, assistantOpen, onToggleAssistant }: Props) {
               <dd>{tc('flightDay', { day: missionDay })}</dd>
             </div>
           </dl>
-          <Button
-            id="assistant-toggle"
-            className="app-header__assistant"
-            variant="ghost"
-            aria-expanded={assistantOpen}
-            aria-controls="assistant-panel"
-            onClick={onToggleAssistant}
-          >
-            {t('assistant.toggle')}
-          </Button>
           <div className="app-header__language">
             <LanguageToggle />
           </div>
@@ -91,11 +78,6 @@ export function AppHeader({ crewId, assistantOpen, onToggleAssistant }: Props) {
       </header>
       <div ref={noticeRef} className="app-notice">
         <SimulatedNotice />
-        {CORE_IS_PROVISIONAL && (
-          <p className="app-notice__provisional" role="note">
-            {t('provisional.rules')}
-          </p>
-        )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SessionRecord } from '@app/core';
-import { getHistory } from './core';
+import { FIRST_SIGN_CONTROLS, sampleHistory } from '../testing/fixtures';
 import { applyEvent, startDraft } from './session';
 import {
   STORAGE_KEY,
@@ -25,11 +25,17 @@ import {
 
 const OPTIONS = { missionDays: [30, 90, 150], defaultMissionDay: 150 } as const;
 
-/** A sample control "done in this browser": a precomputed sample one, relabelled. */
+const SAMPLES = { A: sampleHistory('A', FIRST_SIGN_CONTROLS), B: sampleHistory('B', FIRST_SIGN_CONTROLS) };
+
+function sample(crewId: 'A' | 'B', flightDay: number): SessionRecord {
+  const record = SAMPLES[crewId].find((candidate) => candidate.flightDay === flightDay);
+  if (!record) throw new Error('sample record missing');
+  return record;
+}
+
+/** A sample control "done in this browser". */
 function liveRecord(crewId: 'A' | 'B', flightDay: number): SessionRecord {
-  const sample = getHistory(crewId, 151).find((record) => record.flightDay === flightDay);
-  if (!sample) throw new Error('sample record missing');
-  return { ...sample, origin: 'live' };
+  return { ...sample(crewId, flightDay), origin: 'live' };
 }
 
 describe('state transitions', () => {
@@ -76,7 +82,7 @@ describe('state transitions', () => {
     expect(state.questions).toEqual({});
     expect(saved && questionsFor(state, saved)).toEqual(['How often should I repeat the scan?']);
 
-    const precomputed = getHistory('B', 151).find((record) => record.flightDay === 90) as SessionRecord;
+    const precomputed = sample('B', 90);
     state = withQuestions(state, 'B', 90, ['Should I try other glasses?']);
     expect(state.questions).toEqual({ 'B:90': ['Should I try other glasses?'] });
     expect(questionsFor(state, precomputed)).toEqual(['Should I try other glasses?']);
