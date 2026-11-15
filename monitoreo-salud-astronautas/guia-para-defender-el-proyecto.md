@@ -1,6 +1,6 @@
 # Guía personal para entender y defender el proyecto
 
-**Para Ramiro. Estado: 15 de noviembre de 2026.**
+**Guía para el equipo. Estado: 15 de noviembre de 2026.**
 Leela con la demo abierta. Todo ejemplo de astronauta, imagen y resultado de esta
 guía es **simulado**. Los números del recorrido son observaciones de la demo,
 no mediciones en una persona.

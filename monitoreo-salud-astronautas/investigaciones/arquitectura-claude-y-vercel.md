@@ -429,7 +429,7 @@ Forma del archivo, con valores tomados de los ejemplos oficiales (no es una reco
 
 ## 9. Fuentes
 
-Todas son documentación oficial, leída en su versión de texto (la misma dirección terminada en `.md`). Las de la tabla central se bajaron el 14 de noviembre de 2026; el 15 volví a bajar esas y las nuevas. Entre un día y otro el contenido no cambió: solo cambió la lista de enlaces relacionados en tres páginas de Vercel. Copias locales: `/home/ramiro/.cache/nasa_hacka/arquitectura/` (14/11) y su carpeta `hoy/` (15/11).
+Todas son documentación oficial, leída en su versión de texto (la misma dirección terminada en `.md`). Las de la tabla central se bajaron el 14 de noviembre de 2026; el 15 volví a bajar esas y las nuevas. Entre un día y otro el contenido no cambió: solo cambió la lista de enlaces relacionados en tres páginas de Vercel. Copias locales: `~/.cache/nasa_hacka/arquitectura/` (14/11) y su carpeta `hoy/` (15/11).
 
 **Leída:** *Sí* = completa · *Parcial* = las partes de donde salen los datos.
 

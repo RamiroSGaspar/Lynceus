@@ -120,7 +120,7 @@ Si la captura no alcanza, el sistema pide repetirla hasta tres veces. Si sigue s
 
 ## 8. Asistente
 
-- **Modelo:** Claude Haiku 5.5 (`claude-haiku-5-5`), esfuerzo medio, con la clave de Ramiro.
+- **Modelo:** Claude Haiku 5.5 (`claude-haiku-5-5`), esfuerzo medio, con la clave administrada por el responsable del proyecto.
 - **Qué hace:** explica el resultado y los términos, responde sobre el síndrome con una base fija de datos citados y ayuda a armar preguntas para el médico.
 - **Qué no hace:** diagnosticar, cambiar el nivel que calculó el motor, indicar medicación ni atender pedidos ajenos, como escribir código.
 
@@ -131,7 +131,7 @@ Si la captura no alcanza, el sistema pide repetirla hasta tres veces. Si sigue s
 | Negativa fija | Si está fuera del alcance, se muestra un texto nuestro, no el del modelo |
 | Revisión de la respuesta | Si trae código o no cita la base, se reemplaza por la negativa |
 | Límites | Pregunta de hasta 500 caracteres, respuesta corta y tope de pedidos por visitante |
-| Tope de gasto | Límite mensual en la consola de Anthropic; lo pone Ramiro |
+| Tope de gasto | Límite mensual en la consola de Anthropic; lo configura el responsable del proyecto |
 
 - **La clave** va en Vercel y en un archivo local que no se sube al repositorio. El asistente de desarrollo no la lee ni la imprime.
 - **Sin conexión**, el análisis funciona igual; solo falta el asistente.
@@ -192,10 +192,10 @@ y enlaza los detalles técnicos de implementación.
 | F | Asistente |
 | G | Documentación en español e inglés, publicación y entrega (**punto de control 3**) |
 
-- **Quién construye:** una sola sesión de Claude Code (Opus 5.5, xhigh). Falta definir con Ramiro si corre sin pedidos de permiso o con una lista de comandos permitidos (instalar dependencias del proyecto, compilar, probar y hacer commits). El asistente de esta sesión especifica, revisa cada etapa, corre las pruebas y escribe la documentación.
+- **Quién construye:** una sola sesión de Claude Code (Opus 5.5, xhigh). Falta definir con el responsable del proyecto si corre sin pedidos de permiso o con una lista de comandos permitidos (instalar dependencias del proyecto, compilar, probar y hacer commits). El asistente de esta sesión especifica, revisa cada etapa, corre las pruebas y escribe la documentación.
 - **Dónde:** en una rama aparte, que se une a `master` al cerrar cada etapa.
 
-## 14. Qué necesito de Ramiro
+## 14. Pendientes del responsable del proyecto
 
 1. Aprobar este documento o marcar qué cambiar.
 2. Confirmar la excepción de privacidad del asistente (sección 8).

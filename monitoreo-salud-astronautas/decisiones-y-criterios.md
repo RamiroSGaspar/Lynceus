@@ -9,15 +9,15 @@
 | **Última actualización** | 14 de noviembre de 2026 |
 | **Para qué es** | Dejar por escrito lo que se fue decidiendo y los criterios que se acordaron al discutir la idea, con su justificación, para no perderlos y poder revisarlos. |
 | **Qué no es** | No es el diseño de la solución ni una lista de funcionalidades. Los recursos y las reglas de entrega están en [recursos-del-desafio.md](recursos-del-desafio.md). |
-| **De dónde sale** | De las conversaciones de trabajo del 14 de noviembre entre Ramiro y los asistentes de IA (Claude y Devin). |
+| **De dónde sale** | De las conversaciones de trabajo del 14 de noviembre entre el responsable del proyecto y los asistentes de IA (Claude y Devin). |
 
 ### Cómo leerlo
 
 - **Sección 1:** decisiones sobre el alcance, es decir, de qué trata el proyecto.
 - **Sección 2:** criterios para trabajar y para comunicarle datos al astronauta.
 - **Sección 3:** lo que todavía no está decidido.
-- **Columna "Quién":** quién lo planteó. Lo que planteó Devin figura solo si Ramiro lo aceptó.
-- **Columna "Estado":** *Decidido* (lo resolvió Ramiro), *Aceptado* (criterio acordado), *Preferido* (inclinación, no cerrado) o *Abierto*.
+- **Columna "Quién":** quién lo planteó. Lo que planteó Devin figura solo si el responsable del proyecto lo aceptó.
+- **Columna "Estado":** *Decidido* (lo resolvió el responsable del proyecto), *Aceptado* (criterio acordado), *Preferido* (inclinación, no cerrado) o *Abierto*.
 
 ---
 
@@ -25,30 +25,30 @@
 
 | # | Decisión | Por qué | Quién | Estado |
 |---|---|---|---|---|
-| D1 | Trabajar el desafío 4, monitoreo de salud para astronautas. | Se eligió después de analizar a fondo los desafíos 4, 5 y 7. | Ramiro | Decidido |
-| D2 | Enfocarse en algo específico y no abarcar todo el cuerpo. | El desafío acepta cualquier indicador de salud y no exige cubrir todo. Permite más profundidad y diferencia al proyecto entre 3.023 equipos. | Ramiro | Decidido |
-| D3 | El tema es la columna vertebral. | La idea inicial eran las articulaciones, pero juntaban problemas distintos, la NASA no tiene un riesgo propio para ellas y la evidencia en humanos es escasa. La columna tiene más evidencia en humanos y figura en los recursos oficiales. | Ramiro | Reemplazada por D7 (sección 4) |
-| D4 | El foco es durante la misión, en el espacio. La vuelta a la Tierra queda afuera. | El desafío busca que el astronauta se autogestione. En la Tierra ya tiene especialistas a disposición. Matiz registrado: llegar a la Luna o a Marte también es misión, y es parte de por qué importa vigilar la columna durante el viaje. | Ramiro | Decidido |
-| D5 | El enfoque que más interesa es el deterioro progresivo y silencioso de la columna: músculos que la sostienen, curvatura, movilidad, densidad de las vértebras y alargamiento. | Es progresivo, ocurre durante la misión y se conecta con el ejercicio como contramedida, que está en los recursos oficiales. El dolor de adaptación del inicio del vuelo también entra en el foco, pero interesa menos. | Ramiro | Reemplazada por D7 (sección 4) |
-| D6 | La idea de cómo resolver el desafío la define Ramiro, no la IA. | Las reglas prohíben usar IA para generar la idea. La IA se usa para investigar, discutir y acelerar, y su uso se declara en la entrega. | Ramiro | Decidido |
+| D1 | Trabajar el desafío 4, monitoreo de salud para astronautas. | Se eligió después de analizar a fondo los desafíos 4, 5 y 7. | Responsable del proyecto | Decidido |
+| D2 | Enfocarse en algo específico y no abarcar todo el cuerpo. | El desafío acepta cualquier indicador de salud y no exige cubrir todo. Permite más profundidad y diferencia al proyecto entre 3.023 equipos. | Responsable del proyecto | Decidido |
+| D3 | El tema es la columna vertebral. | La idea inicial eran las articulaciones, pero juntaban problemas distintos, la NASA no tiene un riesgo propio para ellas y la evidencia en humanos es escasa. La columna tiene más evidencia en humanos y figura en los recursos oficiales. | Responsable del proyecto | Reemplazada por D7 (sección 4) |
+| D4 | El foco es durante la misión, en el espacio. La vuelta a la Tierra queda afuera. | El desafío busca que el astronauta se autogestione. En la Tierra ya tiene especialistas a disposición. Matiz registrado: llegar a la Luna o a Marte también es misión, y es parte de por qué importa vigilar la columna durante el viaje. | Responsable del proyecto | Decidido |
+| D5 | El enfoque que más interesa es el deterioro progresivo y silencioso de la columna: músculos que la sostienen, curvatura, movilidad, densidad de las vértebras y alargamiento. | Es progresivo, ocurre durante la misión y se conecta con el ejercicio como contramedida, que está en los recursos oficiales. El dolor de adaptación del inicio del vuelo también entra en el foco, pero interesa menos. | Responsable del proyecto | Reemplazada por D7 (sección 4) |
+| D6 | La idea de cómo resolver el desafío la define el responsable del proyecto, no la IA. | Las reglas prohíben usar IA para generar la idea. La IA se usa para investigar, discutir y acelerar, y su uso se declara en la entrega. | Responsable del proyecto | Decidido |
 
 ## 2. Criterios de trabajo y de comunicación
 
 | # | Criterio | Por qué | Quién | Estado |
 |---|---|---|---|---|
-| C1 | Trabajar desde la investigación y los supuestos: una lógica realista sobre un caso investigado, sin afirmar de más. No es solo presentar una idea. | No se puede validar clínicamente en dos días. Decir qué es dato y qué es supuesto es más honesto que aparentar certeza. | Ramiro | Aceptado |
-| C2 | Lo que se le comunica al astronauta tiene que ser claro y responsable. | Es salud. Los astronautas son profesionales, pero en medicina no saben más que lo entrenado. El desafío pide no asumir que saben evaluar su salud. | Ramiro | Aceptado |
-| C3 | Al evaluar un dato se miran tres cosas por separado: qué tan directo se mide, qué tan preciso es el instrumento y qué tan claro es lo que el valor significa para la salud. | Un dato directo no siempre es interpretable: la estatura se mide directo, pero no está claro qué dice sobre la salud. Un dato "blando" puede ser el más útil: el dolor es autorreporte y es el síntoma de columna con más datos reales en vuelo. El riesgo de comunicar mal está sobre todo en el paso del dato a la conclusión. | Devin; Ramiro lo pensaba así y lo había resumido como "medición directa" | Aceptado |
+| C1 | Trabajar desde la investigación y los supuestos: una lógica realista sobre un caso investigado, sin afirmar de más. No es solo presentar una idea. | No se puede validar clínicamente en dos días. Decir qué es dato y qué es supuesto es más honesto que aparentar certeza. | Responsable del proyecto | Aceptado |
+| C2 | Lo que se le comunica al astronauta tiene que ser claro y responsable. | Es salud. Los astronautas son profesionales, pero en medicina no saben más que lo entrenado. El desafío pide no asumir que saben evaluar su salud. | Responsable del proyecto | Aceptado |
+| C3 | Al evaluar un dato se miran tres cosas por separado: qué tan directo se mide, qué tan preciso es el instrumento y qué tan claro es lo que el valor significa para la salud. | Un dato directo no siempre es interpretable: la estatura se mide directo, pero no está claro qué dice sobre la salud. Un dato "blando" puede ser el más útil: el dolor es autorreporte y es el síntoma de columna con más datos reales en vuelo. El riesgo de comunicar mal está sobre todo en el paso del dato a la conclusión. | Devin; el responsable del proyecto lo pensaba así y lo había resumido como "medición directa" | Aceptado |
 | C4 | La incertidumbre se dice, no se esconde. Una estimación presentada como estimación es responsable; una medición directa con una conclusión que la evidencia no sostiene no lo es. | Descartar todo lo estimado puede dejar afuera lo que más importa. En columna, lo más relevante (densidad de las vértebras, estado de los músculos) se estudia antes y después del vuelo, no durante. | Devin | Aceptado, con el balance de C5 |
-| C5 | Cuánto de lo incierto o estimado se incluye se decide haciendo un balance con el tiempo disponible. | Preferir lo más directo no es elegir el camino fácil ni dejar de lado lo importante. Con dos días, comunicar bien algo muy incierto lleva más trabajo del que quizá haya. | Ramiro | Aceptado |
+| C5 | Cuánto de lo incierto o estimado se incluye se decide haciendo un balance con el tiempo disponible. | Preferir lo más directo no es elegir el camino fácil ni dejar de lado lo importante. Con dos días, comunicar bien algo muy incierto lleva más trabajo del que quizá haya. | Responsable del proyecto | Aceptado |
 | C6 | Lo medido y lo estimado se distinguen siempre. | Si se muestra en misión un valor que en la realidad no se mide en misión, es una estimación y hay que decirlo. | Devin | Aceptado |
 | C7 | Los dos errores cuestan: tranquilizar de más y alarmar de más. | Tranquilizar de más puede hacer que se pase un problema. Alarmar de más también hace daño en gente aislada y bajo estrés. | Devin | Aceptado |
 | C8 | Parte de la responsabilidad es el límite: definir cuándo la herramienta deja de opinar y deriva a la tripulación o a los médicos en Tierra. | El desafío pide orientar sobre tratamientos y pregunta cuándo un resultado amerita atención de la tripulación o de los médicos. | Devin | Aceptado |
 | C9 | Hay un segundo destinatario, los jueces: dejar claro que los datos son simulados y que los valores y umbrales no están validados. | Todos los datos del proyecto van a ser simulados. Presentarlos como validados sería afirmar de más. | Devin | Aceptado |
-| C10 | Los datos ficticios tienen que ser plausibles y salir de investigar cómo funcionan los instrumentos que los obtendrían. | Da lógica y justificación al proyecto. Responde a dos preguntas guía del desafío: qué se puede medir en el espacio y por qué. | Ramiro | Aceptado |
+| C10 | Los datos ficticios tienen que ser plausibles y salir de investigar cómo funcionan los instrumentos que los obtendrían. | Da lógica y justificación al proyecto. Responde a dos preguntas guía del desafío: qué se puede medir en el espacio y por qué. | Responsable del proyecto | Aceptado |
 | C11 | Lo más difícil de justificar es el umbral, no el dato. | Simular un valor plausible es más fácil que justificar cuándo ese valor amerita una alerta. | Devin | Aceptado |
 | C12 | Pocos indicadores, bien fundamentados. | Investigar cada instrumento lleva tiempo y la entrega es el 15 de noviembre a las 23:59. | Devin | Aceptado |
-| C13 | Separar lo que dice la NASA o el desafío de lo que es interpretación de una IA. | Varias lecturas de las sesiones con IA son interpretación y no texto oficial. Si se trabaja desde la investigación, no hay que tomarlas como dichas por el desafío. | Devin y Ramiro | Aceptado |
+| C13 | Separar lo que dice la NASA o el desafío de lo que es interpretación de una IA. | Varias lecturas de las sesiones con IA son interpretación y no texto oficial. Si se trabaja desde la investigación, no hay que tomarlas como dichas por el desafío. | Devin y el responsable del proyecto | Aceptado |
 
 ## 3. Puntos abiertos
 
@@ -65,7 +65,7 @@
 
 ## 4. Decisiones sobre el producto (ronda 1, 14 de noviembre a la noche)
 
-Las tomó Ramiro al responder la primera ronda de preguntas. Los criterios C1 a C13 de la sección 2 siguen vigentes.
+Las tomó el responsable del proyecto al responder la primera ronda de preguntas. Los criterios C1 a C13 de la sección 2 siguen vigentes.
 
 | # | Tema | Decisión | Estado |
 |---|---|---|---|
@@ -82,21 +82,21 @@ Las tomó Ramiro al responder la primera ronda de preguntas. Los criterios C1 a 
 | R10 | Motor de análisis | Algoritmos de medición como base, más un componente entrenado para hallazgos secundarios. Nada que sea una caja negra. | Decidido |
 | R11 | Validación | Completa: el motor se prueba contra ojos ficticios de valor conocido, y ese error medido es la incertidumbre que se comunica. | Decidido |
 | R12 | Qué puede indicar | Pasos dentro de la práctica actual de la NASA: repetir la captura, adelantar el control, probar otros anteojos, avisar al médico. Nunca medicación. | Decidido |
-| R13 | Asistente | Lleva un asistente que usa la API de Claude (modelo Claude Haiku 5.5, esfuerzo medio, clave de Ramiro). Estrictamente acotado al producto: no responde pedidos ajenos, como escribir código. | Decidido |
+| R13 | Asistente | Lleva un asistente que usa la API de Claude (modelo Claude Haiku 5.5, esfuerzo medio, clave administrada por el responsable del proyecto). Estrictamente acotado al producto: no responde pedidos ajenos, como escribir código. | Decidido |
 | R14 | Datos ficticios | Generador propio, con valor verdadero conocido. Cada imagen va marcada como simulada. | Decidido |
 | R15 | Forma | Sesión guiada paso a paso, que termina en una página personal con el estado de cada ojo y su historia. | Decidido |
 | R16 | Incertidumbre | Palabras atadas a un criterio numérico, número con su rango, y etiqueta en cada dato: medido, estimado o no se puede medir a bordo. | Decidido |
 | R17 | Idioma de la interfaz | Inglés con opción de español. | Decidido |
 | R18 | Plataforma | Aplicación web que corre en el navegador (TypeScript), publicada en Vercel con el plan gratuito. | Decidido |
-| R19 | Repositorio | Lo crea Ramiro cuando haya nombre y una versión presentable, y lo pasa para subir el código. | Decidido |
+| R19 | Repositorio | Lo crea el responsable del proyecto cuando haya nombre y una versión presentable, y lo pasa para subir el código. | Decidido |
 | R20 | Idioma de la documentación | Español e inglés, sin idioma principal. | Decidido |
-| R21 | Equipo en la web | Lo crea Ramiro más adelante. | Abierto |
-| R22 | Equipo | Las otras dos personas trabajan junto a Ramiro en la misma sesión. | Decidido |
+| R21 | Equipo en la web | Lo crea el responsable del proyecto más adelante. | Abierto |
+| R22 | Equipo | Los otros dos integrantes trabajan junto al responsable del proyecto en la misma sesión. | Decidido |
 | R23 | Demo | Diapositivas, hasta 7. Ver [entrega-y-pitch.md](entrega-y-pitch.md). | Decidido |
 | R24 | Nombre | Se busca algo artístico, ligado a la identidad del astronauta, la exploración del espacio y la salud y fuerza del explorador. | Abierto |
 | R25 | Ritmo | Construir ya, priorizando hacerlo bien. | Decidido |
 | R26 | Autonomía y cuidados | El asistente puede crear ramas, hacer commits, instalar dependencias y reorganizar carpetas. Condiciones: todo se instala dentro del proyecto, nada global; nada que no deba publicarse llega a GitHub (clave de Anthropic, cosas personales); avisar con tiempo si el disco se acerca a 2 GB libres; no gastar dinero ni usar herramientas pagas, salvo la API de Claude. | Decidido |
-| R27 | Workers | Autorizados, sin pedidos de permiso. Se puede usar Opus 5.5 en xhigh con la cuenta de Claude de Ramiro. Sin límite de cuota. | Decidido |
+| R27 | Workers | Autorizados, sin pedidos de permiso. Se puede usar Opus 5.5 en xhigh con la cuenta de Claude del responsable del proyecto. Sin límite de cuota. | Decidido |
 | R28 | Otras sesiones | Quedan quietas o cerradas; se coordina desde una sola sesión. | Decidido |
 | R29 | Material anterior | Columna y ejercicio archivados en `archivo/`; investigaciones integradas a `master`. | Hecho |
 | R30 | Puntos de control | Tres: documento de decisiones y arquitectura; primera versión de punta a punta; versión final antes de publicar. | Decidido |

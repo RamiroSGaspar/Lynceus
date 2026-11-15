@@ -2,7 +2,7 @@
 
 ## Alcance vigente para cerrar la hackatón
 
-Ramiro pidió reducir el tiempo y la profundidad de pruebas para priorizar el
+El responsable del proyecto pidió reducir el tiempo y la profundidad de pruebas para priorizar el
 prototipo de una hackatón de dos días. Esta indicación prevalece sobre los
 requisitos de cierre más amplios que figuran abajo y sobre la repetición de la
 suite completa antes de cada commit de esta entrega.

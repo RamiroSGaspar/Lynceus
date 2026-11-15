@@ -2,13 +2,13 @@
 
 ## Estado vigente: demo reanudada
 
-15 de noviembre de 2026. Ramiro volvió y pidió ir directamente a una demo usable.
+15 de noviembre de 2026. El responsable del proyecto retomó el trabajo y pidió ir directamente a una demo usable.
 La pausa queda levantada. La validación existente se cerró en `validacion`
 (`b1969cc`) y se incorpora a `master`, con el modelo provisorio activo.
 
 - **Demo local:** http://127.0.0.1:5178/ — terminal de Orca «Demo local» en `master`.
 - **Repositorio público:** https://github.com/RamiroSGaspar/Lynceus — rama principal
-  `master`, publicada por autorización de Ramiro. La publicación del sitio web
+  `master`, publicada por autorización del responsable del proyecto. La publicación del sitio web
   sigue pendiente.
 - **Resultado del recorrido:** http://127.0.0.1:5178/#/result/B/150 .
 - **Caso comprobado:** Elena Voss, día 150. Derecho aceptado; izquierdo rechazado
@@ -41,7 +41,7 @@ La documentación ya está escrita: [README](../README.es.md), guías públicas 
 [guía personal](guia-para-defender-el-proyecto.md).
 
 1. Siete diapositivas y texto del formulario a partir de `producto.md`.
-2. Publicación de la demo cuando Ramiro autorice y defina el proyecto de alojamiento.
+2. Publicación de la demo cuando el responsable del proyecto autorice y defina el proyecto de alojamiento.
 
 ### Primera subida a GitHub
 
@@ -82,7 +82,7 @@ de 621 capturas. Comando acotado para comprobarla:
 
 ### Asistente: prueba real completada
 
-Ramiro cargó la clave y fijó un presupuesto de **USD 8**; el límite mensual efectivo
+El responsable del proyecto cargó la clave y fijó un presupuesto de **USD 8**; el límite mensual efectivo
 se configura en Anthropic y no se verifica con el chequeo local.
 **Haiku 5.5** (`claude-haiku-5-5`, esfuerzo `medium`) completó seis casos con el
 resultado esperado y una consulta desde la interfaz: siete llamadas HTTP 200,
@@ -100,7 +100,7 @@ batería para continuar con la presentación. Si cambia la clave, comprobar la
 recarga del servidor antes de usarlo.
 
 Sonnet 5.5 High en Devin para tareas directas; Opus 5.5 High para las que lo
-requieran. Claude Code solo por indicación de Ramiro. Worktrees nuevos: hijos de
+requieran. Claude Code solo por indicación del responsable del proyecto. Worktrees nuevos: hijos de
 `master`. La demo ya se puede usar sin esperar los pendientes de entrega.
 
 ---
@@ -109,7 +109,7 @@ requieran. Claude Code solo por indicación de Ramiro. Worktrees nuevos: hijos d
 
 Lo que sigue conserva el plan escrito antes de la retoma; sus tareas pendientes
 de validación ya están cerradas. El 15 de noviembre de 2026, alrededor de las 10:20,
-Ramiro pidió pausar agentes y pruebas hasta su regreso.
+El responsable del proyecto pidió pausar agentes y pruebas hasta su regreso.
 
 El agente de validación quedó en espera. Se detuvieron los procesos de sus
 herramientas, incluida la segunda corrida larga de validación y su servidor de
@@ -122,7 +122,7 @@ No se borraron ni revirtieron archivos.
   los resultados, el informe, las pruebas de visión y el asistente.
   Último commit antes de esta nota: `c99ba33`.
 - **Validación pendiente de integrar:** rama `validacion`, worktree
-  `/home/ramiro/orca/workspaces/nasa_hacka/validacion`.
+  `~/orca/workspaces/nasa_hacka/validacion`.
   Commits `0d8e1c8` (protocolo) y `7f3fac8` (matriz y ejecución).
   **Hay cambios importantes sin commit y archivos nuevos en ese worktree.**
   Continuar desde ellos; no empezar de cero, no resetear ni limpiar la carpeta.
@@ -183,7 +183,7 @@ Corregir bloqueos de uso; dejar mejoras cosméticas para después.
 
 - Publicar en Vercel cuando estén listos el repositorio y el proyecto de destino.
   Revisar los archivos que se publicarán; las claves y copias locales quedan fuera.
-- Cuando Ramiro configure la clave y el tope de gasto, probar unas pocas preguntas
+- Cuando el responsable del proyecto configure la clave y el tope de gasto, probar unas pocas preguntas
   representativas y rechazos del asistente. Si la clave sigue pendiente, la
   demostración del análisis local puede usarse con el asistente no disponible.
 - Conservar las tareas del equipo: cuenta/equipo en Space Apps, formulario y enlaces
@@ -193,7 +193,7 @@ Corregir bloqueos de uso; dejar mejoras cosméticas para después.
 
 Sonnet 5.5 **High**, en **Devin**, para cerrar esta integración, documentación y
 presentación. Opus 5.5 **High** solo para un bloqueo que requiera razonamiento más
-complejo. Claude Code únicamente si Ramiro vuelve a indicarlo.
+complejo. Claude Code únicamente si el responsable del proyecto vuelve a indicarlo.
 Worktrees nuevos: hijos de `master`. No lanzar varios workers para este cierre.
 
 ## Identificadores para recuperar el contexto

@@ -9,7 +9,7 @@
 | **Fecha** | 14 de noviembre de 2026 |
 | **Para qué es** | Dejar claro el enfoque del proyecto: qué problema se mira, desde dónde, qué se puede afirmar y qué no. |
 | **Qué no es** | No es el diseño de la solución ni una lista de funcionalidades. Tampoco entra en detalle técnico; eso viene después. |
-| **De dónde sale** | De la discusión entre Ramiro y el asistente de IA (Devin) sobre la investigación `investigaciones/herramientas-medicion-columna-v2.md` (rama `investigaciones`, commit `7c7c87c`). El tema, el momento y los criterios los definió Ramiro; el giro hacia el ejercicio lo propuso el asistente a partir de la evidencia. Documento redactado por el asistente. |
+| **De dónde sale** | De la discusión entre el responsable del proyecto y el asistente de IA (Devin) sobre la investigación `investigaciones/herramientas-medicion-columna-v2.md` (rama `investigaciones`, commit `7c7c87c`). El tema, el momento y los criterios los definió el responsable del proyecto; el giro hacia el ejercicio lo propuso el asistente a partir de la evidencia. Documento redactado por el asistente. |
 | **Documentos relacionados** | [decisiones-y-criterios.md](decisiones-y-criterios.md) · [recursos-del-desafio.md](recursos-del-desafio.md) |
 
 ### Cómo leerlo
@@ -110,6 +110,6 @@ El ejercicio abarca todo el cuerpo. La columna es el foco en **la parte del ejer
 
 1. Verificar lo marcado "a verificar" en la sección 4.
 2. Investigar cuánto protege el ejercicio a la columna en particular, sobre todo a los músculos.
-3. Definir la solución: qué hace la herramienta con estos datos. Lo define Ramiro.
+3. Definir la solución: qué hace la herramienta con estos datos. Lo define el responsable del proyecto.
 4. Definir los umbrales: cuándo algo amerita un aviso y cuándo se deriva a la tripulación o a los médicos en Tierra.
 5. Recién después, entrar en el detalle técnico.

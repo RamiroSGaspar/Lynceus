@@ -10,7 +10,7 @@
 
 ---
 
-## Persona 1: cómo es hoy el ejercicio en misión
+## Encargado 1: cómo es hoy el ejercicio en misión
 
 Sirve para el planteo: muestra qué pierde el astronauta cuando la Tierra queda a 20 minutos de demora.
 
@@ -20,7 +20,7 @@ Sirve para el planteo: muestra qué pierde el astronauta cuando la Tierra queda 
 | **Equipos de ejercicio previstos para naves fuera de la órbita baja** y qué datos generan | Cierra el supuesto de equipo del escenario | [Zero T2, NASA](https://www.nasa.gov/reference/zero-t2/) · [Revisión de 2026 sobre la nueva era del ejercicio en vuelo](https://pmc.ncbi.nlm.nih.gov/articles/PMC13394428/) |
 | **Datos reales para simular:** valores de ejercicio por tipo y su evolución durante la misión | Es la base de los datos ficticios del prototipo | [Artículo de 2023 con datos de 46 astronautas](https://www.nature.com/articles/s41526-023-00256-5) |
 
-## Persona 2: cómo se comunica y cuándo se deriva
+## Encargado 2: cómo se comunica y cuándo se deriva
 
 Sirve para la solución y para la interfaz, que el desafío pondera mucho.
 
