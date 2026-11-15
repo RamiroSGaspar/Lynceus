@@ -1,0 +1,87 @@
+import { defineMessages } from './index';
+
+/** Start screen: who you are and which control is due today. */
+export const homeMessages = defineMessages(
+  {
+    'title': 'Who are you, and which control is due today?',
+    'day.legend': 'Mission day',
+    'day.help':
+      'NASA’s routine eye controls for a mission of this length fall on flight days {days}. Choosing another day travels to that control: the history shows only what came before it.',
+    'crew.heading': 'Crew',
+    'crew.fictional': 'Fictional crew: the names, the exams and the histories are invented.',
+    'card.last': 'Last control',
+    'card.last.none': 'No in-flight control yet. The pre-flight exam is on record.',
+    'card.last.here': 'done in this browser',
+    'card.today': 'Today’s control',
+    'card.today.routine':
+      'Routine control: symptoms, near vision, Amsler grid and a tomography of each eye, compared with the pre-flight exam.',
+    'card.status.notStarted': 'Not started.',
+    'card.status.inProgress': 'In progress: step {step} of {total}.',
+    'card.status.done': 'Done in this browser.',
+    'card.start': 'Start today’s control',
+    'card.resume': 'Resume today’s control',
+    'card.result': 'See the result',
+    'card.history': 'History',
+    'card.for': '{action}: {name}',
+    'learn.heading': 'Before you start',
+    'learn.brain': 'What is known about the brain',
+    'learn.brain.text': 'What is known, what only an MRI before and after the flight shows, and what cannot be known during a mission.',
+    'learn.how': 'How it works',
+    'learn.how.text': 'The process step by step, with its sources, its assumptions and its validation.',
+    'storage.heading': 'Saved in this browser',
+    'storage.local': 'Health data stay in this browser. Nothing is sent over the network.',
+    'storage.summary': 'Controls done here: {records}. Controls in progress: {drafts}.',
+    'storage.none': 'Nothing is saved in this browser yet.',
+    'storage.notPersistent':
+      'This browser is not saving data: what you do here will be lost when you close the page.',
+    'storage.discarded':
+      'Data saved by another version of this application could not be read and was ignored.',
+    'storage.delete': 'Delete what is saved in this browser',
+    'storage.confirm':
+      'This deletes the controls done in this browser, the controls in progress and your questions for the flight surgeon. The crew history that comes with the application stays. It cannot be undone.',
+    'storage.confirm.yes': 'Delete',
+    'storage.confirm.no': 'Keep everything',
+    'storage.deleted': 'Deleted. Nothing is saved in this browser now.',
+  },
+  {
+    'title': '¿Quién sos y qué control te toca hoy?',
+    'day.legend': 'Día de la misión',
+    'day.help':
+      'Los controles de rutina de la NASA para una misión de este largo caen en los días de vuelo {days}. Elegir otro día es viajar a ese control: la historia muestra solo lo anterior.',
+    'crew.heading': 'Tripulación',
+    'crew.fictional': 'Tripulación ficticia: los nombres, los exámenes y las historias son inventados.',
+    'card.last': 'Último control',
+    'card.last.none': 'Todavía no hay controles en vuelo. El examen de antes del vuelo está registrado.',
+    'card.last.here': 'hecho en este navegador',
+    'card.today': 'El control de hoy',
+    'card.today.routine':
+      'Control de rutina: síntomas, visión de cerca, grilla de Amsler y una tomografía de cada ojo, comparada con el examen de antes del vuelo.',
+    'card.status.notStarted': 'Sin empezar.',
+    'card.status.inProgress': 'En curso: paso {step} de {total}.',
+    'card.status.done': 'Hecho en este navegador.',
+    'card.start': 'Empezar el control de hoy',
+    'card.resume': 'Retomar el control de hoy',
+    'card.result': 'Ver el resultado',
+    'card.history': 'Historia',
+    'card.for': '{action}: {name}',
+    'learn.heading': 'Antes de empezar',
+    'learn.brain': 'Qué se sabe del cerebro',
+    'learn.brain.text': 'Qué se sabe, qué solo muestra una resonancia antes y después del vuelo, y qué no se puede saber en misión.',
+    'learn.how': 'Cómo funciona',
+    'learn.how.text': 'El proceso paso a paso, con sus fuentes, sus supuestos y su validación.',
+    'storage.heading': 'Guardado en este navegador',
+    'storage.local': 'Los datos de salud quedan en este navegador. No se envía nada por la red.',
+    'storage.summary': 'Controles hechos acá: {records}. Controles en curso: {drafts}.',
+    'storage.none': 'Todavía no hay nada guardado en este navegador.',
+    'storage.notPersistent':
+      'Este navegador no está guardando datos: lo que hagas acá se pierde al cerrar la página.',
+    'storage.discarded':
+      'Había datos guardados por otra versión de esta aplicación; no se pudieron leer y se ignoraron.',
+    'storage.delete': 'Borrar lo guardado en este navegador',
+    'storage.confirm':
+      'Esto borra los controles hechos en este navegador, los controles en curso y tus preguntas para el médico de vuelo. La historia de la tripulación que viene con la aplicación queda. No se puede deshacer.',
+    'storage.confirm.yes': 'Borrar',
+    'storage.confirm.no': 'Conservar todo',
+    'storage.deleted': 'Borrado. Ahora no hay nada guardado en este navegador.',
+  },
+);
