@@ -4,6 +4,7 @@ import { LOCALES, renderHtml, textOf, unfilledPlaceholders } from '../testing/re
 import { BrainScreen } from './BrainScreen';
 
 vi.mock('../slots', () => ({
+  ExamViewer: () => <div data-slot="viewer" />,
   AssistantPanel: ({ record }: { record: SessionRecord | null }) => (
     <button data-slot="assistant" data-record={record ? 'record' : 'none'}>
       assistant

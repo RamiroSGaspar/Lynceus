@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { CrewId } from '@app/core';
 import { formatRoute, routeCrewId, type Route } from './app/routes';
 import { useRoute } from './app/useRoute';
+import { DevOctPage } from './features/oct';
 import { DevVisionPage } from './features/vision';
 import { useMessages } from './i18n';
 import { appMessages } from './i18n/app';
@@ -92,7 +93,8 @@ function Shell({ route }: { route: Route }) {
 
 export function App() {
   const route = useRoute();
-  // The development page of the vision tests brings its own frame.
+  // The development pages of the vision tests and of the tomography bring their own frame.
   if (route.name === 'dev' && route.page === 'vision') return <DevVisionPage />;
+  if (route.name === 'dev' && route.page === 'oct') return <DevOctPage />;
   return <Shell route={route} />;
 }

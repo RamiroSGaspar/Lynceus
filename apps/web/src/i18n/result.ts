@@ -31,6 +31,8 @@ export const resultMessages = defineMessages(
     'sure.quality.scans': '{usable} of {total} scans usable',
     'sure.quality.scale': 'The scale goes from 0 to {max} dB; below {poor} dB the signal is poor.',
 
+    'viewer.summary': 'See the tomography and what was measured on it',
+    'viewer.note': 'The exam is generated again from its request: the same request gives the same image. It takes a few seconds.',
     'detail.summary': 'Measurements and capture attempts',
     'detail.caption': '{eye}: what was measured, next to the pre-flight exam',
     'detail.measure': 'Measure',
@@ -150,6 +152,8 @@ export const resultMessages = defineMessages(
     'sure.quality.scans': '{usable} de {total} cortes sirven',
     'sure.quality.scale': 'La escala va de 0 a {max} dB; con menos de {poor} dB la señal es pobre.',
 
+    'viewer.summary': 'Ver la tomografía y lo que se midió en ella',
+    'viewer.note': 'El examen se vuelve a generar a partir de su pedido: el mismo pedido da la misma imagen. Lleva unos segundos.',
     'detail.summary': 'Mediciones e intentos de captura',
     'detail.caption': '{eye}: lo que se midió, junto al examen de antes del vuelo',
     'detail.measure': 'Medida',

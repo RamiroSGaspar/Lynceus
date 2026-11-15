@@ -360,13 +360,16 @@ export function SessionScreen({ crewId }: { crewId: CrewId }) {
       );
     }
     return (
-      <OctCaptureStep
-        crewId={crewId}
-        eye={eye}
-        flightDay={flightDay}
-        baseline={exam}
-        onComplete={(value) => dispatch({ type: 'eye', value })}
-      />
+      <div className="session__step">
+        <ScreenTitle>{t(eye === 'OD' ? 'step.oct-od' : 'step.oct-os')}</ScreenTitle>
+        <OctCaptureStep
+          crewId={crewId}
+          eye={eye}
+          flightDay={flightDay}
+          baseline={exam}
+          onComplete={(value) => dispatch({ type: 'eye', value })}
+        />
+      </div>
     );
   };
 

@@ -9,6 +9,7 @@ import { ResultScreen } from './ResultScreen';
 
 /** The assistant is someone else's piece, with its own tests: here only where it is mounted and what it is given. */
 vi.mock('../slots', () => ({
+  ExamViewer: () => <div data-slot="viewer" />,
   AssistantPanel: ({ record }: { record: SessionRecord | null }) => (
     <button data-slot="assistant" data-record={record ? `${record.crewId}:${record.flightDay}` : 'none'}>
       assistant

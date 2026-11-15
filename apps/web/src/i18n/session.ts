@@ -1,6 +1,6 @@
 import { defineMessages } from './index';
 
-/** The guided session: its frame, its presentation, its evaluation and the provisional capture step. */
+/** The guided session: its frame, its presentation and its evaluation. */
 export const sessionMessages = defineMessages(
   {
     'context': 'Today’s control',
@@ -78,15 +78,6 @@ export const sessionMessages = defineMessages(
     'evaluation.error.do':
       'What you can do: try again. If it fails again, go back to the previous step and repeat it. What you did is still saved.',
     'evaluation.retry': 'Try again',
-
-    'oct.title': 'Tomography of the {eye}',
-    'oct.what':
-      'The capture goes here: the instrument takes the tomography, the analysis measures it against your pre-flight exam, and a capture that is not good enough is repeated, up to three times. This step is being built separately.',
-    'oct.examples': 'Until it is plugged in, choose an example result to continue. These numbers are chosen by hand: nothing is measured.',
-    'oct.baseline': 'Pre-flight thickness of this eye next to the optic nerve:',
-    'oct.example.none': 'Example: measured, about {value} µm of change',
-    'oct.example.retry': 'Example: measured on the second attempt',
-    'oct.example.unmeasured': 'Example: could not be measured after three attempts',
   },
   {
     'context': 'El control de hoy',
@@ -164,14 +155,5 @@ export const sessionMessages = defineMessages(
     'evaluation.error.do':
       'Qué podés hacer: probar de nuevo. Si vuelve a fallar, volvé al paso anterior y repetilo. Lo que hiciste sigue guardado.',
     'evaluation.retry': 'Probar de nuevo',
-
-    'oct.title': 'Tomografía del {eye}',
-    'oct.what':
-      'Acá va la captura: el instrumento toma la tomografía, el análisis la mide contra tu examen de antes del vuelo, y una captura que no alcanza se repite, hasta tres veces. Este paso se está construyendo aparte.',
-    'oct.examples': 'Hasta que se enchufe, elegí un resultado de ejemplo para seguir. Estos números están elegidos a mano: no se mide nada.',
-    'oct.baseline': 'Grosor de este ojo junto al nervio óptico antes del vuelo:',
-    'oct.example.none': 'Ejemplo: medido, unos {value} µm de cambio',
-    'oct.example.retry': 'Ejemplo: medido en el segundo intento',
-    'oct.example.unmeasured': 'Ejemplo: no se pudo medir después de tres intentos',
   },
 );

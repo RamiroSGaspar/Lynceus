@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import {
   ENGINE_VERSION,
   QUALITY_MAX_DB,
@@ -39,7 +39,7 @@ import { commonMessages } from '../i18n/common';
 import { resultMessages } from '../i18n/result';
 import { LinkButton } from '../shell/LinkButton';
 import { ScreenTitle } from '../shell/ScreenTitle';
-import { AssistantPanel } from '../slots';
+import { AssistantPanel, ExamViewer } from '../slots';
 import { Card, LevelBadge, OriginTag, QuantityValue } from '../ui';
 import { NotFoundScreen } from './NotFoundScreen';
 
@@ -280,6 +280,24 @@ function EyeDetail({
   );
 }
 
+/**
+ * The image behind the numbers, for an exam the engine measured. It is mounted
+ * only when opened: generating an exam again takes several seconds.
+ */
+function EyeImage({ record, baseline, eye, t }: { record: SessionRecord; baseline: SessionRecord | null; eye: Eye; t: T }) {
+  const [open, setOpen] = useState(false);
+  const capture = record.eyes[eye];
+  const request = [...capture.attempts].reverse().find((attempt) => attempt.status === 'measured')?.request;
+  if (!request || capture.accepted?.engineVersion !== ENGINE_VERSION) return null;
+  return (
+    <details className="eye-detail" onToggle={(event) => setOpen(event.currentTarget.open)}>
+      <summary>{t('viewer.summary')}</summary>
+      <p className="note">{t('viewer.note')}</p>
+      {open && <ExamViewer request={request} baseline={baseline?.eyes[eye].accepted ?? undefined} />}
+    </details>
+  );
+}
+
 // ------------------------------------------------------------------ One eye
 
 function EyeCard({
@@ -337,6 +355,7 @@ function EyeCard({
           t={t}
         />
       )}
+      <EyeImage record={record} baseline={record.flightDay === 0 ? null : baselineOf(history)} eye={eye} t={t} />
       <EyeDetail record={record} baseline={baselineOf(history)} eye={eye} t={t} />
     </Card>
   );

@@ -9,6 +9,7 @@ import { LOCALES, renderHtml, testStore, textOf, unfilledPlaceholders } from '..
 import { HistoryScreen } from './HistoryScreen';
 
 vi.mock('../slots', () => ({
+  ExamViewer: () => <div data-slot="viewer" />,
   AssistantPanel: ({ record }: { record: SessionRecord | null }) => (
     <button data-slot="assistant" data-record={record ? `${record.crewId}:${record.flightDay}` : 'none'}>
       assistant

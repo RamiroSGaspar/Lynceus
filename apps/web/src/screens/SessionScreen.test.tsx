@@ -5,11 +5,7 @@ import { baselineOf } from '../app/history';
 import { STEP_IDS, applyEvent, startDraft, type DraftEvent, type SessionDraft } from '../app/session';
 import { withDraft, withMissionDay, withRecord } from '../app/store';
 import { SAMPLE_CALIBRATION, makeAcuity, makeSymptomAnswers } from '../sample/vision';
-import {
-  OctCaptureStep,
-  exampleMeasured,
-  exampleUnmeasured,
-} from '../slots/provisional/OctCapturePlaceholder';
+import { makeExamSummary, makeMeasuredCapture, makeUnmeasuredCapture } from '../sample/exams';
 import { sampleRecord } from '../testing/fixtures';
 import { LOCALES, renderHtml, testStore, textOf, unfilledPlaceholders } from '../testing/render';
 import { SessionScreen } from './SessionScreen';
@@ -26,8 +22,9 @@ vi.mock('../slots', () => ({
       amsler step
     </h1>
   ),
+  // The real capture step opens with a second-level heading: the session gives it the screen title.
   OctCaptureStep: (props: { crewId: CrewId; eye: Eye; flightDay: number; baseline: ExamSummary }) => (
-    <h1
+    <h2
       data-slot="oct"
       data-crew={props.crewId}
       data-eye={props.eye}
@@ -36,9 +33,10 @@ vi.mock('../slots', () => ({
       data-baseline-eye={props.baseline.eye}
     >
       capture step
-    </h1>
+    </h2>
   ),
   AssistantPanel: () => null,
+  ExamViewer: () => null,
 }));
 
 const BASELINE = baselineOf(getHistory('B', 150));
@@ -53,8 +51,11 @@ const EVENTS: DraftEvent[] = [
   { type: 'symptoms', value: makeSymptomAnswers() },
   { type: 'acuity', value: { calibration: SAMPLE_CALIBRATION, OD: makeAcuity('OD', 0.1), OS: makeAcuity('OS', 0.1) } },
   { type: 'amsler', value: null },
-  { type: 'eye', value: exampleMeasured('B', BASELINE_OD, 150, 26) },
-  { type: 'eye', value: exampleUnmeasured('B', 'OS', 150) },
+  {
+    type: 'eye',
+    value: makeMeasuredCapture('B', makeExamSummary({ crewId: 'B', eye: 'OD', flightDay: 150, trtRingUm: 423 }), 150),
+  },
+  { type: 'eye', value: makeUnmeasuredCapture('B', 'OS', 150) },
 ];
 
 /** The control of crew member B on flight day 150 after the first `count` steps. */
@@ -167,32 +168,5 @@ describe('guided session', () => {
     expect(html).toContain('href="#/result/B/150"');
     expect(text).toContain('Repeat the control');
     expect(text).toContain('replaces the saved control');
-  });
-});
-
-describe('provisional tomography step', () => {
-  it.each(LOCALES)('says in %s that it is provisional and that nothing is measured', (locale) => {
-    const html = renderHtml(
-      <OctCaptureStep crewId="B" eye="OD" flightDay={150} baseline={BASELINE_OD} onComplete={() => undefined} />,
-      locale,
-    );
-    const text = textOf(html);
-    expect(text).toContain(locale === 'en' ? 'Provisional piece' : 'Pieza provisoria');
-    expect(text).toMatch(locale === 'en' ? /nothing is measured/ : /no se mide nada/);
-    expect(html.match(/<button/g)).toHaveLength(5);
-    expect(unfilledPlaceholders(html)).toEqual([]);
-  });
-
-  it('hands back well-formed examples, marked as examples in the exam itself', () => {
-    const measured = exampleMeasured('B', BASELINE_OD, 150, 26, 1);
-    expect(measured.eye).toBe('OD');
-    expect(measured.attempts.map((attempt) => attempt.status)).toEqual(['cannot-measure', 'measured']);
-    expect(measured.accepted?.engineVersion).toContain('provisional-example');
-    expect(measured.accepted?.referenceId).toBe(BASELINE_OD.examId);
-    expect((measured.accepted?.trtRingUm?.value ?? 0) - (BASELINE_OD.trtRingUm?.value ?? 0)).toBeCloseTo(26, 1);
-    const unmeasured = exampleUnmeasured('B', 'OS', 150);
-    expect(unmeasured.accepted).toBeNull();
-    expect(unmeasured.attempts).toHaveLength(3);
-    expect(unmeasured.attempts.every((attempt) => attempt.status === 'cannot-measure')).toBe(true);
   });
 });
