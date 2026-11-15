@@ -45,6 +45,7 @@ const EXAM_ORDER: readonly ExamRejection[] = [
   'bmo-mismatch-with-baseline',
   'bmo-fit-failed',
   'insufficient-ring-coverage',
+  'outside-error-model',
 ];
 
 /** The reason to tell first, or null when the attempt was measured. */

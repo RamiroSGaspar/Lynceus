@@ -29,6 +29,8 @@ export { INVALID_VALUE, VolFormatError, volFileBytes } from './vol/format';
 export * from './rules/sources';
 export * from './rules/thresholds';
 export * from './rules/errorModel';
+export * from './rules/simulatedErrorModel';
+export { ACTIVE_ERROR_MODEL } from './rules/activeErrorModel';
 export * from './rules/probability';
 export * from './rules/assess';
 export { PROVISIONAL_ENGINE_VERSION } from './dataset/provisional';
@@ -36,5 +38,7 @@ export { getHistory, getHistoryInfo, MEASURED_HISTORY_FORMAT } from './dataset/m
 export { checkHistoryDataset, unstableNumbers } from './dataset/historyChecks';
 export type { MeasuredHistoryDataset, MeasuredHistoryVersions } from './dataset/measuredHistory';
 export { visionScenario, VISION_SCENARIOS_VERSION } from './dataset/visionScenarios';
+export { VALIDATION_SUMMARY, VALIDATION_SUMMARY_FORMAT, SIMULATED_ERROR_MODEL } from './dataset/validationSummary';
+export type * from './dataset/validationSummary';
 export * from './texts';
 export * from './report';

@@ -28,7 +28,8 @@ import type {
   VisionSession,
 } from '../contract';
 import { MISSION } from '../mission';
-import { PROVISIONAL_ERROR_MODEL, type ErrorModel } from './errorModel';
+import { ACTIVE_ERROR_MODEL } from './activeErrorModel';
+import type { ErrorModel } from './errorModel';
 import { assessFunctional } from './functional';
 import { alertForLevel, levelRank, maxLevel } from './levels';
 import { cleanDifference, likelihoodWord, probabilityBeyond } from './probability';
@@ -155,7 +156,8 @@ function notMeasuredEye(eye: Eye, reasons: NotMeasuredReason[]): EyeAssessment {
 /** A difference between two exams, with its error and 95 % interval when the model gives one. */
 function changeQuantity(current: number, reference: number, standardError: number | null): Quantity {
   const value = cleanDifference(current, reference);
-  if (standardError === null) return { value, unit: 'µm', origin: 'derived' };
+  // No range without an error the model supports: never a number with apparent certainty.
+  if (standardError === null || !(standardError > 0) || !Number.isFinite(standardError)) return { value, unit: 'µm', origin: 'derived' };
   return {
     value,
     unit: 'µm',
@@ -437,11 +439,11 @@ function nextSteps(
 /**
  * Assesses one session: each eye against its own pre-flight exam, the vision
  * tests and the questionnaire, and from them the level, the contact urgency and
- * the next steps. `errorModel` defaults to the provisional one.
+ * the next steps. `errorModel` defaults to the active one (`ACTIVE_ERROR_MODEL`).
  */
 export function assessSession(
   input: AssessmentInput,
-  errorModel: ErrorModel = PROVISIONAL_ERROR_MODEL,
+  errorModel: ErrorModel = ACTIVE_ERROR_MODEL,
 ): SessionAssessment {
   const { crewId, flightDay } = input;
   const earlier = input.history
@@ -457,9 +459,13 @@ export function assessSession(
     const capture = input.eyes[eye];
     const exam = measuredExam(capture);
     if (!exam) return notMeasuredEye(eye, notMeasuredReasons(capture));
+    // An exam the error model was not validated for gives no number (the engine refuses it too).
+    const supported = (quality: ExamSummary['quality']) => errorModel.supports?.(quality).supported ?? true;
+    if (!supported(exam.quality)) return notMeasuredEye(eye, ['outside-error-model']);
     if (isReference) return referenceEye(eye);
     const baseline = measuredExam(preflight?.eyes[eye]);
     if (!baseline) return notMeasuredEye(eye, ['no-baseline']);
+    if (!supported(baseline.quality)) return notMeasuredEye(eye, ['outside-error-model']);
     let previous: PreviousExam | null = null;
     for (let i = inFlight.length - 1; i >= 0 && !previous; i--) {
       const earlierExam = measuredExam(inFlight[i]!.eyes[eye]);

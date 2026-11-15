@@ -16,6 +16,7 @@ export const EXAM_REJECTIONS: readonly ExamRejection[] = [
   'bmo-mismatch-with-baseline',
   'insufficient-ring-coverage',
   'decentered',
+  'outside-error-model',
 ];
 
 const ADVICE: Readonly<Record<Locale, Readonly<Record<CaptureReason, string>>>> = {
@@ -31,6 +32,7 @@ const ADVICE: Readonly<Record<Locale, Readonly<Record<CaptureReason, string>>>> 
     'bmo-mismatch-with-baseline': 'This can come from a poor match with the position of the pre-flight exam. Capture again; if it persists, your flight surgeon will check the images.',
     'insufficient-ring-coverage': 'Part of the image near the optic nerve was lost in several scans. Keep the eye open and still, and capture again.',
     decentered: 'Look straight at the fixation target so the pattern is centred on the optic nerve, and capture again.',
+    'outside-error-model': 'The image could be read, but its quality is beyond what the error of the analysis was measured on. Blink, keep the eye open and still on the fixation target, and capture again.',
   },
   es: {
     'low-signal': 'Parpadeá unas veces para humedecer el ojo, mantenelo bien abierto y quieto, y capturá de nuevo. Si vuelve a pasar, revisá el foco del equipo.',
@@ -44,6 +46,7 @@ const ADVICE: Readonly<Record<Locale, Readonly<Record<CaptureReason, string>>>> 
     'bmo-mismatch-with-baseline': 'Puede venir de una mala coincidencia con la posición del examen de antes del vuelo. Capturá de nuevo; si sigue pasando, tu médico va a revisar las imágenes.',
     'insufficient-ring-coverage': 'En varios cortes se perdió parte de la imagen cerca del nervio óptico. Mantené el ojo abierto y quieto, y capturá de nuevo.',
     decentered: 'Mirá derecho al punto de fijación para que el patrón quede centrado en el nervio óptico, y capturá de nuevo.',
+    'outside-error-model': 'La imagen se pudo leer, pero su calidad queda más allá de aquella sobre la que se midió el error del análisis. Parpadeá, mantené el ojo abierto y quieto sobre el punto de fijación, y capturá de nuevo.',
   },
 };
 

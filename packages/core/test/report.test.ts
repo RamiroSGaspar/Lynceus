@@ -416,7 +416,7 @@ describe('report: vision tests, steps, limits, versions and questions', () => {
     expect(thresholds.rows[0]![3]).toContain('Laurie 2020');
     expect(thresholds.rows[4]![3]).toBe('—');
     const validated = { ...c118, assessment: { ...c118.assessment, errorModelVersion: 'validated-1' } };
-    expect(row(section(buildReport(validated, historyC, 'en'), 'versions').tables[0]!, 'Error model')[1]).toBe('validated-1');
+    expect(row(section(buildReport(validated, historyC, 'en'), 'versions').tables[0]!, 'Error model')[1]).toBe('validated-1 (measured on simulated exams only, not on people)');
   });
 
   it('carries the questions the crew member wrote, or says there are none', () => {

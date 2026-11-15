@@ -3,6 +3,7 @@ import { useMessages } from '../i18n';
 import { howMessages } from '../i18n/how';
 import { LinkButton } from '../shell/LinkButton';
 import { ScreenTitle } from '../shell/ScreenTitle';
+import { HowValidation } from './HowValidation';
 
 /** The eight steps of the process, in the order of section 5 of the architecture document. */
 const STEPS = [1, 2, 3, 4, 5, 6, 7, 8] as const;
@@ -83,8 +84,7 @@ export function HowScreen() {
         <h2 id="how-validation">{t('validation.heading')}</h2>
         <p>{t('validation.what')}</p>
         <p>{t('validation.use')}</p>
-        <p className="callout callout--caution">{t('validation.pending')}</p>
-        <p>{t('validation.limit')}</p>
+        <HowValidation />
       </section>
 
       <section className="screen__section" aria-labelledby="how-actions">

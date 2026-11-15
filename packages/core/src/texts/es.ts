@@ -64,6 +64,7 @@ const NOT_MEASURED: Readonly<Record<NotMeasuredReason, string>> = {
     'La abertura del nervio óptico que se encontró hoy no coincide con la de tu examen de antes del vuelo.',
   'insufficient-ring-coverage': 'Se pudo medir muy poco del anillo que rodea al nervio óptico.',
   decentered: 'La tomografía no quedó centrada en el nervio óptico.',
+  'outside-error-model': 'La captura quedó fuera de las condiciones en las que se midió el error de este análisis, así que no se puede dar un número.',
   'not-captured': 'No se tomó una tomografía de este ojo.',
   'no-baseline': 'No hay un examen de antes del vuelo de este ojo para comparar.',
 };
@@ -419,7 +420,7 @@ export const ES: Phrases = {
       case 'not-validated-on-people':
         return provisionalErrorModel
           ? 'Esta herramienta no está validada con personas. Sus rangos y probabilidades salen de un modelo de error provisorio, que todavía no se midió.'
-          : 'Esta herramienta no está validada con personas. Sus rangos y probabilidades salen de su error sobre ojos simulados.';
+          : 'Esta herramienta no está validada con personas. Sus rangos y probabilidades salen de su error medido sobre ojos simulados, dibujados con el mismo modelo de la retina que espera el análisis; en exámenes reales el error es mayor y no se conoce.';
       case 'ground-confirms':
         return 'Tu médico de vuelo, en Tierra, confirma cada resultado y tiene la última palabra.';
       case 'no-intracranial-pressure':
