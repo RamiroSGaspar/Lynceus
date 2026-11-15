@@ -58,7 +58,7 @@ Los datos del astronauta se guardan en el navegador. No hay base de datos ni ser
 
 - **Aparato real:** el tomógrafo Heidelberg Spectralis OCT2, que está en la estación desde 2017.
 - **Formato real:** el archivo `.vol` de ese equipo, con sus cabeceras y campos (`sans-spectralis-datos.md`). El instrumento virtual lo escribe y el motor lo lee.
-- **Protocolo de la NASA:** 48 cortes radiales de 15° centrados en el nervio óptico, de 768 × 496 píxeles (unos 5,7 µm por píxel a lo ancho y 3,87 en profundidad). Un examen pesa cerca de 78 MB.
+- **Protocolo de la NASA:** 48 cortes radiales de 15° centrados en el nervio óptico, de 768 × 496 píxeles (unos 5,7 µm por píxel a lo ancho y 3,87 en profundidad). Un examen pesa cerca de 78 MB (cálculo propio a partir del formato).
 - **Valores de partida:** los medidos en astronautas antes del vuelo, por ejemplo grosor de la retina junto al nervio de 392 µm (rango 299 a 484).
 - **Tripulación:** cuatro astronautas inventados en una misión de 180 días, con controles antes del vuelo y los días 30, 90 y 150.
 
@@ -190,7 +190,7 @@ Aceptados en la ronda 2: todo número se puede rastrear hasta la imagen y la fue
 | F | Asistente |
 | G | Documentación en español e inglés, publicación y entrega (**punto de control 3**) |
 
-- **Quién construye:** una sola sesión de Claude Code (Opus 5.5, xhigh), con una lista de comandos permitidos: instalar dependencias del proyecto, compilar, probar y hacer commits. El asistente de esta sesión especifica, revisa cada etapa, corre las pruebas y escribe la documentación.
+- **Quién construye:** una sola sesión de Claude Code (Opus 5.5, xhigh). Falta definir con Ramiro si corre sin pedidos de permiso o con una lista de comandos permitidos (instalar dependencias del proyecto, compilar, probar y hacer commits). El asistente de esta sesión especifica, revisa cada etapa, corre las pruebas y escribe la documentación.
 - **Dónde:** en una rama aparte, que se une a `master` al cerrar cada etapa.
 
 ## 14. Qué necesito de Ramiro
