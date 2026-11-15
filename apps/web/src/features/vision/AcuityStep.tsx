@@ -142,7 +142,7 @@ export function AcuityStep({ onComplete, onSkip }: Props) {
     body = (
       <section className="vt-panel vt-test" aria-label={t('eye.title', { eye: eyeName(phase.eye) })}>
         <p className="vt-counter" aria-live="polite">
-          {eyeName(phase.eye)} · {t('trial.counter', { current: trials.length + 1, total: totalTrials })}
+          {tc(`eye.${phase.eye}`)} · {t('trial.counter', { current: trials.length + 1, total: totalTrials })}
         </p>
         <div className="vt-test-area">
           <LandoltC

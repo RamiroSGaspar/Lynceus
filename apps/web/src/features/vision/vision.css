@@ -74,6 +74,9 @@
   background: var(--level-warning-bg);
   color: var(--level-warning);
 }
+.vt-warning svg {
+  flex: none;
+}
 .vt-warning p {
   color: var(--color-text);
   margin: 0;
