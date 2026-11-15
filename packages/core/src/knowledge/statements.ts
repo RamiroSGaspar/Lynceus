@@ -132,7 +132,7 @@ export const KNOWLEDGE: readonly KnowledgeStatement[] = [
       en: 'NASA images the optic nerve with optical coherence tomography (OCT): 48 scans of 15° arranged as a star centred on the nerve, each the average of 25 images.',
       es: 'La NASA toma imágenes del nervio óptico con tomografía de coherencia óptica (OCT): 48 cortes de 15° en forma de estrella centrados en el nervio, cada uno promedio de 25 imágenes.',
     },
-    sources: ['macias-2020', 'ferguson-2023'],
+    sources: ['pardon-2022', 'ferguson-2023'],
     basis: 'sans-oct-base-tecnica.md §1.B and §2',
   },
   {
@@ -184,8 +184,8 @@ export const KNOWLEDGE: readonly KnowledgeStatement[] = [
     topic: 'measurement',
     certainty: 'established',
     text: {
-      en: "Folds are measured as the roughness of Bruch's membrane after removing tilt and curvature. Its normal variation next to the nerve is 2.8 µm.",
-      es: 'Los pliegues se miden como la rugosidad de la membrana de Bruch, después de quitar inclinación y curvatura. Su variación normal junto al nervio es 2,8 µm.',
+      en: "Folds are measured as the roughness of Bruch's membrane after removing tilt and curvature. Its repeatability margin next to the nerve (two standard deviations) is 2.8 µm.",
+      es: 'Los pliegues se miden como la rugosidad de la membrana de Bruch, después de quitar inclinación y curvatura. Su margen de repetibilidad junto al nervio (dos desvíos estándar) es 2,8 µm.',
     },
     sources: ['ferguson-2023'],
     basis: 'sans-oct-base-tecnica.md §1.B and §5.2',
@@ -274,8 +274,8 @@ export const KNOWLEDGE: readonly KnowledgeStatement[] = [
     topic: 'thresholds',
     certainty: 'limited-evidence',
     text: {
-      en: 'The only published example of in-flight follow-up at the clinically concerning level, one astronaut: tomography every 3 to 6 weeks and the Amsler grid several times a week.',
-      es: 'El único ejemplo publicado de seguimiento en vuelo en el nivel clínicamente preocupante, una astronauta: tomografía cada 3 a 6 semanas y grilla de Amsler varias veces por semana.',
+      en: 'The only published example we found of in-flight follow-up at the clinically concerning level, one astronaut: tomography every 3 to 6 weeks and the Amsler grid several times a week.',
+      es: 'El único ejemplo publicado que encontramos de seguimiento en vuelo en el nivel clínicamente preocupante, una astronauta: tomografía cada 3 a 6 semanas y grilla de Amsler varias veces por semana.',
     },
     sources: ['brunstetter-2024'],
     basis: 'sans-evolucion-y-logica-clinica.md §B2',
