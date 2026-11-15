@@ -74,6 +74,18 @@ describe('barrier 1: input', () => {
     expect(local.calls).toHaveLength(0);
   });
 
+  it('accepts a context whose session has no level, because no eye could be measured', async () => {
+    const local = fakeApi({ body: apiMessage(GOOD_ANSWER) });
+    const unmeasured = { measured: false, level: null, changes: [], thresholds: [], capture: null };
+    const context = { ...SAMPLE_CONTEXT, level: null, alert: 'none', eyes: { OD: unmeasured, OS: unmeasured }, findings: ['eye-not-measured'] };
+    const response = await handleAssistant(request({ question: 'Q?', locale: 'en', context }), 'ip', deps(local.fetch));
+    expect(((await response.json()) as AssistantResponse).status).toBe('answered');
+    expect(local.calls).toHaveLength(1);
+    const content = (local.calls[0]!.body.messages as { content: string }[])[0]!.content;
+    expect(content).toContain('"level":null');
+    expect(content).not.toContain('no-detectable-change');
+  });
+
   it('accepts a question of exactly 500 characters with line breaks', async () => {
     const question = `${'a'.repeat(250)}\n${'b'.repeat(249)}`;
     const { json } = await ask(GOOD_ANSWER, { question, locale: 'es', context: null });
@@ -114,6 +126,7 @@ describe('barriers 2 and 3: fixed instructions and cache', () => {
     expect(body.system[0].cache_control).toEqual({ type: 'ephemeral' });
     expect(body.system[0].text).toContain('<knowledge_base>');
     expect(body.system[0].text).toContain('brain.icp-never-measured-in-flight');
+    expect(body.system[0].text).toContain('a "level" of null means that no eye could be measured');
     expect(body.messages).toHaveLength(1);
     expect(body.messages[0].role).toBe('user');
   });

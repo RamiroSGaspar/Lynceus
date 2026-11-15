@@ -36,7 +36,7 @@ import type { RuleSourceId } from './sources';
 import { IMAGING_THRESHOLDS, thresholdQuantity } from './thresholds';
 
 /** Changes whenever the rules change. */
-export const RULES_VERSION = 'rules-1.0.0';
+export const RULES_VERSION = 'rules-1.1.0';
 
 export interface AssessmentInput {
   crewId: CrewId;
@@ -471,7 +471,13 @@ export function assessSession(
 
   const functional = assessFunctional(input.vision, isReference ? null : (preflight?.vision ?? null));
   const todayLevels = [eyes.OD.level, eyes.OS.level];
-  const level: Level = functional.acute ? 'acute-visual-symptom' : maxLevel(todayLevels);
+  // With no eye measured there is no imaging level: "no detectable change" would reassure without a reading.
+  const anyEyeMeasured = eyes.OD.measured || eyes.OS.measured;
+  const level: Level | null = functional.acute
+    ? 'acute-visual-symptom'
+    : anyEyeMeasured
+      ? maxLevel(todayLevels)
+      : null;
   const contact: ContactUrgency = functional.acute
     ? 'now'
     : functional.withoutDelay || todayLevels.includes('clinically-concerning')

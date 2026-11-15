@@ -118,7 +118,7 @@ export function validateContext(value: unknown): AssistantContext {
   const eyes = obj(o.eyes);
   return {
     flightDay: int(o.flightDay, 0, MAX_FLIGHT_DAY),
-    level: oneOf(o.level, LEVELS),
+    level: o.level === null ? null : oneOf(o.level, LEVELS),
     alert: oneOf(o.alert, ALERT_CLASSES),
     eyes: { OD: eye(eyes.OD), OS: eye(eyes.OS) },
     findings: uniqueList(o.findings, FINDING_IDS),
