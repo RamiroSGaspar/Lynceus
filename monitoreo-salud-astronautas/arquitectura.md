@@ -177,6 +177,7 @@ Aceptados en la ronda 2: todo número se puede rastrear hasta la imagen y la fue
 8. Los cuatro tripulantes y la forma exacta de sus curvas.
 9. El modelo de ruido de la imagen.
 10. Tres intentos de captura antes de decir "no puedo medir".
+11. Agudeza de cerca: la función psicométrica del procedimiento adaptativo (logística en logMAR, pendiente 15 por logMAR, 2 % de respuestas erradas por distracción; los valores propios de FrACT no se leyeron), los pasos intermedios de las cuatro primeras figuras (1,0; 0,7; 0,4; 0,1 logMAR), la figura más grande (1,3 logMAR) y el criterio de "no converge" (estimación más allá de la figura más grande, o respuestas que no se distinguen del azar con una prueba de cociente de verosimilitud al 5 %).
 
 ## 13. Plan de construcción
 
