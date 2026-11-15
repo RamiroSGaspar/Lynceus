@@ -9,7 +9,7 @@ especificación y qué falta.
 | Paso (sección 10) | Estado |
 |---|---|
 | 1. Azar, matemática y formato `.vol` | Hecho |
-| 2. Ojo virtual, tripulación y valor verdadero | Pendiente |
+| 2. Ojo virtual, tripulación y valor verdadero | Hecho |
 | 3. Instrumento virtual y `preview` | Pendiente |
 | 4. Motor | Pendiente |
 | 5. `accuracy`, precisión, rechazo y rendimiento | Pendiente |
@@ -25,6 +25,11 @@ especificación y qué falta.
 | `src/vol/format.ts` | Bytes de la cabecera del examen y de cada corte (tablas 1.2 y 1.3), fechas, valor inválido, `VolFormatError` |
 | `src/vol/io.ts` | `readVol` (decodifica cada corte cuando se lo piden), `writeVolBlocks`, `writeVol` |
 | `src/vol/display.ts` | Transformación de visualización de eyepy (tabla 1.4) |
+| `src/eye/crew.ts` | `MISSION`, `CREW`, tablas de anatomía y evolución de la sección 4, fechas |
+| `src/eye/model.ts` | `EyeModel` (anatomía fija y calibración) y `EyeState` (el ojo en un día de vuelo: `profile(x, y)` dice qué hay a lo largo de una columna) |
+| `src/eye/vessels.ts` | Árbol de vasos en el plano de frente, con grilla para consultas rápidas |
+| `src/eye/groundTruth.ts` | `groundTruth(crew, eye, day)`: valor verdadero por integración densa |
+| `src/sectors.ts` | Sectores del borde de la abertura (compartido por el valor verdadero y el motor) |
 
 ## Decisiones
 
@@ -46,6 +51,40 @@ especificación y qué falta.
    dentro de un mismo motor de JavaScript (V8 en Node y en Chrome); entre motores distintos podrían
    diferir en el último bit.
 
+7. **ρ (distancia desde el borde) es radial en el ojo virtual:** `ρ = r − r_BMO(θ)`, sobre el radio desde
+   el centro de la abertura. Es barato y suave; la diferencia con la distancia perpendicular al borde es
+   chica porque la abertura es casi circular.
+8. **Valor verdadero de los anillos:** promedio ponderado por área de la zona entre la elipse ajustada al
+   borde verdadero y la curva a esa distancia de la elipse (parametrización `E(t) + d·n(t)`, elemento de
+   área `|E'(t)|·(1 + κd)`), excluyendo los puntos que caen dentro de la abertura verdadera (donde no hay
+   membrana de Bruch). Es lo mismo que puede medir el motor: usa su elipse y descarta columnas sin BM.
+9. **Valor verdadero de la rugosidad:** 96 medios radios desde el centro de la abertura, con el paso de
+   las columnas de un corte (5,7 µm) y hasta el largo de medio corte; muestras con distancia a la elipse
+   entre 300 y 1700 µm; polinomio de grado 2 por medio radio; RMS de todas las muestras juntas.
+   La altura es lineal en la amplitud de los pliegues, así que la amplitud de cada día de la tabla se
+   resuelve exacta con una ecuación cuadrática; entre días se interpola la amplitud (cúbica monótona).
+10. **Irregularidad natural de la BM:** suma de 24 ondas planas de 220 a 520 µm, escalada para que la
+    rugosidad del examen de referencia sea un valor al azar entre 2 y 3 µm (sección 3.2).
+11. **Copa:** con `p = 6` se encontró en los 8 ojos un ancho `w₀` que da exactos el volumen y el MRW;
+    no hizo falta resignar el MRW. El fondo queda entre −381 µm (A OD, copa grande) y +66 µm (D OD,
+    copa chica y poco profunda).
+12. **Coroides:** se afina hasta cero en los 400 µm junto al borde (**supuesto nuestro**; la especificación
+    pide que llegue a cero pero no dice en cuánto).
+13. **Fecha del día 0** (examen de referencia): un día antes del lanzamiento, con la misma fórmula que los
+    días de vuelo (`fecha = lanzamiento + (día − 1)`).
+
+### Valores calibrados (examen de referencia)
+
+| Ojo | Grosor en el borde `TRT_borde` (µm) | `w₀` | Fondo de la copa (µm) | Rugosidad natural (µm) |
+|---|---|---|---|---|
+| A OD / OS | 386,2 / 380,0 | 0,634 / 0,640 | −381 / −350 | 2,53 / 2,21 |
+| B OD / OS | 415,3 / 409,7 | 0,532 / 0,572 | −276 / −176 | 2,38 / 2,91 |
+| C OD / OS | 441,7 / 432,3 | 0,547 / 0,559 | −65 / −88 | 2,89 / 2,47 |
+| D OD / OS | 425,0 / 430,0 | 0,614 / 0,607 | +66 / +25 | 2,72 / 2,46 |
+
+Con la hinchazón, el MRW verdadero sube de forma parecida a lo publicado: B OD +58 µm con +31 µm de
+anillo el día 150 (P3: +50 con +38 en promedio); D OD +186 µm con +203 µm el día 90 (P5: +158 con +212).
+
 ## Cambios respecto de la especificación
 
 (ninguno todavía)
@@ -58,6 +97,12 @@ de `arquitectura.md`), pero la especificación de esta tarea prohíbe tocar `doc
 coordinador lo indique.
 
 1. Convención de posición de columnas (decisión 1).
+2. ρ radial en el ojo virtual (decisión 7).
+3. Irregularidad natural de la BM con ondas de 220 a 520 µm (decisión 10).
+4. Afinamiento de la coroides en 400 µm junto al borde (decisión 12).
+5. Fecha del examen de referencia: el día anterior al lanzamiento (decisión 13).
+6. Forma del árbol de vasos: arcadas que salen a 45° ± 12° de los ejes, las temporales se curvan
+   hacia el eje temporal; se afinan 0,7 % cada 60 µm y se ramifican con hijos de 0,72 del calibre.
 
 ## Pendientes
 
