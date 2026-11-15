@@ -214,5 +214,7 @@ describe('the pre-flight session', () => {
     }
     expect(assessment.nextOct).toEqual({ flightDay: 30, reason: 'routine' });
     expect(assessment.findings).toEqual([]);
+    // The pre-flight exam has no flight day of its own to count days from.
+    expect(stepOf(assessment, 'oct-routine').params).toEqual({ flightDay: 30, routineDays: '30,90,150' });
   });
 });

@@ -373,7 +373,12 @@ function nextSteps(
 ): NextStep[] {
   const steps: NextStep[] = [];
   const { nextOct } = followUp;
-  const when = nextOct ? { flightDay: nextOct.flightDay, inDays: nextOct.flightDay - flightDay } : null;
+  // Before the flight there is no count of days to the first control: the pre-flight exam has no flight day of its own.
+  const when: Record<string, number> | null = nextOct
+    ? flightDay > 0
+      ? { flightDay: nextOct.flightDay, inDays: nextOct.flightDay - flightDay }
+      : { flightDay: nextOct.flightDay }
+    : null;
 
   // Which urgency goes with which finding is this project's assumption.
   if (contact === 'now') steps.push(step('contact-surgeon-now', 'assumption', []));
