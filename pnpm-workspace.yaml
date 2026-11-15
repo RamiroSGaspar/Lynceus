@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Supply-chain rule of this project: only install versions published at least
+# 7 days ago (value in minutes). Do not lower or remove.
+minimumReleaseAge: 10080
+
+onlyBuiltDependencies:
+  - esbuild

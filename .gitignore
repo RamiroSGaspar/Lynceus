@@ -1,0 +1,25 @@
+# Dependencies and build output
+node_modules/
+dist/
+.vite/
+coverage/
+*.tsbuildinfo
+
+# Scratch space for agents and scripts (never /tmp)
+.tmp/
+
+# Secrets: never commit. `.env.example` documents the variable names only.
+.env
+.env.*
+!.env.example
+*.pem
+.vercel/
+
+# Generated exams are tens of MB each; they are reproducible from their seed.
+*.vol
+
+# OS / editor
+.DS_Store
+*.log
+.idea/
+.vscode/

@@ -1,0 +1,72 @@
+/*
+ * Design tokens. Generic on purpose: the visual identity comes later and should
+ * only need to change this file.
+ *
+ * Alert colours follow the NASA display convention (NASA-STD-3001 vol. 2):
+ * red = warning, yellow = caution, blue = advisory. Colour is never the only
+ * signal: every level also has a shape, an icon and a word.
+ */
+:root {
+  /* Surfaces */
+  --color-bg: #0b0f14;
+  --color-surface: #131a22;
+  --color-surface-raised: #1a232e;
+  --color-border: #2c3947;
+  --color-border-strong: #4a5b6e;
+
+  /* Text: contrast against --color-bg is above 10:1 for the first two */
+  --color-text: #f2f5f8;
+  --color-text-secondary: #c4ced9;
+  --color-text-muted: #94a3b3;
+
+  /* Interaction */
+  --color-accent: #7cc4ff;
+  --color-accent-contrast: #06131f;
+  --color-focus: #ffffff;
+
+  /* Result levels */
+  --level-none: #c4ced9;
+  --level-none-bg: #1d2630;
+  --level-advisory: #6cb6ff;
+  --level-advisory-bg: #10263c;
+  --level-caution: #ffd84d;
+  --level-caution-bg: #33290a;
+  --level-warning: #ff6b61;
+  --level-warning-bg: #3a1512;
+
+  /* Data provenance labels */
+  --origin-measured: #8fe3b0;
+  --origin-estimated: #e3c58f;
+  --origin-reported: #b9a6ff;
+  --origin-unavailable: #94a3b3;
+
+  /* Type: sized for reading at arm's length with degraded near vision */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-3xl: 3rem;
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  /* Space and shape */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --content-width: 72rem;
+
+  --duration-fast: 120ms;
+  --duration-normal: 240ms;
+}
