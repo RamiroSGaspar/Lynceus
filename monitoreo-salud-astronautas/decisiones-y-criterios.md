@@ -1,6 +1,6 @@
 # Decisiones y criterios: Monitoreo de salud para astronautas
 
-> **Etapa:** definición de la idea. La investigación de herramientas de medición está en curso y varios puntos siguen abiertos.
+> **Etapa:** el tema cambió a ojos y cerebro (SANS). La ronda 1 de decisiones sobre el producto está cerrada (sección 4); la ronda 2 está en curso.
 
 | | |
 |---|---|
@@ -27,9 +27,9 @@
 |---|---|---|---|---|
 | D1 | Trabajar el desafío 4, monitoreo de salud para astronautas. | Se eligió después de analizar a fondo los desafíos 4, 5 y 7. | Ramiro | Decidido |
 | D2 | Enfocarse en algo específico y no abarcar todo el cuerpo. | El desafío acepta cualquier indicador de salud y no exige cubrir todo. Permite más profundidad y diferencia al proyecto entre 3.023 equipos. | Ramiro | Decidido |
-| D3 | El tema es la columna vertebral. | La idea inicial eran las articulaciones, pero juntaban problemas distintos, la NASA no tiene un riesgo propio para ellas y la evidencia en humanos es escasa. La columna tiene más evidencia en humanos y figura en los recursos oficiales. | Ramiro | Decidido |
+| D3 | El tema es la columna vertebral. | La idea inicial eran las articulaciones, pero juntaban problemas distintos, la NASA no tiene un riesgo propio para ellas y la evidencia en humanos es escasa. La columna tiene más evidencia en humanos y figura en los recursos oficiales. | Ramiro | Reemplazada por D7 (sección 4) |
 | D4 | El foco es durante la misión, en el espacio. La vuelta a la Tierra queda afuera. | El desafío busca que el astronauta se autogestione. En la Tierra ya tiene especialistas a disposición. Matiz registrado: llegar a la Luna o a Marte también es misión, y es parte de por qué importa vigilar la columna durante el viaje. | Ramiro | Decidido |
-| D5 | El enfoque que más interesa es el deterioro progresivo y silencioso de la columna: músculos que la sostienen, curvatura, movilidad, densidad de las vértebras y alargamiento. | Es progresivo, ocurre durante la misión y se conecta con el ejercicio como contramedida, que está en los recursos oficiales. El dolor de adaptación del inicio del vuelo también entra en el foco, pero interesa menos. | Ramiro | Preferido |
+| D5 | El enfoque que más interesa es el deterioro progresivo y silencioso de la columna: músculos que la sostienen, curvatura, movilidad, densidad de las vértebras y alargamiento. | Es progresivo, ocurre durante la misión y se conecta con el ejercicio como contramedida, que está en los recursos oficiales. El dolor de adaptación del inicio del vuelo también entra en el foco, pero interesa menos. | Ramiro | Reemplazada por D7 (sección 4) |
 | D6 | La idea de cómo resolver el desafío la define Ramiro, no la IA. | Las reglas prohíben usar IA para generar la idea. La IA se usa para investigar, discutir y acelerar, y su uso se declara en la entrega. | Ramiro | Decidido |
 
 ## 2. Criterios de trabajo y de comunicación
@@ -52,6 +52,8 @@
 
 ## 3. Puntos abiertos
 
+> Los puntos A1 a A4 eran del tema anterior (columna) y quedaron sin efecto. A5, crear el equipo en la web, sigue abierto.
+
 | # | Punto abierto | De qué depende | Estado |
 |---|---|---|---|
 | A1 | Qué aspectos de la columna entran en el proyecto. | De la investigación sobre herramientas de medición, en curso en la rama `investigaciones`. | Abierto |
@@ -59,3 +61,66 @@
 | A3 | Enfoque final. El de D5 es el preferido, pero no está cerrado. | De A1 y A2. | Abierto |
 | A4 | Cuánto se construye y qué se muestra en la entrega. | El desafío pide construir un software y la entrega exige un link público al proyecto; falta definir el alcance del prototipo. | Abierto |
 | A5 | Confirmar que el equipo está creado en la web de Space Apps. | Sin equipo no se puede entregar. | Abierto |
+
+
+## 4. Decisiones sobre el producto (ronda 1, 14 de noviembre a la noche)
+
+Las tomó Ramiro al responder la primera ronda de preguntas. Los criterios C1 a C13 de la sección 2 siguen vigentes.
+
+| # | Tema | Decisión | Estado |
+|---|---|---|---|
+| D7 | Tema | Síndrome neuro-ocular asociado al vuelo espacial (SANS), ojos y cerebro. Escenario: una estación espacial, durante la misión. Reemplaza a D3 y D5. | Decidido |
+| R1 | Promesa | "Después de cada examen, en menos de un minuto: si la parte de atrás de tu ojo cambió respecto de antes del vuelo, cuánto, qué tan seguro es ese resultado y qué corresponde hacer." | Decidido |
+| R2 | Qué es real y qué es ficticio | El aparato es uno que existe: el tomógrafo Spectralis OCT2 que está en la estación. Los datos son ficticios pero copian lo que entrega ese equipo (estructura, campos y escalas), según la investigación; no se inventan sin fundamento. Todo el proceso de análisis corre de verdad. Sin gastar dinero en servicios externos. | Decidido |
+| R3 | Ojos y cerebro | El sistema mide el ojo, explica su vínculo con el cerebro y dice qué no se puede saber en misión. Suma las señales del lado del cerebro que sí se toman en misión. Además tiene que atender lo difícil que es comunicarse con médicos o especialistas en Tierra cuando el astronauta necesita entender su estado. | Decidido; el detalle se cierra en la ronda 2 |
+| R4 | Alcance | Producto dedicado a ojos y cerebro, no un módulo de una herramienta general. | Decidido |
+| R5 | Usuario | El astronauta examinado, solo. | Decidido |
+| R6 | Relación con Tierra | Primera lectura a bordo; Tierra confirma después y tiene la última palabra. | Decidido |
+| R7 | Criterios | Siguen C1 a C13. Se pueden sumar criterios profesionales, consultándolos antes. | Decidido |
+| R8 | Imagen | Tomografía de retina (OCT). | Decidido |
+| R9 | Pruebas en la herramienta | Cuestionario ocular, agudeza visual y grilla de Amsler, hechas de verdad por el astronauta. La lógica cruza todo. | Decidido |
+| R10 | Motor de análisis | Algoritmos de medición como base, más un componente entrenado para hallazgos secundarios. Nada que sea una caja negra. | Decidido |
+| R11 | Validación | Completa: el motor se prueba contra ojos ficticios de valor conocido, y ese error medido es la incertidumbre que se comunica. | Decidido |
+| R12 | Qué puede indicar | Pasos dentro de la práctica actual de la NASA: repetir la captura, adelantar el control, probar otros anteojos, avisar al médico. Nunca medicación. | Decidido |
+| R13 | Asistente | Lleva un asistente que usa la API de Claude (modelo Claude Haiku 5.5, esfuerzo medio, clave de Ramiro). Estrictamente acotado al producto: no responde pedidos ajenos, como escribir código. | Decidido |
+| R14 | Datos ficticios | Generador propio, con valor verdadero conocido. Cada imagen va marcada como simulada. | Decidido |
+| R15 | Forma | Sesión guiada paso a paso, que termina en una página personal con el estado de cada ojo y su historia. | Decidido |
+| R16 | Incertidumbre | Palabras atadas a un criterio numérico, número con su rango, y etiqueta en cada dato: medido, estimado o no se puede medir a bordo. | Decidido |
+| R17 | Idioma de la interfaz | Inglés con opción de español. | Decidido |
+| R18 | Plataforma | Aplicación web que corre en el navegador (TypeScript), publicada en Vercel con el plan gratuito. | Decidido |
+| R19 | Repositorio | Lo crea Ramiro cuando haya nombre y una versión presentable, y lo pasa para subir el código. | Decidido |
+| R20 | Idioma de la documentación | Español e inglés, sin idioma principal. | Decidido |
+| R21 | Equipo en la web | Lo crea Ramiro más adelante. | Abierto |
+| R22 | Equipo | Las otras dos personas trabajan junto a Ramiro en la misma sesión. | Decidido |
+| R23 | Demo | Diapositivas, hasta 7. Ver [entrega-y-pitch.md](entrega-y-pitch.md). | Decidido |
+| R24 | Nombre | Se busca algo artístico, ligado a la identidad del astronauta, la exploración del espacio y la salud y fuerza del explorador. | Abierto |
+| R25 | Ritmo | Construir ya, priorizando hacerlo bien. | Decidido |
+| R26 | Autonomía y cuidados | El asistente puede crear ramas, hacer commits, instalar dependencias y reorganizar carpetas. Condiciones: todo se instala dentro del proyecto, nada global; nada que no deba publicarse llega a GitHub (clave de Anthropic, cosas personales); avisar con tiempo si el disco se acerca a 2 GB libres; no gastar dinero ni usar herramientas pagas, salvo la API de Claude. | Decidido |
+| R27 | Workers | Autorizados, sin pedidos de permiso. Se puede usar Opus 5.5 en xhigh con la cuenta de Claude de Ramiro. Sin límite de cuota. | Decidido |
+| R28 | Otras sesiones | Quedan quietas o cerradas; se coordina desde una sola sesión. | Decidido |
+| R29 | Material anterior | Columna y ejercicio archivados en `archivo/`; investigaciones integradas a `master`. | Hecho |
+| R30 | Puntos de control | Tres: documento de decisiones y arquitectura; primera versión de punta a punta; versión final antes de publicar. | Decidido |
+| R31 | Si falta tiempo | Menos cosas, terminadas y probadas. | Decidido |
+
+## 5. Investigaciones de base sobre SANS
+
+Están en `investigaciones/`. Cada una indica qué leyó completo y qué quedó sin verificar.
+
+| Documento | Para qué sirve | Estado |
+|---|---|---|
+| `sans-oct-base-tecnica.md` | Geometría de la imagen, definición de cada medida, valores normales, ruido y algoritmos para marcar capas | Completo |
+| `sans-spectralis-datos.md` | Qué entrega el Spectralis OCT2: formato de archivo, cabeceras, capas, seguimiento | Completo |
+| `sans-evolucion-y-logica-clinica.md` | Evolución por día de vuelo, distribución entre personas, los cuatro niveles de la NASA y qué se hace en cada uno | Completo |
+| `sans-cerebro-en-mision.md` | Qué se puede saber del lado del cerebro durante la misión y qué no | Completo |
+| `comunicar-resultados-de-salud.md` | Cómo mostrar un resultado incierto: números, rangos, colores, letra, límites del análisis | Completo |
+| `arquitectura-claude-y-vercel.md` | Datos de la API de Claude y de Vercel para el asistente y la publicación | Solo la tabla central |
+| `pruebas-de-vision-en-pantalla.md` | Fórmulas y medidas para la agudeza visual y la grilla de Amsler en pantalla | Solo la tabla central, con celdas por verificar |
+| `problemas-candidatos.md` | Comparación de 12 problemas de salud, de donde salió la elección de SANS | Completo |
+
+## 6. Estado del trabajo (14 de noviembre, 23:50)
+
+- **Hecho:** ronda 1 respondida; siete investigaciones sobre SANS; material anterior archivado; guía de entrega y pitch.
+- **En curso:** ronda 2 de preguntas (nombre, señales del cerebro, hallazgos, datos ficticios, asistente, pantallas, repositorio).
+- **Sigue:** documento de arquitectura para aprobar (punto de control 1) y construcción con workers.
+- **A tener en cuenta:** la cuota semanal de Devin se agotó cerca de las 23:10 y cortó dos investigaciones. Los workers de construcción se van a lanzar con Claude Code y la cuenta de Claude de Ramiro.
+- **Copias locales de fuentes y briefs:** `~/.cache/nasa_hacka/` (fuera de `/tmp`, que se borra al reiniciar).
