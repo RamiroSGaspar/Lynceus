@@ -1,5 +1,6 @@
 import { PRODUCT, type Level } from '@app/core';
 import { useEffect, useState } from 'react';
+import { DevOctPage } from './features/oct';
 import { DevVisionPage } from './features/vision';
 import { useI18n } from './i18n';
 import { Card, LanguageToggle, LevelBadge, QuantityValue, SimulatedNotice } from './ui';
@@ -23,6 +24,7 @@ export function App() {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
   if (hash.startsWith('#/dev/vision')) return <DevVisionPage />;
+  if (hash.startsWith('#/dev/oct')) return <DevOctPage />;
   return (
     <main className="shell">
       <LanguageToggle />
