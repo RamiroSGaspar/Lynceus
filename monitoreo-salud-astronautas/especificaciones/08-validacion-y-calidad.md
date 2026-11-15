@@ -1,5 +1,29 @@
 # Especificación 08 — Validación sintética, calidad e incertidumbre
 
+## Alcance vigente para cerrar la hackatón
+
+Ramiro pidió reducir el tiempo y la profundidad de pruebas para priorizar el
+prototipo de una hackatón de dos días. Esta indicación prevalece sobre los
+requisitos de cierre más amplios que figuran abajo y sobre la repetición de la
+suite completa antes de cada commit de esta entrega.
+
+- Conservar el experimento ya ejecutado de 621 capturas, su informe y sus
+  conclusiones. No ampliar la muestra, repetir el experimento completo ni volver
+  a ajustar el modelo para alcanzar los criterios originales.
+- Entregar la aplicación funcional y la explicación del trabajo hecho. El
+  candidato que no cumplió los criterios queda experimental; el modelo provisorio
+  conserva su aviso. No se rebajan los criterios retrospectivamente para
+  presentar el candidato como validado.
+- Comprobar tipos, compilación, credenciales y pruebas focalizadas de los módulos
+  modificados. Reutilizar verificaciones que ya hayan pasado sobre la misma
+  versión. No hace falta otro recorrido exhaustivo del navegador.
+- No regenerar toda la historia si su comportamiento no cambió. Aprovechar las
+  verificaciones que ya estén en curso sin iniciar rondas adicionales.
+- Mantener los rechazos de capturas deficientes y el hook de secretos. Corregir
+  defectos que impidan usar la demo y documentar las limitaciones restantes.
+- Cerrar con commits coherentes e informe de lo verificado y lo postergado.
+  Muestras adicionales, mejoras de precisión y optimización quedan para después.
+
 ## Problema que se debe resolver
 
 La aplicación completa, incluidas sus referencias e historia, ya usa el motor
