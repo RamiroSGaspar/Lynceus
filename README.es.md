@@ -17,6 +17,8 @@ explica resultados con una base de conocimiento citada y un alcance acotado.
 
 ## Probar la demo
 
+**[Abrir la demo pública](https://lynceus-sans.vercel.app)** — no requiere una cuenta.
+
 Requiere **Node.js 22 o posterior** y **pnpm 10.18.3**. Desde la raíz del repositorio:
 
 ```sh
@@ -46,11 +48,10 @@ La evaluación sintética abarca **621 capturas de ocho ojos virtuales**, inclui
 La aplicación conserva el **modelo de error provisorio**. No son resultados de
 precisión clínica; ver [evidencia y límites](docs/es/evidence.md).
 
-Al cierre de esta documentación, 15 de noviembre de 2026, la demo local está
-disponible. Haiku 5.5 pasó seis comprobaciones contra el proveedor real y una
-consulta desde la interfaz; ver [resultados y observación de redacción](docs/es/development.md).
-No se anuncia una publicación pública. El motor de imágenes es determinista;
-las respuestas del modelo de lenguaje pueden variar.
+La demo pública se desplegó el 15 de noviembre de 2026. Haiku 5.5 pasó seis
+comprobaciones contra el proveedor real, una consulta en la interfaz local y otra
+en producción; ver [resultados y observación de redacción](docs/es/development.md).
+El motor de imágenes es determinista; las respuestas del modelo de lenguaje pueden variar.
 
 ## Documentación
 

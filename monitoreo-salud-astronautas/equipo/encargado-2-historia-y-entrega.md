@@ -163,8 +163,8 @@ Next steps:
 • Calibrate the error ranges
 • Test with crew-like users
 
-Try it: [APP LINK]
-Code: [REPO LINK]
+Try it: https://lynceus-sans.vercel.app
+Code: https://github.com/RamiroSGaspar/Lynceus
 
 Source: Brunstetter, NASA presentation (2022)
 ```
@@ -208,8 +208,8 @@ simulated; it is not a medical device.
 ### Link to Final Project
 
 ```text
-[APP LINK]
-[REPO LINK]
+https://lynceus-sans.vercel.app
+https://github.com/RamiroSGaspar/Lynceus
 ```
 
 ### Detailed Project Description
@@ -388,7 +388,7 @@ TypeScript, React, Vite, Vitest, Node.js, pnpm, Vercel, Anthropic API
 | ~15:00 | Recibir la plantilla (encargado 1) y las capturas (encargado 3) |
 | ~18:00 | Diapositivas armadas. El encargado 3 compara los números con este documento |
 | ~19:00 | Formulario cargado como borrador |
-| ~21:00 | El responsable del proyecto pasa los links de la app y del repositorio. Exportar las diapositivas a PDF, subirlas a Google Drive con «cualquier persona con el link puede ver» y probar los tres links en una ventana de incógnito, sin sesión iniciada |
+| ~21:00 | Los links de la app y del repositorio ya están en esta ficha. Exportar las diapositivas a PDF, subirlas a Google Drive con «cualquier persona con el link puede ver» y probar los tres links en una ventana de incógnito, sin sesión iniciada |
 | Antes de las 22:00 | Tildar las dos casillas y apretar **Submit for Judging** |
 
 ## 6. Si algo no se entiende

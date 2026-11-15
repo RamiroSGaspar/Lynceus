@@ -7,9 +7,10 @@ La pausa queda levantada. La validación existente se cerró en `validacion`
 (`b1969cc`) y se incorpora a `master`, con el modelo provisorio activo.
 
 - **Demo local:** http://127.0.0.1:5178/ — terminal de Orca «Demo local» en `master`.
+- **Demo pública:** https://lynceus-sans.vercel.app — Vercel, sin login.
 - **Repositorio público:** https://github.com/RamiroSGaspar/Lynceus — rama principal
-  `master`, publicada por autorización del responsable del proyecto. La publicación del sitio web
-  sigue pendiente.
+  `master`, publicada por autorización del responsable del proyecto y conectada
+  al despliegue automático de Vercel.
 - **Resultado del recorrido:** http://127.0.0.1:5178/#/result/B/150 .
 - **Caso comprobado:** Elena Voss, día 150. Derecho aceptado; izquierdo rechazado
   por parpadeo simulado y aceptado al repetir; resultado, historia e informe.
@@ -40,8 +41,32 @@ La documentación ya está escrita: [README](../README.es.md), guías públicas 
 `docs/es/` y `docs/en/`, [supuestos centrales](../docs/assumptions.md) y
 [guía personal](guia-para-defender-el-proyecto.md).
 
-1. Siete diapositivas y texto del formulario a partir de `producto.md`.
-2. Publicación de la demo cuando el responsable del proyecto autorice y defina el proyecto de alojamiento.
+1. Completar las siete diapositivas y el formulario desde la
+   [ficha del encargado 2](equipo/encargado-2-historia-y-entrega.md).
+2. Confirmar los datos del equipo y enviar la entrega oficial.
+
+### Despliegue público
+
+El proyecto de Vercel usa `apps/web` como raíz, Vite, Node.js 22.x,
+`pnpm install --frozen-lockfile`, `pnpm build` y salida `dist`.
+Incluye los archivos del workspace fuera de esa raíz. La rama de producción es
+`master`; el dominio `lynceus-sans.vercel.app` sigue los despliegues de producción.
+
+La clave se cargó como secreto sensible de producción, sin publicarla en GitHub.
+Se comprobó el inicio público, el resultado precalculado de Elena del día 118,
+el consentimiento del asistente y una respuesta real en español con tres fuentes.
+La consola no mostró errores. Se suma una llamada a las siete de la prueba previa.
+Los registros locales no se trasladan automáticamente al dominio público.
+
+La primera compilación informó `TS2688` (tipos de Node) durante el empaquetado de
+la función. El despliegue terminó en estado `Ready` y la función respondió
+correctamente; el diagnóstico de empaquetado queda pendiente de revisar.
+Los tipos del repositorio se comprueban por separado con `pnpm typecheck`.
+
+La CLI quedó autenticada y la skill de despliegue instalada a nivel de usuario.
+MCP está conectado a `https://mcp.vercel.com`; la consulta de documentación funciona,
+pero requiere habilitar el acceso al equipo para gestionar sus proyectos.
+Esto es independiente del sitio publicado y del acceso operativo de la CLI.
 
 ### Primera subida a GitHub
 

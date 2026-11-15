@@ -174,7 +174,8 @@ Al domingo 15 de noviembre de 2026, después de cerrar la validación sintética
 | Medición del error del análisis | Evaluadas 621 capturas simuladas; informe y explicación bilingüe disponibles. El modelo ajustado no cumplió sus criterios y se conserva el provisorio |
 | Documentación pública y guía personal | README y guías en inglés/español disponibles; supuestos centrales y guía para defender el proyecto escritos |
 | Repositorio público | Publicado en GitHub, rama principal `master` |
-| Publicación de la demo, diapositivas y formulario | Pendientes |
+| Demo pública | Publicada en Vercel; interfaz y asistente comprobados |
+| Diapositivas y formulario | Borradores en la ficha del encargado 2; falta completar datos y presentación |
 
 Entradas: [README en español](../README.es.md), [README en inglés](../README.md)
 y [guía personal para defender el proyecto](guia-para-defender-el-proyecto.md).
@@ -211,11 +212,13 @@ sus avisos. El modelo de error también sigue rotulado como provisorio: los már
 actuales no deben presentarse como resultado de la validación ampliada.
 
 El [repositorio público](https://github.com/RamiroSGaspar/Lynceus) ya está disponible.
+La [demo pública](https://lynceus-sans.vercel.app) funciona sin iniciar sesión;
+los cambios en `master` generan nuevos despliegues.
 
 **Falta decidir o hacer por parte del equipo:** crear el equipo en la web de Space Apps,
-elegir el proyecto de Vercel para publicar la demo, configurar allí el secreto y los
-controles de gasto para la publicación, terminar diapositivas y formulario, y confirmar
-el nombre.
+terminar diapositivas y formulario, confirmar los datos del equipo y enviar la entrega.
+El secreto del asistente ya está configurado en Vercel; el límite de gasto se administra
+en Anthropic.
 
 ## 15. Glosario
 

@@ -102,6 +102,32 @@ the engine's calculated level did not change. Probability and the level's name
 should be distinguished when explaining the result. This small check does not
 guarantee the behavior of every future answer.
 
+## Vercel deployment
+
+Public demo: **https://lynceus-sans.vercel.app**.
+The project is connected to GitHub: changes on `master` deploy to production
+and retain that address. Settings:
+
+| Setting | Value |
+|---|---|
+| Root directory | `apps/web` |
+| Framework | Vite |
+| Node.js | 22.x |
+| Install command | `pnpm install --frozen-lockfile` |
+| Build command | `pnpm build` |
+| Output directory | `dist` |
+| Include files outside the root directory | Yes, for `packages/core` |
+| Production secret | `ANTHROPIC_API_KEY`, marked as sensitive |
+
+Access protection applies to previews; production is public. The key is configured
+in Vercel, is not uploaded with source files and has no `VITE_` prefix.
+Spending limits are managed in Anthropic.
+
+The public UI was checked without signing in, including one question about
+Elena's fictional result on day 118. Haiku answered in Spanish with consistent
+numbers and three linked sources; the console showed no errors.
+This query adds to the seven calls in the earlier check.
+
 ## Checks
 
 | Command | Scope |

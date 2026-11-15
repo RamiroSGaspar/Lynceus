@@ -18,7 +18,9 @@ assistant explains results using a cited knowledge base.
 
 ## Try the demo
 
-Requires **Node.js 22 or later** and **pnpm 10.18.3**. From the repository root:
+**[Open the public demo](https://lynceus-sans.vercel.app)** — no account required.
+
+To run locally, use **Node.js 22 or later** and **pnpm 10.18.3**. From the repository root:
 
 ```sh
 pnpm install
@@ -47,10 +49,10 @@ The synthetic evaluation covers **621 captures of eight virtual eyes**, includin
 The application retains the **provisional error model**. These are not clinical
 accuracy results; see [evidence and limitations](docs/en/evidence.md).
 
-At this documentation checkpoint, 15 November 2026, the local demo is available.
-Haiku 5.5 passed six real-provider checks and one UI query; see the
-[results and wording observation](docs/en/development.md). No public deployment
-is claimed. The image engine is deterministic; language-model responses need not be.
+The public demo was deployed on 15 November 2026. Haiku 5.5 passed six real-provider
+checks, a local UI query and a production UI query; see the
+[results and wording observation](docs/en/development.md).
+The image engine is deterministic; language-model responses need not be.
 
 ## Read more
 

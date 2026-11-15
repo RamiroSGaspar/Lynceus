@@ -7,10 +7,13 @@ prototipo, no un procedimiento médico.
 
 ## Preparación
 
-Ejecutá `pnpm dev` desde la raíz y abrí la dirección que indica la terminal.
+Abrí **https://lynceus-sans.vercel.app**. No requiere iniciar sesión.
+
+Para ejecutarla localmente, usá `pnpm dev` desde la raíz y abrí la dirección que indica la terminal.
 La sesión local del equipo puede usar http://127.0.0.1:5178/; una instalación nueva
 usa normalmente http://localhost:5173/. Usá siempre la misma dirección y navegador
 para conservar los controles: cambiar de puerto, host o perfil cambia el almacenamiento.
+Los controles que hiciste en la demo local no aparecen automáticamente en la pública.
 
 Elegí **Español**, **día de vuelo 150** y **Elena Voss (B)**.
 El asistente es opcional para esta presentación.

@@ -1,7 +1,7 @@
 # Entrega y pitch: qué se presenta y cómo
 
 > **Estado:** guion de trabajo actualizado el 15 de noviembre de 2026. El repositorio
-> ya está publicado; faltan las diapositivas finales, el formulario y el sitio público.
+> y la demo ya están publicados; faltan las diapositivas finales y el formulario.
 > Para cifras y límites, usar [evidencia](../docs/es/evidence.md) y
 > [supuestos](../docs/assumptions.md).
 
@@ -90,7 +90,7 @@ Etapas y fechas:
 - [ ] Equipo creado en la web, con todos los integrantes en el mismo evento local.
 - [ ] Averiguar con el organizador local si hay presentación en vivo u horarios propios.
 - [ ] Nombre del proyecto definido.
-- [ ] Aplicación publicada y link público probado sin iniciar sesión.
+- [x] [Aplicación publicada](https://lynceus-sans.vercel.app) y comprobada sin iniciar sesión.
 - [x] [Repositorio público](https://github.com/RamiroSGaspar/Lynceus).
 - [ ] Diapositivas en inglés, 7 como máximo, con link público probado.
 - [ ] Textos del formulario en inglés.

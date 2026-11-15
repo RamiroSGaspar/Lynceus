@@ -104,6 +104,32 @@ el nivel calculado por el motor no cambió. La probabilidad y el nombre del nive
 deben distinguirse al explicar el resultado. Esta prueba acotada no garantiza
 el comportamiento de todas las respuestas futuras.
 
+## Despliegue en Vercel
+
+Demo pública: **https://lynceus-sans.vercel.app**.
+El proyecto está conectado a GitHub: los cambios en `master` despliegan a
+producción y conservan esa dirección. La configuración es:
+
+| Ajuste | Valor |
+|---|---|
+| Directorio raíz | `apps/web` |
+| Framework | Vite |
+| Node.js | 22.x |
+| Instalación | `pnpm install --frozen-lockfile` |
+| Compilación | `pnpm build` |
+| Directorio de salida | `dist` |
+| Incluir archivos externos al directorio raíz | Sí, para `packages/core` |
+| Secreto de producción | `ANTHROPIC_API_KEY`, marcado como sensible |
+
+La protección de acceso se aplica a previews; producción es pública. La clave
+se configura en Vercel y no se sube con los archivos ni lleva el prefijo `VITE_`.
+El límite de gasto se administra en Anthropic.
+
+Se comprobó la interfaz pública sin login y una pregunta sobre el resultado
+ficticio de Elena, día 118. Haiku respondió en español con cifras coherentes y
+tres fuentes enlazadas; no hubo errores de consola.
+Esta consulta se suma a las siete llamadas de la comprobación anterior.
+
 ## Comprobaciones
 
 | Comando | Alcance |

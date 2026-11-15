@@ -7,10 +7,13 @@ it is not a medical procedure.
 
 ## Preparation
 
-Run `pnpm dev` from the root and open the address printed in the terminal.
+Open **https://lynceus-sans.vercel.app**. No sign-in is required.
+
+To run locally, use `pnpm dev` from the root and open the address printed in the terminal.
 The team's local session may use http://127.0.0.1:5178/; a new installation normally
 uses http://localhost:5173/. Keep the same address and browser to retain controls:
 changing port, host or browser profile changes the storage.
+Controls saved in the local demo do not automatically appear in the public one.
 
 Choose **English**, **flight day 150** and **Elena Voss (B)**.
 The assistant is optional for this presentation.
