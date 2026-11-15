@@ -37,7 +37,11 @@ La documentación ya está escrita: [README](../README.es.md), guías públicas 
 [guía personal](guia-para-defender-el-proyecto.md).
 
 1. Siete diapositivas y texto del formulario a partir de `producto.md`.
-2. Clave del asistente y tope de gasto a cargo de Ramiro; luego prueba breve de la API.
+2. Prueba breve de la API en curso, encargada al worker de `asistente-api`.
+   Ramiro confirmó la carga de la clave; el chequeo seguro devuelve `present`.
+   Fijó el presupuesto en **USD 8**; el límite mensual efectivo se configura en
+   la consola de Anthropic. La comprobación local no verifica ese ajuste externo.
+   El producto usa **Haiku 5.5** (`claude-haiku-5-5`, esfuerzo `medium`).
    La preparación de Opus (`38a4faa`) incluye `assistant:smoke`: seis casos.
    `pnpm --filter @app/web assistant:smoke -- --check` comprueba configuración
    sin llamadas; `NO KEY` no demuestra que la API funcione. Reiniciar Vite

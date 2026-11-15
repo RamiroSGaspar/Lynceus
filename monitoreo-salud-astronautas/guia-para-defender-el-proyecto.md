@@ -7,6 +7,8 @@ no mediciones en una persona.
 
 Para presentar en pocos minutos, empezá por las secciones 1, 4 y 9.
 Para preguntas del jurado, repasá las secciones 5 a 8.
+También tenés dos lecturas cortas: [defensa científica](defensa-cientifica.md)
+y [defensa del flujo del programa](defensa-arquitectura.md).
 
 ## 1. Qué estás proponiendo
 
