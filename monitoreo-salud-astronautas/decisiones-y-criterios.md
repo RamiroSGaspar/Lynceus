@@ -102,6 +102,25 @@ Las tomó Ramiro al responder la primera ronda de preguntas. Los criterios C1 a 
 | R30 | Puntos de control | Tres: documento de decisiones y arquitectura; primera versión de punta a punta; versión final antes de publicar. | Decidido |
 | R31 | Si falta tiempo | Menos cosas, terminadas y probadas. | Decidido |
 
+### Ronda 2 (15 de noviembre, madrugada)
+
+| # | Tema | Decisión | Estado |
+|---|---|---|---|
+| R32 | Nombre | **Lynceus**, por el argonauta de vista más aguda, vigía de la nave Argo. | Provisorio |
+| R33 | Aparato y datos | Spectralis OCT2. Los exámenes ficticios se generan con el formato `.vol` de ese equipo y el motor lee ese formato. Sin servicios externos. | Decidido |
+| R34 | Qué mide el motor | Hinchazón del nervio (definición de la NASA) y pliegues (ondulación de la membrana de base). Quedan afuera la coroides y los quistes. | Decidido |
+| R35 | Componente entrenado | Modelo chico y legible que decide si una captura sirve para medir y cuánto error esperar. | Decidido |
+| R36 | Cerebro y comunicación con Tierra | Pantalla de qué se sabe y qué no; síntomas de cabeza en el cuestionario, sin afirmar relación; "preparar la conferencia médica" con informe y preguntas. | Decidido |
+| R37 | Colores y estilo | Genéricos por ahora; después se aplica un sistema de diseño e identidad. | Decidido |
+| R38 | Control ante un primer indicio | Tomografía a las 4 semanas y grilla de Amsler dos veces por semana, declarado como supuesto nuestro. | Decidido |
+| R39 | Tripulación ficticia | Cuatro astronautas en una misión de 180 días: sin cambio, primer indicio, nivel clínico con pliegues y caso extremo. | Decidido |
+| R40 | Asistente | Alcance, negativa fija, clave fuera del repositorio, tope de gasto y funcionamiento sin conexión, como se propuso. | Decidido |
+| R41 | Criterios nuevos | Los seis: rastreable, reproducible, "no puedo medir", datos en el dispositivo, letra y contraste de la NASA, supuestos en un solo lugar. | Decidido |
+| R42 | Workers | Devin sin restricción y **una sola** sesión de Claude Code. | Decidido |
+| R43 | Repositorio público | Código, documentación en español e inglés e investigaciones. Afuera: `archivo/`, copias locales y claves. | Decidido |
+
+La arquitectura que resulta de estas decisiones está en [arquitectura.md](arquitectura.md), pendiente de aprobación.
+
 ## 5. Investigaciones de base sobre SANS
 
 Están en `investigaciones/`. Cada una indica qué leyó completo y qué quedó sin verificar.
@@ -117,10 +136,11 @@ Están en `investigaciones/`. Cada una indica qué leyó completo y qué quedó 
 | `pruebas-de-vision-en-pantalla.md` | Fórmulas y medidas para la agudeza visual y la grilla de Amsler en pantalla | Solo la tabla central, con celdas por verificar |
 | `problemas-candidatos.md` | Comparación de 12 problemas de salud, de donde salió la elección de SANS | Completo |
 
-## 6. Estado del trabajo (14 de noviembre, 23:50)
+## 6. Estado del trabajo (15 de noviembre, 00:45)
 
-- **Hecho:** ronda 1 respondida; siete investigaciones sobre SANS; material anterior archivado; guía de entrega y pitch.
-- **En curso:** ronda 2 de preguntas (nombre, señales del cerebro, hallazgos, datos ficticios, asistente, pantallas, repositorio).
-- **Sigue:** documento de arquitectura para aprobar (punto de control 1) y construcción con workers.
-- **A tener en cuenta:** la cuota semanal de Devin se agotó cerca de las 23:10 y cortó dos investigaciones. Los workers de construcción se van a lanzar con Claude Code y la cuenta de Claude de Ramiro.
+- **Hecho:** rondas 1 y 2 respondidas; siete investigaciones sobre SANS; material anterior archivado; guía de entrega y pitch; propuesta de arquitectura.
+- **En curso:** aprobación de la arquitectura (punto de control 1).
+- **Sigue:** construcción por etapas (A a G en `arquitectura.md`).
+- **Investigaciones incompletas:** `arquitectura-claude-y-vercel.md` y `pruebas-de-vision-en-pantalla.md` tienen solo la tabla central.
+- **Cuota de Devin:** la cuota semanal se agotó el 14 de noviembre cerca de las 23:10. Desde entonces los workers y subagentes de Devin responden con ese error; solo sigue funcionando la sesión coordinadora.
 - **Copias locales de fuentes y briefs:** `~/.cache/nasa_hacka/` (fuera de `/tmp`, que se borra al reiniciar).
