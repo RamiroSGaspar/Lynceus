@@ -728,3 +728,91 @@ a.btn {
     padding: var(--space-4);
   }
 }
+
+/* ---- History */
+.eye-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-5);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.eye-toggle legend {
+  float: left;
+  padding: 0;
+  color: var(--color-text-secondary);
+}
+.eye-toggle__option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+.eye-toggle__option input {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+.controls {
+  display: grid;
+  gap: var(--space-4);
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+.controls > li {
+  max-width: none;
+}
+.control > * + * {
+  margin-top: var(--space-3);
+}
+.control__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+}
+.control__head .card__title {
+  margin: 0;
+}
+.control__today {
+  color: var(--color-accent);
+}
+.control__eyes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  gap: var(--space-3) var(--space-5);
+  margin: 0;
+}
+.control__eye dt {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.control__eye dd {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 0;
+}
+/* Where a control comes from: a solid edge for one done here, a dashed one for one that came with the application. */
+.origin-mark {
+  padding: 0 var(--space-2);
+  border: 1px dashed var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.origin-mark--live {
+  border: 2px solid var(--color-accent);
+  color: var(--color-text);
+}
