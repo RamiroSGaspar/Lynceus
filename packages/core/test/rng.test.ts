@@ -17,9 +17,11 @@ describe('seeded random numbers', () => {
     const r = createRng('moments');
     const n = 200000;
     let su = 0, sn = 0, sn2 = 0, sg = 0, sg2 = 0;
+    // Checked once after the loop: 200 000 assertions made the test slow enough to time out on a busy machine.
+    let inRange = true;
     for (let i = 0; i < n; i++) {
       const u = r.next();
-      expect(u >= 0 && u < 1).toBe(true);
+      if (!(u >= 0 && u < 1)) inRange = false;
       su += u;
       const z = r.normal();
       sn += z;
@@ -28,6 +30,7 @@ describe('seeded random numbers', () => {
       sg += g;
       sg2 += g * g;
     }
+    expect(inRange).toBe(true);
     expect(su / n).toBeCloseTo(0.5, 2);
     expect(sn / n).toBeCloseTo(0, 2);
     expect(sn2 / n).toBeCloseTo(1, 1);
