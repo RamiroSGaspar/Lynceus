@@ -1,10 +1,53 @@
 # Retomar el prototipo
 
-## Pausa solicitada por Ramiro
+## Estado vigente: demo reanudada
 
-15 de noviembre de 2026, alrededor de las 10:20. **No reanudar agentes ni pruebas
-hasta que Ramiro pida continuar.** La prioridad es cerrar una demo de hackatón,
-con comprobaciones esenciales y límites claros.
+15 de noviembre de 2026. Ramiro volvió y pidió ir directamente a una demo usable.
+La pausa queda levantada. La validación existente se cerró en `validacion`
+(`b1969cc`) y se incorpora a `master`, con el modelo provisorio activo.
+
+- **Demo local:** http://127.0.0.1:5178/ — terminal de Orca «Demo local» en `master`.
+- **Resultado del recorrido:** http://127.0.0.1:5178/#/result/B/150 .
+- **Caso comprobado:** Elena Voss, día 150. Derecho aceptado; izquierdo rechazado
+  por parpadeo simulado y aceptado al repetir; resultado, historia e informe.
+  Se comprobó la descarga del informe y los textos principales en ambos idiomas.
+- Se saltearon cuestionario, agudeza y Amsler para este control breve; la aplicación
+  los muestra como no hechos. No se probó la API del asistente ni la impresión.
+- Se conservaron las 621 capturas, se comprobó el ajuste publicado y se corrigió
+  una prueba cuyo cambio se cancelaba contra la referencia. Núcleo: 340 pruebas;
+  web: 310; validación: 21 más una de rendimiento. Compilación y credenciales correctas.
+  La prueba corregida y los textos finales se verificaron de forma focalizada.
+- No se repitió el experimento largo. La segunda corrida interrumpida no demuestra
+  reproducibilidad; el informe conserva los datos de la primera.
+- Sesiones comprobadas: `interfaz`, `reglas`, `vision`, `asistente`, `validacion` y
+  `construccion` abiertas y esperando; `captura`, `historia` e `investigaciones`
+  inactivas. Los archivos de todos los worktrees se conservan.
+
+### Cómo mostrarla rápido
+
+Elegir Elena Voss y día 150 en el inicio. En el navegador de Orca ya está guardado
+el control recorrido; se puede abrir el resultado y su informe directamente.
+Para mostrar la captura, empezar el control de nuevo desde el flujo de sesión.
+Las pruebas de visión se pueden hacer o saltear y quedan registradas según eso.
+
+### Pendientes de entrega
+
+1. README en inglés y español, fuentes y supuestos centrales.
+2. Siete diapositivas y texto del formulario a partir de `producto.md`.
+3. Clave del asistente y tope de gasto a cargo de Ramiro; luego prueba breve de la API.
+4. Publicación cuando Ramiro la autorice y defina el destino.
+
+Sonnet 5.5 High en Devin para tareas directas; Opus 5.5 High para las que lo
+requieran. Claude Code solo por indicación de Ramiro. Worktrees nuevos: hijos de
+`master`. La demo ya se puede usar sin esperar los pendientes de entrega.
+
+---
+
+## Registro histórico de la pausa (superado por el estado anterior)
+
+Lo que sigue conserva el plan escrito antes de la retoma; sus tareas pendientes
+de validación ya están cerradas. El 15 de noviembre de 2026, alrededor de las 10:20,
+Ramiro pidió pausar agentes y pruebas hasta su regreso.
 
 El agente de validación quedó en espera. Se detuvieron los procesos de sus
 herramientas, incluida la segunda corrida larga de validación y su servidor de

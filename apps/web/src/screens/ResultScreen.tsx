@@ -126,7 +126,7 @@ function HowSure({
             ))}
           </ul>
           <p className="note">
-            {t('sure.range')} {provisional && t('sure.provisional')}
+            {t('sure.range')} {provisional ? t('sure.provisional') : t('sure.simulatedModel')}
           </p>
         </>
       )}

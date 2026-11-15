@@ -118,6 +118,7 @@ export interface ReportLabels {
   rules: string;
   errorModel: string;
   provisional: string;
+  simulatedModel: string;
   thresholdsAndSources: string;
   whose: string;
   whoseValue: Record<'nasa' | 'assumption', string>;
@@ -260,7 +261,8 @@ const EN: ReportLabels = {
   noEngine: 'No exam was measured',
   rules: 'Rules',
   errorModel: 'Error model',
-  provisional: 'provisional: not measured yet',
+  provisional: 'provisional: ranges not validated',
+  simulatedModel: 'measured on simulated exams only, not on people',
   thresholdsAndSources: 'Thresholds and their sources',
   whose: 'Set by',
   whoseValue: { nasa: 'NASA', assumption: 'This tool (an assumption)' },
@@ -406,7 +408,8 @@ const ES: ReportLabels = {
   noEngine: 'No se midió ningún examen',
   rules: 'Reglas',
   errorModel: 'Modelo de error',
-  provisional: 'provisorio: todavía no se midió',
+  provisional: 'provisorio: rangos sin validar',
+  simulatedModel: 'medido solo sobre exámenes simulados, no con personas',
   thresholdsAndSources: 'Umbrales y sus fuentes',
   whose: 'Lo define',
   whoseValue: { nasa: 'NASA', assumption: 'Esta herramienta (un supuesto)' },

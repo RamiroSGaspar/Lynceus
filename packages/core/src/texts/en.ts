@@ -63,6 +63,7 @@ const NOT_MEASURED: Readonly<Record<NotMeasuredReason, string>> = {
   'bmo-mismatch-with-baseline': 'The optic nerve opening found today does not match the one in your pre-flight exam.',
   'insufficient-ring-coverage': 'Too little of the ring around the optic nerve could be measured.',
   decentered: 'The scan was not centred on the optic nerve.',
+  'outside-error-model': 'The capture was outside the conditions in which the error of this analysis was measured, so no number can be given for it.',
   'not-captured': 'No scan of this eye was taken.',
   'no-baseline': 'There is no pre-flight exam of this eye to compare with.',
 };
@@ -407,7 +408,7 @@ export const EN: Phrases = {
       case 'not-validated-on-people':
         return provisionalErrorModel
           ? 'This tool has not been validated on people. Its ranges and probabilities come from a provisional error model that has not been measured yet.'
-          : 'This tool has not been validated on people. Its ranges and probabilities come from its error on simulated eyes.';
+          : 'This tool has not been validated on people. Its ranges and probabilities come from its error measured on simulated eyes, drawn with the same model of the retina that the analysis expects; on real exams the error is larger and not known.';
       case 'ground-confirms':
         return 'Your flight surgeon on the ground confirms every result and has the final word.';
       case 'no-intracranial-pressure':

@@ -34,6 +34,13 @@ import { seedOf } from './texture';
  */
 export const NOMINAL_QUALITY_DB = 30;
 
+/**
+ * Version of the virtual instrument: what it draws for a given request. The `.vol`
+ * format alone does not identify it. Changes whenever the same request would give
+ * different pixels or headers.
+ */
+export const INSTRUMENT_VERSION = 'virtual-instrument-1';
+
 export interface AcquireOptions {
   /** false renders without speckle (noise-free engine tests, spec 01 test 5). Default true. */
   speckle?: boolean;

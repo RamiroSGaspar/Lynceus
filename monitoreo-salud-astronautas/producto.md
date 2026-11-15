@@ -156,7 +156,7 @@ Elegimos un solo problema y lo llevamos hasta el final, en lugar de un panel con
 
 ## 14. Estado actual
 
-Al domingo 15 de noviembre de 2026, después de integrar la historia medida (`3ef3d77`):
+Al domingo 15 de noviembre de 2026, después de cerrar la validación sintética y retomar la demo:
 
 | Parte | Estado |
 |---|---|
@@ -171,14 +171,21 @@ Al domingo 15 de noviembre de 2026, después de integrar la historia medida (`3e
 | Base de conocimiento y asistente | Construidos e integrados; falta probar las respuestas contra la API real |
 | Pantalla de captura y visor de la tomografía | Integrados; muestran el análisis y permiten repetir capturas rechazadas |
 | Historia y examen de antes del vuelo | Medidos con el mismo motor: 27 sesiones de los cuatro tripulantes, con sus pedidos y reintentos registrados |
-| Medición del error del análisis | Primera evaluación sobre datos simulados disponible; faltan validación ampliada y modelo de calidad e incertidumbre |
+| Medición del error del análisis | Evaluadas 621 capturas simuladas; informe y explicación bilingüe disponibles. El modelo ajustado no cumplió sus criterios y se conserva el provisorio |
 | Documentación en inglés y español, publicación, diapositivas y formulario | Falta |
 
-La entrega de historia pasó 655 pruebas automáticas y compiló. El recorrido en navegador
-incluyó el cuestionario, ambos ojos, un rechazo con repetición, resultado, visor, historia
-e informe, en inglés y español. En ese recorrido final se omitieron agudeza y Amsler;
-no se probaron una respuesta del asistente contra la API, el botón de descarga ni la
-impresión en papel. Las pruebas por separado no equivalen a validación clínica.
+La entrega reúne 672 pruebas automáticas comprobadas, además de compilación y control
+de credenciales. En el cierre se corrigió una prueba que modificaba por igual el examen
+y su referencia, cancelando el cambio que esperaba detectar; el módulo corregido pasó
+sus pruebas. El modelo de la aplicación sigue siendo el provisorio.
+
+En el control breve de la demo se recorrió Elena Voss, día 150: captura del ojo derecho,
+rechazo del izquierdo por parpadeo simulado, segundo intento aceptado, resultado,
+historia e informe con descarga. Se comprobaron textos en español e inglés y la nueva
+explicación de validación en ambos idiomas. Se saltearon cuestionario, agudeza y Amsler,
+y el resultado los identifica como no hechos. El visor y las pruebas de visión ya se
+habían comprobado en las entregas anteriores. Quedan sin probar la respuesta del
+asistente contra la API real y la impresión en papel. Esto no es validación clínica.
 
 La historia se regeneró dos veces y su archivo coincidió byte a byte. Además, se
 comprobó en el navegador el visor de una referencia y de un control cuyo primer

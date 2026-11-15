@@ -9,7 +9,9 @@
     "preview": "tsx src/preview.ts",
     "accuracy": "tsx src/accuracy.ts",
     "history:generate": "tsx src/history.ts",
-    "history:check": "tsx src/history.ts --check"
+    "history:check": "tsx src/history.ts --check",
+    "quality:run": "tsx src/quality/run.ts",
+    "quality:fit": "tsx src/quality/fit.ts"
   },
   "dependencies": {
     "@app/core": "workspace:*"

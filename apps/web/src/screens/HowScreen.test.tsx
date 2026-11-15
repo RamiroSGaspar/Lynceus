@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LOCALES, renderHtml, textOf, unfilledPlaceholders } from '../testing/render';
+import { ACTIVE_ERROR_MODEL, VALIDATION_SUMMARY } from '../app/core';
 import { HowScreen } from './HowScreen';
 
 describe('screen "how it works"', () => {
@@ -51,5 +52,30 @@ describe('screen "how it works"', () => {
   it('says that it has not been validated on people', () => {
     expect(textOf(renderHtml(<HowScreen />, 'en'))).toContain('it has not been validated on people');
     expect(textOf(renderHtml(<HowScreen />, 'es'))).toContain('no está validado con personas');
+  });
+
+  it.each(LOCALES)('shows in %s the validation as generated: sample, parts, errors, model and versions', (locale) => {
+    const html = renderHtml(<HowScreen />, locale);
+    const text = textOf(html);
+    expect(unfilledPlaceholders(html)).toEqual([]);
+    expect(text).toContain(String(VALIDATION_SUMMARY.sample.captures));
+    expect(text).toContain(VALIDATION_SUMMARY.protocol);
+    expect(text).toContain(VALIDATION_SUMMARY.versions.model);
+    expect(text).toContain(VALIDATION_SUMMARY.versions.instrument);
+    // Partitions table and error table: three parts, two measures each.
+    expect(html.match(/<table>/g)).toHaveLength(2);
+    for (const p of ['development', 'test-anatomy', 'test-family'] as const) expect(text).toContain(String(VALIDATION_SUMMARY.partitions[p].captures));
+    expect(text).toContain(locale === 'en' ? 'simulated exams' : 'exámenes simulados');
+  });
+
+  it('says whether the fitted model is in use, and what did not pass when it is not', () => {
+    const text = textOf(renderHtml(<HowScreen />, 'en'));
+    if (VALIDATION_SUMMARY.decision.activate) {
+      expect(ACTIVE_ERROR_MODEL.version).toBe(VALIDATION_SUMMARY.versions.model);
+      expect(text).toContain('passed every criterion fixed before its final test');
+    } else {
+      expect(text).toContain('still come from the provisional error model');
+      expect(text).toContain('(required');
+    }
   });
 });

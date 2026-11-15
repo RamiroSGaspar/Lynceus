@@ -19,6 +19,7 @@ import type {
   Sector,
 } from '../contract';
 import { DECENTRATION_LIMIT_MM } from '../constants';
+import { ACTIVE_ERROR_MODEL } from '../rules/activeErrorModel';
 import { ellipseArea, type Ellipse } from '../math/ellipse';
 import { SECTORS } from '../sectors';
 import { bmRoughness, fitOpening, minimumRimWidth, ringThickness, type Geometry } from './measure';
@@ -64,6 +65,7 @@ function toBmoEllipse(e: Ellipse, rmsUm: number, used: number, rejected: number)
 
 /** Same as `analyzeExam`, delivering a progress report for every step of every scan. */
 export function* analyzeExamSteps(exam: ExamSource, options: AnalyzeOptions = {}): Generator<AnalysisProgress, ExamAnalysis> {
+  const errorModel = options.errorModel ?? ACTIVE_ERROR_MODEL;
   const h = exam.header;
   const n = h.numBScans;
   yield { step: 'read', scansTotal: n };
@@ -173,6 +175,18 @@ export function* analyzeExamSteps(exam: ExamSource, options: AnalyzeOptions = {}
     decentrationUm,
   });
 
+  const quality: ExamAnalysis['quality'] = {
+    usableScans: usable,
+    totalScans: n,
+    meanQualityDb: meanQ,
+    minQualityDb: Math.min(...q),
+    decentrationUm,
+    features,
+  };
+  // The error model's domain (specification 08): a capture the engine could measure but whose
+  // error was not validated is not measured either. It never turns a refusal into a measure.
+  if (rejections.length === 0 && errorModel.supports && !errorModel.supports(quality).supported) rejections.push('outside-error-model');
+
   const ok = rejections.length === 0;
   const sectorValues = mrw ? SECTORS.filter((s) => mrw!.bySector.has(s)).map((sector: Sector) => ({ sector, value: measured(mrw!.bySector.get(sector)!, 'µm', ['P6']) })) : [];
   const analysis: ExamAnalysis = {
@@ -184,14 +198,7 @@ export function* analyzeExamSteps(exam: ExamSource, options: AnalyzeOptions = {}
     examTimeMs: h.examTimeMs,
     status: ok ? 'measured' : 'cannot-measure',
     rejections,
-    quality: {
-      usableScans: usable,
-      totalScans: n,
-      meanQualityDb: meanQ,
-      minQualityDb: Math.min(...q),
-      decentrationUm,
-      features,
-    },
+    quality,
     bmo: ok && fit ? toBmoEllipse(fit.ellipse, fit.rmsUm, used, pts.length - used) : null,
     bmoSource,
     rings: ok ? rings : [],

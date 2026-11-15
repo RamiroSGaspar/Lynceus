@@ -400,7 +400,7 @@ function versions({ record, locale, L }: Context): ReportSection {
         [L.rules, assessment.rulesVersion],
         [
           L.errorModel,
-          isProvisionalErrorModel(assessment.errorModelVersion) ? `${errorModel} (${L.provisional})` : errorModel,
+          isProvisionalErrorModel(assessment.errorModelVersion) ? `${errorModel} (${L.provisional})` : `${errorModel} (${L.simulatedModel})`,
         ],
       ]),
       { caption: L.thresholdsAndSources, columns: [L.threshold, L.value, L.whose, L.sources], rows },

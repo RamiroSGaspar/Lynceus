@@ -1,8 +1,10 @@
 # Arquitectura de Lynceus (nombre provisorio)
 
 > **Estado:** diseño aprobado y prototipo integrado, con historia y referencias
-> medidas por el motor. La validación ampliada y los modelos de calidad e
-> incertidumbre siguen pendientes. El estado de cada entrega se mantiene en
+> medidas por el motor. La validación sintética del error (especificación 08) está
+> hecha y publicada; su modelo no cumplió los criterios fijados antes de la prueba
+> final, así que los rangos siguen saliendo del modelo provisorio
+> (`packages/validation/out/quality-validation.md`). El estado de cada entrega se mantiene en
 > `producto.md`, sección 14.
 
 | | |
@@ -183,7 +185,13 @@ Aceptados en la ronda 2: todo número se puede rastrear hasta la imagen y la fue
 11. Agudeza de cerca: la función psicométrica del procedimiento adaptativo (logística en logMAR, pendiente 15 por logMAR, 2 % de respuestas erradas por distracción; los valores propios de FrACT no se leyeron), los pasos intermedios de las cuatro primeras figuras (1,0; 0,7; 0,4; 0,1 logMAR), la figura más grande (1,3 logMAR) y el criterio de "no converge" (estimación más allá de la figura más grande, o respuestas que no se distinguen del azar con una prueba de cociente de verosimilitud al 5 %).
 12. La historia que viene con la aplicación se calcula con hasta tres intentos por ojo y por sesión, también para el examen de antes del vuelo (extiende el 10). Si ese examen no puede medirse en algún ojo, el conjunto no se publica; no se reemplaza por una tabla. Los controles siguen el calendario que dan las reglas con las medidas del motor, no uno fijado de antemano.
 13. La visión de la historia (cuestionario, agudeza de cerca y grilla de Amsler de cada control) es un escenario ficticio por tripulante, no sale de una tomografía. Conserva las semillas y los valores de la historia provisoria, para que lo único que cambie sea lo que mide el motor.
-14. El instrumento virtual no tiene un número de versión propio: el archivo de la historia lo identifica por el formato de examen y de corte que escribe y por los pedidos completos de cada captura.
+14. El instrumento virtual se identifica con `INSTRUMENT_VERSION` (`virtual-instrument-1`), que cambia cuando un mismo pedido daría otros píxeles o cabeceras; el formato `.vol` solo no alcanza. Hasta la especificación 08 no tenía versión propia y el archivo de la historia lo identificaba por los formatos de examen y de corte y por los pedidos completos de cada captura.
+15. Validación sintética (`packages/validation/protocol.md`, `sim-validation-protocol-1`): la matriz de capturas, sus niveles de falla y su frecuencia son una elección del experimento y no representan la frecuencia de fallas en astronautas. Las capturas con fallas explícitas apuntan a 30 dB sin variación entre cortes, como está escrito el instrumento. La segunda referencia de cada ojo (intento 9 del día 0) lleva el pequeño error de registro de un examen de seguimiento.
+16. Particiones de esa validación: la prueba final con anatomía nueva es el tripulante C (los dos ojos que cruzan 19,4 y 55 µm y tienen pliegues); la de fallas nuevas, el borde apagado y las combinaciones sobre A, B y D. Con cuatro personas ficticias, la prueba de anatomía nueva son dos ojos de una sola persona.
+17. Forma del modelo de error: normal de media cero, sin corrección de sesgo; desvío `k·√(s(hoy)² + s(referencia)²)` con `s = exp(β₀ + Σβ·z)` sobre siete variables de calidad que calcula el motor; selección hacia adelante por validación cruzada dejando un tripulante afuera (mejora mínima de 2 en la log-verosimilitud, hasta 3 variables, sin coeficientes negativos); calibración `k = max(1, q95(|z|)/1,96)`. La aproximación normal de `probabilityBeyond` se comprueba solo sobre estos errores simulados.
+18. Dominio del modelo (vale cuando ese modelo es el activo; hoy no lo es): una captura con alguna variable que no es un número o que supera el máximo visto en desarrollo no se mide ("no puedo medir", motivo `outside-error-model`); del lado mejor la variable se recorta al mínimo visto, para no extrapolar un error menor que el medido.
+19. Tolerancias de ingeniería de esa validación (no son umbrales de la NASA): error del cambio de TRT ≤ 6 µm y de rugosidad ≤ 1,5 µm en cada captura aceptada (especificación 01, prueba 6); cobertura observada del rango del 95 % ≥ 90 % con límite inferior de Wilson ≥ 85 %; a lo sumo 2 % de pares más allá de 3 desvíos; al menos 50 pares por prueba; a lo sumo 10 % de capturas limpias fuera del dominio. El modelo nuevo se activa solo si todas se cumplen en las dos pruebas y para las dos medidas.
+20. El índice de calidad (unos 25 dB en una captura limpia) es la implementación del simulador de la definición de la especificación 01, 5.4, no una calibración validada del índice del equipo real; la validación lo usa como está.
 
 ## 13. Plan de construcción
 

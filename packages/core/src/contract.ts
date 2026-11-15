@@ -13,6 +13,7 @@
  * the vitreous (row 0) into the eye.
  */
 import type { Locale } from './product';
+import type { ErrorModel } from './rules/errorModel';
 
 // ---------------------------------------------------------------- Identity
 
@@ -190,7 +191,9 @@ export type ExamRejection =
   | 'bmo-fit-failed'
   | 'bmo-mismatch-with-baseline'
   | 'insufficient-ring-coverage'
-  | 'decentered';
+  | 'decentered'
+  /** The capture is outside the conditions where the error of the analysis was measured. */
+  | 'outside-error-model';
 
 /** One end of Bruch's membrane in one B-scan. */
 export interface BmoPoint {
@@ -311,6 +314,11 @@ export interface AnalyzeOptions {
   baseline?: ExamSummary;
   /** Called after each B-scan has been analysed. */
   onScan?: (scan: ScanAnalysis) => void;
+  /**
+   * Error model whose domain decides whether a capture can be measured (specification 08).
+   * Defaults to the active one; validation passes it explicitly.
+   */
+  errorModel?: ErrorModel;
 }
 
 // ----------------------------------------------------------- Ground truth

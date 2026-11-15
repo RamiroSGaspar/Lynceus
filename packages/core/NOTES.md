@@ -14,6 +14,7 @@ especificación y qué falta.
 | 4. Motor | Hecho |
 | 5. `accuracy`, precisión, rechazo y rendimiento | Hecho |
 | 6. Historia y referencias medidas por el motor (especificación 07) | Hecho |
+| 7. Validación sintética del error y modelo de error (especificación 08) | Hecho; modelo **no activado** |
 
 **Resultados** (`packages/validation/out/accuracy.md`): cambio del anillo 0–250 µm con error ≤ 6 µm en
 32 de 32 casos, error máximo 0,7 µm, RMS 0,24 µm; cambio de rugosidad con error máximo 0,36 µm. Sin
@@ -63,6 +64,46 @@ pnpm --filter @app/validation history:generate -- --crew A,B --concurrency 1   #
 - Los registros viejos guardados en un navegador por la versión provisoria llevan `PROVISIONAL_ENGINE_VERSION`
   y la pantalla de resultado sigue avisando que sus números no se midieron sobre una imagen; no se renombran
   ni se borran.
+
+## Validación sintética del error (especificación 08)
+
+Protocolo versionado `sim-validation-protocol-1` en `packages/validation/protocol.md`, escrito y
+guardado antes de generar la muestra. Se corre a mano:
+
+```
+pnpm --filter @app/validation quality:run            # mide la matriz (621 capturas, ~28 min con 2 hilos)
+pnpm --filter @app/validation quality:fit            # elige, ajusta, calibra y evalúa la prueba final (~1 s)
+pnpm --filter @app/validation quality:fit -- --check # compara con lo publicado
+```
+
+- `quality:run` escribe `out/quality-rows.json` (una fila por captura: pedido, estado, motivos,
+  características del motor, medidas y, aparte, el valor verdadero; sin píxeles; ~770 KB) y
+  `out/quality-run.md` (tiempos). Caché por captura en `.tmp/quality-cache/<protocolo>/<motor>/<instrumento>/`,
+  con clave por pedido y referencia. El motor se corre con el modelo provisorio, que no rechaza nada
+  propio: las filas guardan solo los rechazos del motor.
+- `quality:fit` escribe `out/quality-validation.md` (informe completo) y
+  `src/dataset/validation-summary.json` (`VALIDATION_SUMMARY`, lo que muestra "Cómo funciona", con los
+  coeficientes). Una prueba de `packages/validation` comprueba que los dos son lo que da el comando.
+- La segunda corrida sin caché se interrumpió al pausar el trabajo. El archivo conservado
+  coincide byte a byte con la primera corrida (SHA-256 `44510818ce6e49bc9545a7bc551faa3abb5d36e76c7e8a616ef1cbc26970b394`);
+  esto comprueba que se preservó el resultado, no que terminara la segunda corrida ni su
+  reproducibilidad. El cierre usa la primera corrida, sin repetir el experimento.
+- **Resultado:** 8 ojos, 16 referencias, 621 capturas. Prueba P1 (tripulante C): 78 pares, cobertura
+  del rango del 95 % de 98,7 % en TRT y 97,4 % en rugosidad, pero error máximo 8,9 µm y 3,0 µm (tolerancias
+  6 y 1,5) y 21 % de capturas limpias de C fuera del dominio (residuo de la elipse mayor que el visto en
+  desarrollo). Prueba P2 (fallas nuevas): solo 24 pares (el borde apagado sale entero del dominio por
+  columnas sin borde), cobertura 79 % en rugosidad. **No se activa**: `ACTIVE_ERROR_MODEL` sigue siendo el
+  provisorio, la historia no cambia y el texto "provisorio" se mantiene.
+- **Defectos del motor encontrados (no se tocaron, especificación 08):** capturas que el motor acepta con
+  errores grandes del cambio de TRT, hasta 7,9 µm en desarrollo y 11,5 µm en P2: parpadeos de 6 a 10
+  cortes, truncamiento en un subconjunto de cortes y movimiento. El movimiento leve (0,1–0,3) que el motor
+  acepta suma en promedio +1,2 a +1,6 µm de rugosidad (máximo 3,45 µm, más que el umbral de pliegues de
+  2,8 µm): puede dar "pliegues nuevos" falsos. El índice de calidad no anticipa el error (su coeficiente
+  sale negativo solo): los peores errores están en capturas de ≥ 24 dB. Hay 15 pares aceptados fuera de
+  tolerancia en TRT y 20 en rugosidad.
+- El motor ya acepta `AnalyzeOptions.errorModel` y rechaza con `outside-error-model` lo que el modelo no
+  respalda; con el provisorio activo no cambia nada (misma historia, `history:check` pasa), por eso no
+  cambió `ENGINE_VERSION` ni `RULES_VERSION`.
 
 ## Mapa del código
 

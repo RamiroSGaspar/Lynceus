@@ -27,7 +27,9 @@ export const resultMessages = defineMessages(
     'sure.above': 'more than {value}',
     'sure.range': 'A range is where the real value is expected 95 times out of 100.',
     'sure.provisional':
-      'These ranges and probabilities come from a provisional error model: the error of the analysis has not been measured yet.',
+      'These ranges and probabilities come from a provisional error model. The evaluation on simulated exams did not provide enough evidence to replace it with the fitted model.',
+    'sure.simulatedModel':
+      'These ranges and probabilities come from the error of the analysis measured on simulated exams. On real exams the error is larger and not known, and they are not the probability of having the syndrome.',
     'sure.quality': 'Capture quality',
     'sure.quality.scans': '{usable} of {total} scans usable',
     'sure.quality.scale': 'The scale goes from 0 to {max} dB; below {poor} dB the signal is poor.',
@@ -60,6 +62,7 @@ export const resultMessages = defineMessages(
     'rejection.bmo-mismatch-with-baseline': 'the opening found does not match the one of the pre-flight exam',
     'rejection.insufficient-ring-coverage': 'too little of the ring around the optic nerve could be measured',
     'rejection.decentered': 'the scan was not centred on the optic nerve',
+    'rejection.outside-error-model': 'the capture was outside the conditions in which the error of this analysis was measured',
     'rejection.low-signal': 'weak signal',
     'rejection.signal-dropout': 'part of the image missing, as with a blink',
     'rejection.truncated': 'retina cut off at the top of the image',
@@ -149,7 +152,9 @@ export const resultMessages = defineMessages(
     'sure.above': 'más de {value}',
     'sure.range': 'Un rango es donde se espera el valor real 95 de cada 100 veces.',
     'sure.provisional':
-      'Estos rangos y probabilidades salen de un modelo de error provisorio: el error del análisis todavía no se midió.',
+      'Estos rangos y probabilidades salen de un modelo de error provisorio. La evaluación sobre exámenes simulados no dio evidencia suficiente para reemplazarlo por el modelo ajustado.',
+    'sure.simulatedModel':
+      'Estos rangos y probabilidades salen del error del análisis medido sobre exámenes simulados. En exámenes reales el error es mayor y no se conoce, y no son la probabilidad de tener el síndrome.',
     'sure.quality': 'Calidad de la captura',
     'sure.quality.scans': '{usable} de {total} cortes sirven',
     'sure.quality.scale': 'La escala va de 0 a {max} dB; con menos de {poor} dB la señal es pobre.',
@@ -182,6 +187,7 @@ export const resultMessages = defineMessages(
     'rejection.bmo-mismatch-with-baseline': 'la abertura encontrada no coincide con la del examen de antes del vuelo',
     'rejection.insufficient-ring-coverage': 'se pudo medir muy poco del anillo que rodea al nervio óptico',
     'rejection.decentered': 'la tomografía no quedó centrada en el nervio óptico',
+    'rejection.outside-error-model': 'la captura quedó fuera de las condiciones en las que se midió el error de este análisis',
     'rejection.low-signal': 'señal débil',
     'rejection.signal-dropout': 'faltó una parte de la imagen, como con un parpadeo',
     'rejection.truncated': 'retina cortada en el borde de arriba de la imagen',

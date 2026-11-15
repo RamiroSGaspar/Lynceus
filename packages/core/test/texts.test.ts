@@ -420,7 +420,7 @@ describe('texts: what a result means and what it does not', () => {
     }
     const validated = { ...CASES.noChange!, errorModelVersion: 'validated-1' };
     expect(explainAssessment(validated, 'en').limitations[2]!.text).toBe(
-      'This tool has not been validated on people. Its ranges and probabilities come from its error on simulated eyes.',
+      'This tool has not been validated on people. Its ranges and probabilities come from its error measured on simulated eyes, drawn with the same model of the retina that the analysis expects; on real exams the error is larger and not known.',
     );
     expect(explainAssessment(CASES.noChange!, 'en').limitations.map((limitation) => limitation.text)).toEqual([
       'This is not a diagnosis: it is a first reading of a measurement against NASA’s published thresholds.',

@@ -1,0 +1,395 @@
+{
+  "format": "validation-summary-1",
+  "simulated": true,
+  "notice": "Simulated data. Not a medical device. Not validated on people.",
+  "protocol": "sim-validation-protocol-1",
+  "versions": {
+    "engine": "0.1.0",
+    "instrument": "virtual-instrument-1",
+    "examFormat": "HSF-OCT-103",
+    "scanFormat": "HSF-BS-103",
+    "model": "sim-1"
+  },
+  "sample": {
+    "crewMembers": 4,
+    "eyes": 8,
+    "references": 16,
+    "captures": 621
+  },
+  "partitions": {
+    "development": {
+      "crew": [
+        "A",
+        "B",
+        "D"
+      ],
+      "eyes": 6,
+      "captures": 362,
+      "engineRefused": 118,
+      "modelRefused": 0,
+      "pairs": 232,
+      "results": {
+        "trt": {
+          "pairs": 232,
+          "eyes": 6,
+          "biasUm": -0.027009151462518467,
+          "rmseUm": 1.7629672060047503,
+          "maeUm": 0.8360602639520501,
+          "maxAbsUm": 7.935480778996066,
+          "medianSeUm": 0.4448523961982479,
+          "coverage": 0.9698275862068966,
+          "coverageLow": 0.9390406512119887,
+          "coverageHigh": 0.985309126346593,
+          "beyond3Se": 0
+        },
+        "roughness": {
+          "pairs": 232,
+          "eyes": 6,
+          "biasUm": 0.027752766877559617,
+          "rmseUm": 0.5804787253071925,
+          "maeUm": 0.2593932905476403,
+          "maxAbsUm": 3.450371178859624,
+          "medianSeUm": 0.2331730748947743,
+          "coverage": 0.9525862068965517,
+          "coverageLow": 0.9171070884078172,
+          "coverageHigh": 0.9733215963963211,
+          "beyond3Se": 0.03017241379310345
+        }
+      }
+    },
+    "test-anatomy": {
+      "crew": [
+        "C"
+      ],
+      "eyes": 2,
+      "captures": 171,
+      "engineRefused": 53,
+      "modelRefused": 36,
+      "pairs": 78,
+      "results": {
+        "trt": {
+          "pairs": 78,
+          "eyes": 2,
+          "biasUm": -0.4219015587175232,
+          "rmseUm": 2.445428676370258,
+          "maeUm": 1.107436324288795,
+          "maxAbsUm": 8.935940671909066,
+          "medianSeUm": 0.42972583748288185,
+          "coverage": 0.9871794871794872,
+          "coverageLow": 0.930891429982978,
+          "coverageHigh": 0.9977332682461664,
+          "beyond3Se": 0
+        },
+        "roughness": {
+          "pairs": 78,
+          "eyes": 2,
+          "biasUm": 0.022613920922555115,
+          "rmseUm": 0.5548680340170895,
+          "maeUm": 0.2697205191624789,
+          "maxAbsUm": 2.9586107706996145,
+          "medianSeUm": 0.2331730748947743,
+          "coverage": 0.9743589743589743,
+          "coverageLow": 0.9112472996432415,
+          "coverageHigh": 0.9929399065272408,
+          "beyond3Se": 0.01282051282051282
+        }
+      }
+    },
+    "test-family": {
+      "crew": [
+        "A",
+        "B",
+        "D"
+      ],
+      "eyes": 6,
+      "captures": 88,
+      "engineRefused": 39,
+      "modelRefused": 25,
+      "pairs": 24,
+      "results": {
+        "trt": {
+          "pairs": 24,
+          "eyes": 6,
+          "biasUm": -0.025573856988664545,
+          "rmseUm": 3.2019609241481017,
+          "maeUm": 1.953273426531588,
+          "maxAbsUm": 11.486848827930146,
+          "medianSeUm": 3.903031110737516,
+          "coverage": 0.9583333333333334,
+          "coverageLow": 0.7975819352134406,
+          "coverageHigh": 0.9926065438344942,
+          "beyond3Se": 0.041666666666666664
+        },
+        "roughness": {
+          "pairs": 24,
+          "eyes": 6,
+          "biasUm": 0.6982323082070393,
+          "rmseUm": 1.359436248853541,
+          "maeUm": 0.8419805932031598,
+          "maxAbsUm": 3.380847232182136,
+          "medianSeUm": 0.36743916661202847,
+          "coverage": 0.7916666666666666,
+          "coverageLow": 0.5952954674681133,
+          "coverageHigh": 0.9075517464714814,
+          "beyond3Se": 0.08333333333333333
+        }
+      }
+    }
+  },
+  "examErrorCorrelation": {
+    "trt": 0.10295045364833474,
+    "roughness": 0.13555678539179636,
+    "pairs": 395,
+    "references": 16
+  },
+  "grossErrors": {
+    "trt": 15,
+    "roughness": 20,
+    "toleranceTrtUm": 6,
+    "toleranceRoughnessUm": 1.5
+  },
+  "model": {
+    "version": "sim-1",
+    "calibration": {
+      "trt": 1.4161261440407786,
+      "roughness": 1
+    },
+    "trt": {
+      "intercept": -1.634728775962449,
+      "terms": [
+        {
+          "feature": "ringCoverage",
+          "beta": 17.717812601321288
+        },
+        {
+          "feature": "quality",
+          "beta": 0.7279366405564234
+        }
+      ]
+    },
+    "roughness": {
+      "intercept": -1.8025478807365531,
+      "terms": [
+        {
+          "feature": "motion",
+          "beta": 7.3114810507226045
+        }
+      ]
+    },
+    "domain": {
+      "quality": {
+        "min": -0.8529338111247291,
+        "max": 1.8368880311999956
+      },
+      "unusedScans": {
+        "min": 0,
+        "max": 0.125
+      },
+      "bmoFit": {
+        "min": 0.6050555007575018,
+        "max": 1.1370777666332945
+      },
+      "decentration": {
+        "min": 0.22517772286652854,
+        "max": 4.360707044037631
+      },
+      "ringCoverage": {
+        "min": 0,
+        "max": 0.26086956521739135
+      },
+      "motion": {
+        "min": 0,
+        "max": 0.9791666666666666
+      },
+      "missingColumns": {
+        "min": 0,
+        "max": 0.0369737734781016
+      }
+    }
+  },
+  "decision": {
+    "activate": false,
+    "criteria": [
+      {
+        "id": "min-pairs",
+        "partition": "test-anatomy",
+        "measure": "both",
+        "value": 78,
+        "limit": 50,
+        "comparison": ">=",
+        "passed": true
+      },
+      {
+        "id": "max-abs-error",
+        "partition": "test-anatomy",
+        "measure": "trt",
+        "value": 8.935940671909066,
+        "limit": 6,
+        "comparison": "<=",
+        "passed": false
+      },
+      {
+        "id": "coverage",
+        "partition": "test-anatomy",
+        "measure": "trt",
+        "value": 0.9871794871794872,
+        "limit": 0.9,
+        "comparison": ">=",
+        "passed": true
+      },
+      {
+        "id": "coverage-low",
+        "partition": "test-anatomy",
+        "measure": "trt",
+        "value": 0.930891429982978,
+        "limit": 0.85,
+        "comparison": ">=",
+        "passed": true
+      },
+      {
+        "id": "beyond-3-se",
+        "partition": "test-anatomy",
+        "measure": "trt",
+        "value": 0,
+        "limit": 0.02,
+        "comparison": "<=",
+        "passed": true
+      },
+      {
+        "id": "max-abs-error",
+        "partition": "test-anatomy",
+        "measure": "roughness",
+        "value": 2.9586107706996145,
+        "limit": 1.5,
+        "comparison": "<=",
+        "passed": false
+      },
+      {
+        "id": "coverage",
+        "partition": "test-anatomy",
+        "measure": "roughness",
+        "value": 0.9743589743589743,
+        "limit": 0.9,
+        "comparison": ">=",
+        "passed": true
+      },
+      {
+        "id": "coverage-low",
+        "partition": "test-anatomy",
+        "measure": "roughness",
+        "value": 0.9112472996432415,
+        "limit": 0.85,
+        "comparison": ">=",
+        "passed": true
+      },
+      {
+        "id": "beyond-3-se",
+        "partition": "test-anatomy",
+        "measure": "roughness",
+        "value": 0.01282051282051282,
+        "limit": 0.02,
+        "comparison": "<=",
+        "passed": true
+      },
+      {
+        "id": "min-pairs",
+        "partition": "test-family",
+        "measure": "both",
+        "value": 24,
+        "limit": 50,
+        "comparison": ">=",
+        "passed": false
+      },
+      {
+        "id": "max-abs-error",
+        "partition": "test-family",
+        "measure": "trt",
+        "value": 11.486848827930146,
+        "limit": 6,
+        "comparison": "<=",
+        "passed": false
+      },
+      {
+        "id": "coverage",
+        "partition": "test-family",
+        "measure": "trt",
+        "value": 0.9583333333333334,
+        "limit": 0.9,
+        "comparison": ">=",
+        "passed": true
+      },
+      {
+        "id": "coverage-low",
+        "partition": "test-family",
+        "measure": "trt",
+        "value": 0.7975819352134406,
+        "limit": 0.85,
+        "comparison": ">=",
+        "passed": false
+      },
+      {
+        "id": "beyond-3-se",
+        "partition": "test-family",
+        "measure": "trt",
+        "value": 0.041666666666666664,
+        "limit": 0.02,
+        "comparison": "<=",
+        "passed": false
+      },
+      {
+        "id": "max-abs-error",
+        "partition": "test-family",
+        "measure": "roughness",
+        "value": 3.380847232182136,
+        "limit": 1.5,
+        "comparison": "<=",
+        "passed": false
+      },
+      {
+        "id": "coverage",
+        "partition": "test-family",
+        "measure": "roughness",
+        "value": 0.7916666666666666,
+        "limit": 0.9,
+        "comparison": ">=",
+        "passed": false
+      },
+      {
+        "id": "coverage-low",
+        "partition": "test-family",
+        "measure": "roughness",
+        "value": 0.5952954674681133,
+        "limit": 0.85,
+        "comparison": ">=",
+        "passed": false
+      },
+      {
+        "id": "beyond-3-se",
+        "partition": "test-family",
+        "measure": "roughness",
+        "value": 0.08333333333333333,
+        "limit": 0.02,
+        "comparison": "<=",
+        "passed": false
+      },
+      {
+        "id": "clean-model-refused",
+        "partition": "test-anatomy",
+        "measure": "both",
+        "value": 0.21052631578947367,
+        "limit": 0.1,
+        "comparison": "<=",
+        "passed": false
+      },
+      {
+        "id": "finite-coefficients",
+        "partition": "development",
+        "measure": "both",
+        "value": 1,
+        "limit": 1,
+        "comparison": ">=",
+        "passed": true
+      }
+    ]
+  }
+}

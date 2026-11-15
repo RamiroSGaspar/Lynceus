@@ -6,11 +6,13 @@
 import { getHistory as coreGetHistory, type CrewId, type SessionRecord } from '@app/core';
 
 export {
+  ACTIVE_ERROR_MODEL,
   CREW,
   MISSION,
   PROVISIONAL_ENGINE_VERSION,
   TRT_CLINICALLY_CONCERNING_UM,
   TRT_FIRST_SIGN_UM,
+  VALIDATION_SUMMARY,
   assessSession,
   explainAssessment,
   isProvisionalErrorModel,

@@ -7,12 +7,23 @@
  */
 import type { ExamQuality } from '../contract';
 
+/** Whether an error model has a measured error for an exam: when not, which variable is outside and why. */
+export type ErrorModelSupport =
+  | { supported: true }
+  | { supported: false; feature: string; reason: 'not-a-number' | 'beyond-validated-range' };
+
 export interface ErrorModel {
   version: string;
   /** Standard error of the change of the 0–250 µm ring between two exams. */
   trtChangeSeUm(current: ExamQuality, baseline: ExamQuality): number;
   /** Standard error of the change of the roughness of Bruch's membrane between two exams. */
   roughnessChangeSeUm(current: ExamQuality, baseline: ExamQuality): number;
+  /**
+   * Whether the model was validated for an exam like this one. Absent: every exam is
+   * supported (the provisional model makes no claim of its own to restrict). An exam
+   * that is not supported is not measured: no number is shown for it.
+   */
+  supports?(quality: ExamQuality): ErrorModelSupport;
 }
 
 // PROVISIONAL values, an assumption of this project until the validation stage
