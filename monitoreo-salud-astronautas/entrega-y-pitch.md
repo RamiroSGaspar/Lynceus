@@ -1,6 +1,9 @@
 # Entrega y pitch: qué se presenta y cómo
 
-> **Estado:** borrador del 14 de noviembre de 2026. El guion de las diapositivas depende de decisiones todavía abiertas (nombre y alcance final).
+> **Estado:** guion de trabajo actualizado el 15 de noviembre de 2026. El repositorio
+> ya está publicado; faltan las diapositivas finales, el formulario y el sitio público.
+> Para cifras y límites, usar [evidencia](../docs/es/evidence.md) y
+> [supuestos](../docs/assumptions.md).
 
 | | |
 |---|---|
@@ -58,10 +61,10 @@ Cinco criterios, de 1 a 5 cada uno, en todas las etapas:
 
 | Criterio | Qué mira | Cómo lo cubre este proyecto (**propuesta**) |
 |---|---|---|
-| Impact | Qué problema ataca y a cuántos ayuda | El síndrome afecta a cerca del 70 % de los astronautas de la estación y no da síntomas |
-| Creativity | Originalidad | Medir lo mismo que mide la NASA y devolvérselo al propio astronauta, con su incertidumbre |
+| Impact | Qué problema ataca y a cuántos ayuda | En las fuentes revisadas, cerca del 70 % de tripulantes de vuelos largos presenta algún signo de SANS; pueden aparecer cambios sin síntomas notorios |
+| Creativity | Originalidad | Comparar medidas inspiradas en métodos publicados con la referencia del astronauta y explicar el resultado y su incertidumbre provisoria |
 | Validity | Base científica y factibilidad; usabilidad | Definiciones y umbrales de la NASA; motor probado contra datos de valor conocido |
-| Relevance | Responde al desafío y usa datos de la NASA como parte central | Los umbrales, el calendario y las pruebas salen de documentos de la NASA |
+| Relevance | Responde al desafío y usa datos de la NASA como parte central | Usa umbrales y calendario publicados por NASA; las adaptaciones de pruebas y seguimiento se identifican como supuestos |
 | Presentation | Claridad de la historia; evalúa la demo y la página completa | Diapositivas más aplicación funcionando |
 
 Etapas y fechas:
@@ -75,7 +78,7 @@ Etapas y fechas:
 | # | Diapositiva | Contenido |
 |---|---|---|
 | 1 | Título | Nombre del proyecto y frase. Nombre del equipo, integrantes y desafío |
-| 2 | El problema | La mayoría de los astronautas desarrolla hinchazón del nervio óptico y no la siente. Hoy las imágenes las leen especialistas en Tierra y el astronauta espera |
+| 2 | El problema | En vuelos largos pueden aparecer cambios oculares sin síntomas notorios. La interpretación depende de especialistas y las misiones lejanas necesitan más autonomía para una primera lectura |
 | 3 | Qué es | La promesa en una frase y una captura del resultado que ve el astronauta |
 | 4 | Cómo funciona | El proceso completo en un diagrama: captura, control de calidad, marcado de capas, medición, comparación con la imagen de antes del vuelo, incertidumbre, nivel y próximo paso |
 | 5 | La experiencia | Capturas de la sesión guiada: captura, pruebas de visión, resultado e informe para el médico |
@@ -88,7 +91,7 @@ Etapas y fechas:
 - [ ] Averiguar con el organizador local si hay presentación en vivo u horarios propios.
 - [ ] Nombre del proyecto definido.
 - [ ] Aplicación publicada y link público probado sin iniciar sesión.
-- [ ] Repositorio público.
+- [x] [Repositorio público](https://github.com/RamiroSGaspar/Lynceus).
 - [ ] Diapositivas en inglés, 7 como máximo, con link público probado.
 - [ ] Textos del formulario en inglés.
 - [ ] Lista de datos y recursos de la NASA.

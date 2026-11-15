@@ -7,6 +7,9 @@ La pausa queda levantada. La validación existente se cerró en `validacion`
 (`b1969cc`) y se incorpora a `master`, con el modelo provisorio activo.
 
 - **Demo local:** http://127.0.0.1:5178/ — terminal de Orca «Demo local» en `master`.
+- **Repositorio público:** https://github.com/RamiroSGaspar/Lynceus — rama principal
+  `master`, publicada por autorización de Ramiro. La publicación del sitio web
+  sigue pendiente.
 - **Resultado del recorrido:** http://127.0.0.1:5178/#/result/B/150 .
 - **Caso comprobado:** Elena Voss, día 150. Derecho aceptado; izquierdo rechazado
   por parpadeo simulado y aceptado al repetir; resultado, historia e informe.
@@ -38,7 +41,44 @@ La documentación ya está escrita: [README](../README.es.md), guías públicas 
 [guía personal](guia-para-defender-el-proyecto.md).
 
 1. Siete diapositivas y texto del formulario a partir de `producto.md`.
-2. Publicación cuando Ramiro la autorice y defina el destino.
+2. Publicación de la demo cuando Ramiro autorice y defina el proyecto de alojamiento.
+
+### Primera subida a GitHub
+
+Se publicó la versión integrada de `master`, con código, pruebas, documentación,
+investigaciones, historia simulada y artefactos de validación. El historial inicial
+contiene 111 commits hasta `7a85491`; se revisaron 567 versiones de archivos sin
+coincidencias de credenciales ni archivos que excedan el límite de 100 MiB.
+
+Quedan fuera del repositorio:
+
+- `.env.local` y otras credenciales: se cargan aparte en el servidor.
+- `node_modules`, compilaciones y cachés: se reconstruyen con pnpm.
+- `.tmp`, registros y material temporal: el cierre útil está en la documentación
+  versionada.
+- Exámenes `.vol` generados: se reconstruyen con los pedidos y semillas; las
+  medidas y los resultados de validación sí están publicados.
+- Ramas auxiliares, sesiones y configuración local de Orca: se publicó `master`;
+  los commits ya integrados sí forman parte de su historial.
+
+La otra sesión del workspace recibió propuestas de tareas para el equipo:
+demostración guiada breve, diseño de diapositivas, relato y formulario a partir de
+textos existentes, y una prueba de comprensión con observaciones concretas.
+No requieren leer toda la investigación antes de aportar.
+
+### Comprobación al publicar
+
+Pasaron los tipos y 679 pruebas funcionales. La prueba restante, de rendimiento
+de un examen simulado con el modelo ocular ya construido, no alcanzó el objetivo
+de menos de 10 s: dio 16,71 s en la suite y 14,43 s al ejecutarla sola.
+El equipo estaba a batería, con gobernador `powersave`; esa observación no
+demuestra por sí sola la causa. El examen se midió correctamente.
+
+No cambió el código ejecutable respecto de la versión previamente comprobada.
+La limitación de tiempo queda registrada para revisar el rendimiento en el equipo
+de presentación; no se modificó el umbral de la prueba ni se repitió el experimento
+de 621 capturas. Comando acotado para comprobarla:
+`pnpm --filter @app/validation exec vitest run test/performance.test.ts`.
 
 ### Asistente: prueba real completada
 

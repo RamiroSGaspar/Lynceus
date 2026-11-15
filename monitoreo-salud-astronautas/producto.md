@@ -173,7 +173,8 @@ Al domingo 15 de noviembre de 2026, después de cerrar la validación sintética
 | Historia y examen de antes del vuelo | Medidos con el mismo motor: 27 sesiones de los cuatro tripulantes, con sus pedidos y reintentos registrados |
 | Medición del error del análisis | Evaluadas 621 capturas simuladas; informe y explicación bilingüe disponibles. El modelo ajustado no cumplió sus criterios y se conserva el provisorio |
 | Documentación pública y guía personal | README y guías en inglés/español disponibles; supuestos centrales y guía para defender el proyecto escritos |
-| Publicación, diapositivas y formulario | Pendientes |
+| Repositorio público | Publicado en GitHub, rama principal `master` |
+| Publicación de la demo, diapositivas y formulario | Pendientes |
 
 Entradas: [README en español](../README.es.md), [README en inglés](../README.md)
 y [guía personal para defender el proyecto](guia-para-defender-el-proyecto.md).
@@ -182,10 +183,14 @@ la comprobación real completó los seis casos y una consulta desde la interfaz,
 sin fallos del proveedor. Se registró una frase imprecisa entre probabilidad y
 nombre del nivel; ver [desarrollo](../docs/es/development.md).
 
-La entrega reúne 680 pruebas automáticas comprobadas, además de compilación y control
-de credenciales. En el cierre se corrigió una prueba que modificaba por igual el examen
-y su referencia, cancelando el cambio que esperaba detectar; el módulo corregido pasó
-sus pruebas. El modelo de la aplicación sigue siendo el provisorio.
+La entrega tiene 680 pruebas automáticas. Al publicar pasaron los tipos y las 679
+pruebas funcionales; la prueba de velocidad dio 16,71 s y, aislada, 14,43 s frente
+al objetivo de menos de 10 s, con el equipo a batería. El código es el mismo que
+había pasado la verificación anterior y la compilación; se conserva este resultado
+como limitación de rendimiento. El control de credenciales no encontró problemas.
+En el cierre anterior se corrigió una prueba que modificaba por igual el examen
+y su referencia, cancelando el cambio que esperaba detectar. El modelo de la
+aplicación sigue siendo el provisorio.
 
 En el control breve de la demo se recorrió Elena Voss, día 150: captura del ojo derecho,
 rechazo del izquierdo por parpadeo simulado, segundo intento aceptado, resultado,
@@ -205,7 +210,12 @@ Los registros antiguos que se hayan guardado con referencias provisorias conserv
 sus avisos. El modelo de error también sigue rotulado como provisorio: los márgenes
 actuales no deben presentarse como resultado de la validación ampliada.
 
-**Falta decidir o hacer por parte del equipo:** crear el equipo en la web de Space Apps, crear el repositorio y el proyecto en Vercel, configurar allí el secreto y los controles de gasto para la publicación, y confirmar el nombre.
+El [repositorio público](https://github.com/RamiroSGaspar/Lynceus) ya está disponible.
+
+**Falta decidir o hacer por parte del equipo:** crear el equipo en la web de Space Apps,
+elegir el proyecto de Vercel para publicar la demo, configurar allí el secreto y los
+controles de gasto para la publicación, terminar diapositivas y formulario, y confirmar
+el nombre.
 
 ## 15. Glosario
 
