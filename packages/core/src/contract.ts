@@ -358,7 +358,10 @@ export interface ScreenCalibration {
   /** Device pixels per millimetre, from the card-matching step. */
   pxPerMm: number;
   viewingDistanceCm: number;
-  /** Smallest logMAR this screen can draw with a stroke of at least one pixel at that distance. */
+  /**
+   * Smallest logMAR this screen can draw at that distance with a stroke of half a device
+   * pixel, anti-aliased, as FrACT accepts (research doc `pruebas-de-vision-en-pantalla.md`, 1.A).
+   */
   floorLogMar: number;
 }
 
