@@ -95,7 +95,7 @@ function capture(value: unknown): ContextCapture | null {
   return {
     attempts: int(o.attempts, 0, 10),
     usableScans: int(o.usableScans, 0, 200),
-    totalScans: int(o.totalScans, 0, 200),
+    totalScans: o.totalScans === null ? null : int(o.totalScans, 0, 200),
     meanQualityDb: num(o.meanQualityDb, 0, 40),
   };
 }

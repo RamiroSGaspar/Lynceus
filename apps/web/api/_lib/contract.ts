@@ -74,7 +74,8 @@ export interface ContextThreshold {
 export interface ContextCapture {
   attempts: number;
   usableScans: number;
-  totalScans: number;
+  /** Null when no attempt could be measured: the total is known only for an accepted exam. */
+  totalScans: number | null;
   meanQualityDb: number;
 }
 
