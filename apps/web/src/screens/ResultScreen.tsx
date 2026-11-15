@@ -293,7 +293,7 @@ function EyeImage({ record, baseline, eye, t }: { record: SessionRecord; baselin
     <details className="eye-detail" onToggle={(event) => setOpen(event.currentTarget.open)}>
       <summary>{t('viewer.summary')}</summary>
       <p className="note">{t('viewer.note')}</p>
-      {open && <ExamViewer request={request} baseline={baseline?.eyes[eye].accepted ?? undefined} />}
+      {open && <ExamViewer request={request} baseline={record.flightDay > 0 ? (baseline?.eyes[eye].accepted ?? undefined) : undefined} />}
     </details>
   );
 }
