@@ -7,7 +7,7 @@
 | **Fecha** | 14 de noviembre de 2026 |
 | **Para qué es** | Dar los parámetros, fórmulas y umbrales para programar tres pruebas que el astronauta hace en la pantalla (agudeza visual de cerca, grilla de Amsler y cuestionario de síntomas) y para decidir con respaldo cuándo un cambio es real. |
 | **Qué no es** | No diseña la solución ni propone qué construir. No repite lo ya verificado sobre SANS (está en los otros documentos de esta carpeta). |
-| **Estado** | **Primer commit: solo la tabla central.** Las celdas marcadas "por verificar" todavía no fueron leídas en la fuente completa. |
+| **Estado** | **En curso (15/11): tabla central con las celdas de variación y de cambio real ya leídas en la fuente.** Las celdas que siguen marcadas "por verificar" todavía no fueron leídas en la fuente completa. Faltan: grilla de Amsler (medidas y registro), cambio de graduación y cuestionarios. |
 
 **Tipo de dato:** `[N]` norma o manual · `[T]` medido en personas en Tierra · `[A]` dato de astronautas o de la NASA · *derivado* = cuenta hecha acá con la fórmula indicada (no está en la fuente).
 
@@ -31,8 +31,8 @@
 | Figuras | **C de Landolt**: figura de referencia de la norma ISO 8596; 8 orientaciones (azar 12,5 %); no requiere leer. **E giratoria**: 4 orientaciones (azar 25 %). **Letras de Sloan** (C D H K N O R S V Z): 10 opciones (azar 10 %); hay que nombrar o teclear la letra | F1 `[N]` |
 | Puntaje adaptativo (FrACT) | Método *Best PEST*: cada figura se presenta en el umbral estimado hasta ese momento. Respuesta obligada aunque no se vea. Umbral = punto medio entre el azar y 100 % (56,25 % con 8 orientaciones). Cantidad de presentaciones por defecto: 18 (8 opciones), 24 (4 opciones). Para igualar a las cartillas se suma 0,05 logMAR | F1 `[N]` |
 | Puntaje letra por letra | 0,02 logMAR por letra en cartillas de 5 letras por línea y pasos de 0,1 logMAR | por verificar |
-| Variación entre prueba y repetición | Peek Acuity (teléfono, a 2 m): ±0,033 logMAR según el resumen (por verificar en el texto). Cartillas: por verificar | P1 `[T]` |
-| Cuándo un cambio es real | por verificar | — |
+| Variación entre prueba y repetición (límites de acuerdo del 95 % = diferencia media ± 1,96 × desvío estándar de las diferencias) | **FrACT** (C de Landolt, 24 presentaciones, 40 personas sanas, misma sesión): **±0,095 a ±0,100 logMAR** (≈ ±1 línea); la segunda vez sale 0,012 logMAR mejor (aprendizaje) (B2). **COMPlog** (programa en computadora, 20 adultos, dos visitas separadas 4 días en promedio): **±0,123 logMAR** con visión normal y ±0,125 a ±0,218 con visión empeorada a propósito (K1). **Cartilla ETDRS** en pacientes de consultorio: ±0,18 logMAR; cartilla de Snellen: ±0,24 puntuando letra por letra y ±0,33 puntuando por línea (R1, solo el resumen). **Peek Acuity** (teléfono a 2 m, 233 personas en Kenia, en la casa y al día siguiente en la clínica): diferencia media −0,054 logMAR y límites de acuerdo de **−0,498 a +0,390 logMAR** (tabla 1 del artículo); el "±0,033" del resumen no coincide con esos límites | B2, K1, P1 `[T]`; R1 `[T]` sin verificar en el texto completo |
+| Cuándo un cambio es real | Criterio de las fuentes: la variación entre prueba y repetición es la diferencia que aparece "sin que haya un cambio genuino" (K1); un cambio se toma como real cuando **supera los límites de acuerdo de la misma prueba**. Con los valores de la fila anterior: más de **0,10 logMAR (1 línea = 5 letras)** con FrACT en personas sanas; más de 0,12 logMAR con COMPlog entre dos visitas; más de 0,18 logMAR (≈ 2 líneas) con cartilla ETDRS en pacientes. Agudeza de **cerca** en pantalla: por verificar | B2, K1 `[T]`; R1 sin verificar |
 
 ### B. Grilla de Amsler
 
@@ -46,6 +46,16 @@
 
 ---
 
+### C. Cambio de graduación y anteojos a bordo (provisorio)
+
+| Parámetro | Valor | Fuente |
+|---|---|---|
+| Anteojos a bordo (*Space Anticipation Glasses*) | Toda la tripulación vuela con **al menos 3 pares** de anteojos recetados de distinta graduación, para compensar el corrimiento hacia la hipermetropía | N1 `[A]` |
+| Caso publicado | Un astronauta, a los 3 o 4 meses de una misión de 6, dejó de ver bien de cerca con sus anteojos de siempre y pasó a los de reserva, **+1,25 D más fuertes** | N2 `[A]` |
+| Visión de cerca que se pierde con +0,75 D y +1,50 D | por verificar | — |
+
+---
+
 ## Fuentes (provisorio)
 
 | Id | Fuente | ¿Texto completo leído? |
@@ -55,3 +65,8 @@
 | L1 | [Li 2020, "apoyamentón virtual", Scientific Reports](https://pmc.ncbi.nlm.nih.gov/articles/PMC6976612/) | Parcial (en curso) |
 | F2 | [Faes 2014, revisión de la grilla de Amsler, Eye](https://pmc.ncbi.nlm.nih.gov/articles/PMC4094801/) | Parcial (en curso) |
 | B1 | [Bjerager 2023, revisión de la grilla de Amsler, JAMA Ophthalmology](https://pmc.ncbi.nlm.nih.gov/articles/PMC12278824/) | Parcial (en curso) |
+| B2 | [Bach 2016, FrACT con y sin aviso de acierto, PLoS One](https://pmc.ncbi.nlm.nih.gov/articles/PMC4732607/) | Parcial (método y resultados de repetición) |
+| K1 | [Kan 2019, variación del programa COMPlog, Br Ir Orthopt J](https://pmc.ncbi.nlm.nih.gov/articles/PMC7510395/) | Parcial (método, tabla de variación y discusión) |
+| R1 | [Rosser 2001, cartilla logMAR reducida, Br J Ophthalmol](https://pmc.ncbi.nlm.nih.gov/articles/PMC1723918/) | No: solo el resumen |
+| N1 | [NASA OCHMO-MTB-001, 2024](https://www.nasa.gov/wp-content/uploads/2024/02/ochmo-mtb-001-sans.pdf) | Parcial (tabla de contramedidas) |
+| N2 | Informe de evidencia de la NASA sobre SANS (edición anterior a 2022; link por verificar), caso 7 | Parcial (descripción del caso) |
