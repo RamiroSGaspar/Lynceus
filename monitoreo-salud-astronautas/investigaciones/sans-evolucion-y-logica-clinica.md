@@ -24,6 +24,7 @@
 | **MRW** (*minimum rim width*) | Ancho mínimo del anillo neural: distancia más corta entre la BMO y la superficie interna de la retina. |
 | **ODE** (*optic disc edema*) | Hinchazón de la cabeza del nervio óptico. **Escala de Frisén:** grados 0 a 5 de esa hinchazón vista en la foto del fondo de ojo. |
 | **FD / R+ / R-** | Día de vuelo (*flight day*) / días después de volver / días antes de volver. **OD / OS:** ojo derecho / izquierdo. |
+| **Coroides** | Capa de vasos sanguíneos que está debajo de la retina. En vuelo se engrosa. |
 | **D** | Dioptría: unidad de graduación de un lente. Corrimiento "hacia la hipermetropía" = se ve peor de cerca. |
 
 ---
@@ -65,6 +66,7 @@ Estudio *Ocular Health* (P1): 11 astronautas, ambos ojos, 170 ± 19 días en la 
 | 31 astronautas (25 varones, 6 mujeres; 46,9 ± 6,0 años; misión 200 ± 55 días), antes del vuelo: promedio (error estándar) [rango] | 392,0 (5,8) [299 a 484] | 366,4 (9,1) [225 a 494] | 213,3 (11,1) [107 a 406] | P4 |
 | Los mismos, ~FD150 (116 a 183) | 430,2 (9,6) [305 a 593] → *derivado* **+38** | 416,3 (12,6) [238 a 572] → *derivado* +50 | 245,6 (11,9) [134 a 489] → *derivado* +32 | P4 |
 | Los mismos, R+1 a R+7 | 419,3 (7,9) [303 a 541] → *derivado* **+27** | 400,8 (11,4) → *derivado* +34 | 229,0 (11,5) → *derivado* +16 | P4 |
+| Registro anterior de la NASA, solo antes y después de vuelos de 4 a 6 meses (primera semana tras volver) | 362 → 393 µm (**+31**; +8,5 %) | — | 253 → 260 µm (+2,8 %) | Citado en P1 |
 
 En la primera semana tras volver queda cerca del 70 % del aumento de TRT y la mitad del de coroides (*derivado*). En ese grupo de 31: graduación de −0,41 a −0,21 D (+0,20 D); largo del ojo de 24,1 a 23,9 mm.
 
@@ -116,7 +118,7 @@ Caso de 2024 (P5). Controles extra de OCT en FD27, 63, 84, 126, 154 y 183. Vitam
 - Pliegues alrededor del nervio desde FD30; llegaron al centro de la visión (fóvea) en FD63 (OD) y FD84 (OS). Rugosidad máxima 12,7 µm (OD, FD154) y 15,0 µm (OS, FD126).
 - Graduación: de −1,00 D a +0,50 D (OD) y +1,00 D (OS) a R+3; corrimiento confirmado de **+1,50 D y +2,00 D**. Largo del ojo −0,56 y −0,67 mm. Aplanamiento grave en la resonancia.
 - Punción lumbar una semana después: 19,4 cm H₂O (normal).
-- Tenía antes del vuelo: copa del nervio pequeña (0,126 y 0,032 mm³), coroides gruesa (percentil 80 del cuerpo de astronautas), un desprendimiento pequeño del epitelio pigmentario y 4 de 4 variantes genéticas de riesgo.
+- Tenía antes del vuelo: copa del nervio pequeña (el hueco central de la cabeza del nervio; 0,126 y 0,032 mm³), coroides gruesa (percentil 80 del cuerpo de astronautas), un desprendimiento pequeño del epitelio pigmentario (la capa que sostiene a la retina) y 4 de 4 variantes genéticas de riesgo.
 
 ### A5. Caso de Mader 2017: un ojo que tardó 20 meses `[A]`
 
@@ -253,7 +255,7 @@ Dato publicado `[A]`: en FD120 la diferencia entre ojos fue de **8 ± 13 µm** (
 | FD10 | Promedio +11,9; ya hay ojos sueltos por encima (hasta ≈ +35) | Ninguno | P1 |
 | FD22 a FD47 | ≈ 5 o 6 de 20 personas | 1 de 20 (≈ +84 µm, Frisén 1). En A3 y A4: Frisén 1 en FD30 y ≈ +120 µm en FD27 | P3, P2, P5 |
 | FD90 | El promedio del grupo pasa el umbral (≈ +22) | Un ojo de 11 personas (≈ +77) | P1 |
-| ~FD150 | 74 % de las personas; 15 de 21 ojos (71 %) en otro conteo | ≈ 35 % (≥ 55 µm, P4) frente a 15 a 18 % en los registros de la NASA | P4; N1 pág. 12; N2; P7 |
+| ~FD150 | 74 % de las personas (P4). En el estudio *Ocular Health*: 15 de 21 ojos (71 %), sin aclarar el día (N1) | ≈ 35 % (≥ 55 µm, P4) frente a 15 a 18 % en los registros de la NASA | P4; N1 pág. 12; N2; P7 |
 | Después de FD200 | Puede aparecer por primera vez (A3: +45 en FD210, hinchazón visible en FD319) | — | P2 |
 
 ---
@@ -266,7 +268,7 @@ Proporción de tripulantes de vuelos largos del segmento estadounidense con dato
 |---|---|---|---|
 | Algún signo de SANS | ~70 %; 71 % | | N2 pág. 3; P7 |
 | Hinchazón temprana (ΔTRT ≥ 20 µm) | ≈ 66 %; 67 %; 61 % | Tres cifras de registros de la NASA en distintas fechas | N2 gráfico; N1 pág. 12; P7 |
-| Hinchazón clínica, Frisén ≥ 1 | ~15 % (12 a 19 %) | ~90 % de esos casos son grado 1 (borde borroso en forma de C, empieza del lado de la nariz). Un solo ojo llegó a grado 3; ninguno más | N1 pág. 10; P7 |
+| Hinchazón clínica, Frisén ≥ 1 | ~15 % (12 a 19 %) | ~90 % de esos casos son grado 1 (borde borroso en forma de C, empieza del lado de la nariz). Un solo ojo llegó a grado 3; ninguno más. En los 7 primeros casos descritos (2011), 5 tuvieron hinchazón: 2 en un solo ojo y 3 en los dos | N1 pág. 10; P7 |
 | Pliegues de coroides o de retina | ~20 % (N1); 16 % cualquier pliegue y 4 % marcados cerca de la mácula (P7); "~25 % pliegues de coroides" (N2) | Solo 4 astronautas con pliegues hasta la fóvea; pueden durar años | N1 pág. 13; N2 pág. 4; P5 |
 | Arrugas junto al nervio (*peripapillary wrinkles*) | **No encontrada** por separado | La NASA las cuenta dentro de "pliegues" | N2 pág. 4 |
 | Aplanamiento del ojo | ≈ 21 % por resonancia; "~25 %"; 23 % cualquiera y 12 % moderado | En 10 astronautas, el nervio se desplazó 200 ± 110 µm hacia adelante a R+1 y 140 ± 100 µm al año | N2; P7; N1 pág. 15 |
@@ -299,7 +301,7 @@ Proporción de tripulantes de vuelos largos del segmento estadounidense con dato
 | **Sexo** | Sin diferencia (P = 0,73). El mayor aumento medido fue en una mujer | `[A]` 6 mujeres de 31 | P4; P5 |
 | **Peso corporal** | Con hinchazón por foto o pliegues: más peso previo (Buckey 2018). Con ΔTRT: sin relación (peso P = 0,97; índice de masa corporal P = 0,19) | `[A]` contradictorio según cómo se defina el caso | N1 pág. 37; P4 |
 | **Edad** | Sin relación con el ΔTRT (P = 0,86). Sí influye en lo que se nota: después de los 40 años se compensa peor el corrimiento | `[A]` | P4; N1 pág. 15 |
-| **Genética y vitaminas B** | Más riesgo con variantes de dos genes del metabolismo de las vitaminas B: MTRR 66 (alelo G: pliegues y manchas algodonosas) y SHMT1 1420 (alelo C: hinchazón). Homocisteína y afines 25 a 45 % más altas en afectados (5 frente a 15). En cama: 3 o 4 alelos de riesgo → más ΔTRT que 0 a 2 | `[A]` 49 astronautas; `[T]`. No leídos directamente | N1 pág. 35; P7 |
+| **Genética y vitaminas B** | Más riesgo con variantes (alelos) de dos genes del metabolismo de las vitaminas B: MTRR 66 (alelo G: pliegues y manchas algodonosas) y SHMT1 1420 (alelo C: hinchazón). Homocisteína y sustancias afines de la sangre 25 a 45 % más altas en afectados (5 frente a 15). En cama: 3 o 4 alelos de riesgo → más ΔTRT que 0 a 2 | `[A]` 49 astronautas; `[T]`. No leídos directamente | N1 pág. 35; P7 |
 | **Dióxido de carbono** | No resuelto. En contra: la hinchazón aparece en cama con y sin CO₂ agregado. A favor: en A4 la mejoría coincidió con la baja de 2,6 a 1,3 mmHg. Pueden formarse bolsones (modelo: más de 9 mmHg en 10 minutos junto a la boca al dormir sin ventilación). Límite: 3 mmHg promedio en una hora | `[T]`, `[A]` un caso, `[M]` | N1 pág. 37 y 38; P5; N2 pág. 17 |
 | **Ejercicio de fuerza** | Sin diferencia en la cantidad de ejercicio de fuerza o aeróbico entre quienes tuvieron SANS y quienes no. La presión dentro del cráneo sube un momento si se hace fuerza conteniendo el aire | `[A]` revisión retrospectiva; `[H]` | N1 pág. 39 |
 | **Sueño** | Menos horas de sueño → más probabilidad de hinchazón, en reposo en cama | `[T]` Christian 2024, no leído directamente | P7 |
@@ -357,7 +359,7 @@ Tiempo: en el estudio *Ocular Health*, la parte de pruebas visuales llevaba unos
 | Contramedida | Último resultado | Estado | Fuente |
 |---|---|---|---|
 | **Succión en las piernas** (*lower body negative pressure*, LBNP) | `[A]` 14 tripulantes, 10 a 30 minutos a 25 mmHg: baja la presión del ojo y el volumen de la vena yugular, pero **no reduce la coroides ni cambia el nervio o el TRT**. `[T]` 10 personas acostadas 3 días: 8 horas de succión por noche redujeron el aumento de la coroides (74 % en área, 53 % en volumen); efecto inconsistente sobre el MRW | Sin prueba de que prevenga la hinchazón. Se estudian usos largos y un traje móvil | P7; P6; N1 pág. 43 |
-| **Manguitos en los muslos** (*venoconstrictive thigh cuffs*) | `[T]` reducen la presión del ojo y el área de la yugular en cambios de postura; 10 horas por día en inmersión seca frenaron el ensanchamiento de la vaina del nervio pero no el engrosamiento de fibras. `[A]` 3 tripulantes, 4 horas: yugular ≈ 35 % menor (preimpresión sin revisión por pares, P10*) | Estudio en la estación **activo**: 10 personas; 30 minutos, 3 y 6 horas. **Sin resultados oculares publicados** | N10; N11; P7; N1 pág. 43 |
+| **Manguitos en los muslos** (*venoconstrictive thigh cuffs*) | `[T]` reducen la presión del ojo y el área de la yugular en cambios de postura; 10 horas por día en inmersión seca (flotar en agua sin mojarse, otro modo de imitar la falta de peso) frenaron el ensanchamiento de la vaina del nervio pero no el engrosamiento de fibras. `[A]` 3 tripulantes, 4 horas: yugular ≈ 35 % menor (preimpresión sin revisión por pares, P10*) | Estudio en la estación **activo**: 10 personas; 30 minutos, 3 y 6 horas. **Sin resultados oculares publicados** | N10; N11; P7; N1 pág. 43 |
 | **Vitaminas B** | `[A]` un caso (A4): tras el máximo de +232 µm, el TRT bajó a ≈ +178 µm; coincidió con la baja de CO₂, así que no se puede atribuir | Estudio de suplemento diario en vuelo "en marcha"; sin resultados | P5; P7 |
 | **Gravedad artificial** (centrífuga de brazo corto) | `[T]` 60 días en cama, 30 minutos por día (~0,3 g en el ojo): ΔTRT al día 58 de +35,9 (control), +36,5 (continua) y +27,6 µm (intermitente). **Sin diferencia significativa**; hubo pliegues en los tres grupos | No alcanzó con esa dosis | N1 pág. 44; P7 |
 | **Medicación** | Ninguna probada. Acetazolamida: un uso tras el vuelo (B5). Agonistas de GLP-1: bajan la presión dentro del cráneo en pacientes en Tierra | No se usa: no se sabe si esa presión está alta en vuelo | N1 pág. 45; P7 |
