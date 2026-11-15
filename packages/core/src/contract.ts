@@ -306,6 +306,50 @@ export interface AnalysisProgress {
   scansTotal?: number;
 }
 
+export interface AnalyzeOptions {
+  /** Summary of the reference exam of the same eye. Lets the engine place its opening shape (spec 01, 6.4). */
+  baseline?: ExamSummary;
+  /** Called after each B-scan has been analysed. */
+  onScan?: (scan: ScanAnalysis) => void;
+}
+
+// ----------------------------------------------------------- Ground truth
+
+/**
+ * True values of a virtual eye on one flight day, computed densely on the noise-free
+ * model. Only tests, validation and the transparency view use them: the engine never
+ * sees them.
+ */
+export interface EyeGroundTruth {
+  crewId: CrewId;
+  eye: Eye;
+  flightDay: number;
+  /**
+   * Ellipse fitted to the true opening edge, in the anatomical frame: origin at the
+   * centre of the opening, x toward temporal, y toward superior, millimetres.
+   */
+  bmo: { centerXMm: number; centerYMm: number; semiMajorMm: number; semiMinorMm: number; angleDeg: number; areaMm2: number };
+  /** Area inside the true edge, which is not exactly an ellipse. */
+  bmoTrueAreaMm2: number;
+  /** Area-weighted total retinal thickness of the four rings. */
+  rings: { innerUm: number; outerUm: number; thicknessUm: number }[];
+  trtRingUm: number;
+  /** Change of the 0–250 µm ring from the reference exam: the swelling E(d). */
+  trtRingChangeUm: number;
+  mrwUm: number;
+  /** MRW at 96 points of the edge, every 3.75° of anatomical angle (0° temporal, 90° superior). */
+  mrwByPoint: { thetaDeg: number; mrwUm: number }[];
+  mrwSectorsUm: Readonly<Record<Sector, number>>;
+  bmRoughnessUm: number;
+  bmRoughnessChangeUm: number;
+  /** NASA definition: between the inner surface and a plane 200 µm above the opening plane. */
+  cupVolumeMm3: number;
+  /** Mean on the 3.5 mm circle centred on the opening. Drawn in the images, never measured. */
+  choroidThicknessUm: number;
+  /** Nerve fibre layer on the same circle. */
+  rnflCircleUm: number;
+}
+
 // --------------------------------------------- Rules (provisional, stage C)
 
 export type Level =

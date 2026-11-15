@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "preview": "tsx src/preview.ts",
+    "accuracy": "tsx src/accuracy.ts"
   },
   "dependencies": {
     "@app/core": "workspace:*"
