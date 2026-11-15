@@ -107,7 +107,7 @@ function texts(explanation: Explanation): { where: string; text: string }[] {
 /** Plain spaces instead of no-break spaces, to compare with strings written in the tests. */
 const plain = (text: string) => text.replace(/\u00a0/g, ' ');
 
-/** Every explanation the tests look at: the cases above and the whole provisional history, in both languages. */
+/** Every explanation the tests look at: the cases above and the whole measured history, in both languages. */
 function everyExplanation(): { name: string; locale: Locale; assessment: SessionAssessment; explanation: Explanation }[] {
   const all: { name: string; assessment: SessionAssessment }[] = Object.entries(CASES).map(([name, assessment]) => ({ name, assessment }));
   for (const crewId of ['A', 'B', 'C', 'D'] as readonly CrewId[]) {

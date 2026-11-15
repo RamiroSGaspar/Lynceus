@@ -180,6 +180,9 @@ Aceptados en la ronda 2: todo número se puede rastrear hasta la imagen y la fue
 9. El modelo de ruido de la imagen.
 10. Tres intentos de captura antes de decir "no puedo medir".
 11. Agudeza de cerca: la función psicométrica del procedimiento adaptativo (logística en logMAR, pendiente 15 por logMAR, 2 % de respuestas erradas por distracción; los valores propios de FrACT no se leyeron), los pasos intermedios de las cuatro primeras figuras (1,0; 0,7; 0,4; 0,1 logMAR), la figura más grande (1,3 logMAR) y el criterio de "no converge" (estimación más allá de la figura más grande, o respuestas que no se distinguen del azar con una prueba de cociente de verosimilitud al 5 %).
+12. La historia que viene con la aplicación se calcula con hasta tres intentos por ojo y por sesión, también para el examen de antes del vuelo (extiende el 10). Si ese examen no puede medirse en algún ojo, el conjunto no se publica; no se reemplaza por una tabla. Los controles siguen el calendario que dan las reglas con las medidas del motor, no uno fijado de antemano.
+13. La visión de la historia (cuestionario, agudeza de cerca y grilla de Amsler de cada control) es un escenario ficticio por tripulante, no sale de una tomografía. Conserva las semillas y los valores de la historia provisoria, para que lo único que cambie sea lo que mide el motor.
+14. El instrumento virtual no tiene un número de versión propio: el archivo de la historia lo identifica por el formato de examen y de corte que escribe y por los pedidos completos de cada captura.
 
 ## 13. Plan de construcción
 

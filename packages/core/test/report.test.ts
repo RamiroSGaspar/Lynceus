@@ -6,7 +6,7 @@ import {
   getHistory,
   MAX_SUGGESTED_QUESTIONS,
   PRODUCT,
-  PROVISIONAL_ENGINE_VERSION,
+  ENGINE_VERSION,
   quantityText,
   renderReportMarkdown,
   RULES_VERSION,
@@ -75,7 +75,7 @@ const table = (report: Report, id: ReportSectionId, caption: string): ReportTabl
 const isQuantity = (cell: ReportCell | undefined): cell is ReportQuantity => typeof cell === 'object';
 const row = (t: ReportTable, label: string): ReportCell[] => t.rows.find((cells) => cells[0] === label)!;
 
-// A session of the provisional history: C on flight day 118, clinically concerning in one eye, folds in both.
+// A session of the measured history: C on flight day 118, clinically concerning in one eye, folds in both.
 const historyC = getHistory('C', 181);
 const c118 = historyC.find((r) => r.flightDay === 118)!;
 const reportC = buildReport(c118, historyC, 'en');
@@ -106,7 +106,7 @@ const nothingMeasured = record({
   history: [pre],
 });
 
-/** Every record the broad checks run on: the whole provisional history and the special cases. */
+/** Every record the broad checks run on: the whole measured history and the special cases. */
 function everyRecord(): { name: string; record: SessionRecord; history: SessionRecord[] }[] {
   const all: { name: string; record: SessionRecord; history: SessionRecord[] }[] = [
     { name: 'live', record: live, history: [pre] },
@@ -214,8 +214,8 @@ describe('report: each eye', () => {
     const waviness = row(measures, 'Waviness of the membrane under the retina (folds)');
     expect(waviness[3]).toEqual({ quantity: change.bmRoughnessUm, digits: 1, signed: true });
     const area = measures.rows[6]!;
-    expect(area[1]).toEqual({ quantity: { value: 1.86, unit: 'mm²', origin: 'measured' }, digits: 2, signed: false });
-    expect(area[3]).toEqual({ quantity: { value: 0, unit: '%', origin: 'derived' }, digits: 1, signed: true });
+    expect(area[1]).toEqual({ quantity: { value: c118.eyes.OD.accepted!.bmo!.areaMm2, unit: 'mm²', origin: 'measured' }, digits: 2, signed: false });
+    expect(area[3]).toEqual({ quantity: { value: change.bmoAreaChangePct, unit: '%', origin: 'derived' }, digits: 1, signed: true });
     for (const cells of measures.rows) {
       for (const cell of cells.slice(1)) expect(isQuantity(cell)).toBe(true);
     }
@@ -225,8 +225,8 @@ describe('report: each eye', () => {
     const thresholds = table(reportC, 'eye-OD', 'Thresholds');
     expect(thresholds.rows.map((cells) => [cells[0], cells[2], plain(cells[3] as string)])).toEqual([
       ['First sign: thickness increase larger than', 'Yes', 'very likely (more than 99 %)'],
-      ['Clinically concerning: thickness increase of at least', 'Yes', 'likely (57 %)'],
-      ['New folds: waviness increase larger than', 'Yes', 'very likely (95 %)'],
+      ['Clinically concerning: thickness increase of at least', 'Yes', 'likely (69 %)'],
+      ['New folds: waviness increase larger than', 'Yes', 'very likely (99 %)'],
     ]);
     expect(thresholds.rows.map((cells) => cells[1])).toEqual([
       { quantity: { value: 19.4, unit: 'µm', origin: 'reference', sources: ['laurie2020', 'nasa-mtb-2024'] }, digits: 1, signed: false },
@@ -396,7 +396,7 @@ describe('report: vision tests, steps, limits, versions and questions', () => {
   it('gives the versions of the engine, the rules and the error model, and the thresholds with their sources', () => {
     const versions = section(reportC, 'versions');
     expect(versions.tables[0]!.rows).toEqual([
-      ['Analysis engine', PROVISIONAL_ENGINE_VERSION],
+      ['Analysis engine', ENGINE_VERSION],
       ['Rules', RULES_VERSION],
       ['Error model', 'provisional-1 (provisional: not measured yet)'],
     ]);
@@ -450,14 +450,14 @@ describe('report: as Markdown', () => {
   });
 
   it('writes each quantity with its unit, its range and how it was obtained', () => {
-    expect(markdown).toContain('| Retinal thickness, ring from the optic nerve opening to 250 µm (main measure) | 473 µm · measured | 417 µm · measured | +56 µm (+47 to +64) · calculated |');
+    expect(markdown).toContain('| Retinal thickness, ring from the optic nerve opening to 250 µm (main measure) | 476 µm · measured | 419 µm · measured | +58 µm (+47 to +68) · calculated |');
     expect(markdown).toContain('| First sign: thickness increase larger than | 19.4 µm · reference | Yes | very likely (more than 99 %) |');
-    expect(markdown).toContain('| Waviness of the membrane under the retina (folds) | 7.5 µm · measured | 2.9 µm · measured | +4.6 µm (+2.4 to +6.8) · calculated |');
-    expect(markdown).toContain('| 1 | Measured | 46 of 48 | 32.9 dB · measured | — |');
+    expect(markdown).toContain('| Waviness of the membrane under the retina (folds) | 8.3 µm · measured | 3.0 µm · measured | +5.4 µm (+3.1 to +7.6) · calculated |');
+    expect(markdown).toContain('| 1 | Measured | 48 of 48 | 22.8 dB · measured | — |');
     const spanish = plain(renderReportMarkdown(buildReport(c118, historyC, 'es')));
-    expect(spanish).toContain('| 473 µm · medido | 417 µm · medido | +56 µm (+47 a +64) · calculado |');
+    expect(spanish).toContain('| 476 µm · medido | 419 µm · medido | +58 µm (+47 a +68) · calculado |');
     expect(spanish).toContain('| 19,4 µm · referencia | Sí | muy probable (más de 99 %) |');
-    expect(spanish).toContain('+4,6 µm (+2,4 a +6,8) · calculado');
+    expect(spanish).toContain('+5,4 µm (+3,1 a +7,6) · calculado');
   });
 
   it('writes a change with its sign, and a value without one', () => {

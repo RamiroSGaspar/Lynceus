@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ENGINE_VERSION, type SessionRecord } from '@app/core';
+import { ENGINE_VERSION, PROVISIONAL_ENGINE_VERSION, type SessionRecord } from '@app/core';
 import { CREW, explainAssessment, getHistory } from '../app/core';
 import { withMissionDay, withRecord } from '../app/store';
 import { makeVisionSession } from '../sample/vision';
@@ -169,9 +169,36 @@ describe('result screen', () => {
     expect(html).not.toContain('<svg role="img"');
   });
 
+  it('says nothing about "not measured on an image" for a control or a pre-flight exam that the engine measured', () => {
+    for (const day of [0, 118]) {
+      const text = textOf(renderHtml(<ResultScreen crewId="C" flightDay={day} />, 'en'));
+      expect(text).not.toContain('not measured on an image');
+      // The image behind each eye's numbers can be opened, from the request of the attempt the engine accepted.
+      expect(text.match(/See the tomography and what was measured on it/g)).toHaveLength(2);
+    }
+  });
+
   it('says in plain sight when the numbers of a control were not measured on an image', () => {
-    const fromTables = textOf(renderHtml(<ResultScreen crewId="C" flightDay={118} />, 'en'));
-    expect(fromTables).toContain('The numbers of this control were not measured on an image.');
+    // A control saved in this browser by an earlier version, whose numbers came from scenario tables.
+    const record = getHistory('C', 150).find((r) => r.flightDay === 118) as SessionRecord;
+    const fromTables = (eye: 'OD' | 'OS') => {
+      const capture = record.eyes[eye];
+      return { ...capture, accepted: capture.accepted && { ...capture.accepted, engineVersion: PROVISIONAL_ENGINE_VERSION } };
+    };
+    const old: SessionRecord = { ...record, origin: 'live', eyes: { OD: fromTables('OD'), OS: fromTables('OS') } };
+    const text = textOf(renderHtml(<ResultScreen crewId="C" flightDay={118} />, 'en', testStore((state) => withRecord(state, old))));
+    expect(text).toContain('The numbers of this control were not measured on an image.');
+    expect(text).toContain(PROVISIONAL_ENGINE_VERSION);
+    expect(text).not.toContain('See the tomography and what was measured on it');
+  });
+
+  it('keeps saying that the ranges and probabilities come from a provisional error model', () => {
+    const text = normal(textOf(renderHtml(<ResultScreen crewId="C" flightDay={118} />, 'en')));
+    expect(text).toContain('provisional error model');
+    expect(text).toContain('provisional-1');
+  });
+
+  it('a control done here by the engine is not marked as unmeasured, whatever its pre-flight exam says', () => {
     const record = sampleRecord(getHistory('B', 150), 'B', { flightDay: 150, od: 26, os: 3, origin: 'live' });
     const measured = (eye: 'OD' | 'OS') => {
       const capture = record.eyes[eye];
@@ -180,8 +207,7 @@ describe('result screen', () => {
     const byEngine: SessionRecord = { ...record, eyes: { OD: measured('OD'), OS: measured('OS') } };
     const text = textOf(renderHtml(<ResultScreen crewId="B" flightDay={150} />, 'en', testStore((state) => withRecord(state, byEngine))));
     expect(text).not.toContain('The numbers of this control were not measured on an image');
-    // The engine measured today's exam, but the reference still comes from the scenario tables: that is said too.
-    expect(text).toContain('The pre-flight exam this control is compared with was not measured on an image.');
+    expect(text).not.toContain('The pre-flight exam this control is compared with was not measured on an image.');
   });
 
   it('follows the mission day: a control after it is not there yet', () => {

@@ -13,6 +13,7 @@ especificación y qué falta.
 | 3. Instrumento virtual y `preview` | Hecho |
 | 4. Motor | Hecho |
 | 5. `accuracy`, precisión, rechazo y rendimiento | Hecho |
+| 6. Historia y referencias medidas por el motor (especificación 07) | Hecho |
 
 **Resultados** (`packages/validation/out/accuracy.md`): cambio del anillo 0–250 µm con error ≤ 6 µm en
 32 de 32 casos, error máximo 0,7 µm, RMS 0,24 µm; cambio de rugosidad con error máximo 0,36 µm. Sin
@@ -25,6 +26,43 @@ propio instrumento, con el mismo modelo de capas que el motor espera. Las imáge
 variaciones que acá no existen (anatomía irregular, opacidades, vasos dentro de la copa que tapan la
 superficie, artefactos de seguimiento). No es una validación con personas; el margen que vea el
 astronauta no puede salir solo de este número.
+
+## Historia medida (especificación 07)
+
+`getHistory` ya no sale de tablas: el examen de antes del vuelo de cada ojo y cada control se generan con
+`acquire` y se miden con `analyzeExam` (los mismos pedidos y opciones que la captura en vivo de la web), y
+los controles reciben como `baseline` el resumen medido del día 0 del mismo ojo. Se corre a mano:
+
+```
+pnpm --filter @app/validation history:generate            # calcula todo y publica el archivo (~2,5 min, 2 hilos)
+pnpm --filter @app/validation history:check               # recalcula y compara con el archivo publicado
+pnpm --filter @app/validation history:generate -- --crew A,B --concurrency 1   # prueba parcial, no publica
+```
+
+- Hasta tres intentos por ojo y sesión, también el día 0; se detiene en el primer examen aceptado y se
+  guardan todos los intentos realizados. Un ojo sin ningún intento medido queda sin medida (`accepted: null`);
+  si pasa en el día 0 el generador se detiene y no publica.
+- El calendario lo deciden las reglas con las medidas (`assessment.nextOct`), con avance estricto y sin
+  ciclos (si no, el generador falla). Con las medidas reales salió el mismo calendario que el provisorio:
+  A 0, 30, 90, 150; B 0, 30, 90, 118, 150, 178; C 0, 30, 58, 90, 118, 139, 150, 171; D 0, 30, 51, 72, 90, 111, 132, 150, 171.
+- El archivo guarda los `SessionRecord` completos (resúmenes, intentos con su pedido, visión ficticia y
+  evaluación) y las versiones del motor, las reglas, el modelo de error y los formatos del instrumento. No
+  guarda `.vol`, píxeles ni arreglos por corte. Se publica solo cuando todo terminó y pasó
+  `checkHistoryDataset`: se escribe en `.tmp/` y se mueve a su lugar.
+- Determinista: el mismo código da los mismos bytes (comprobado con una segunda corrida completa). Entre
+  motores de JavaScript distintos las normales podrían diferir en el último bit (decisión 6). Si cambian el
+  motor, el instrumento, las reglas o la versión del modelo de error hay que volver a generarlo:
+  `checkHistoryDataset` falla si las evaluaciones guardadas ya no son las que dan las reglas, y la prueba de
+  versiones falla si cambia `ENGINE_VERSION`, `RULES_VERSION` o la versión del modelo de error.
+- No hay caché de capturas: cada corrida genera y analiza todo.
+- **Límites:** esto no es una validación. El modelo de error sigue siendo el provisorio
+  (`provisional-1`) y cada resultado lo sigue diciendo. La calidad media de cada examen sale ~25 dB (cambio 1
+  abajo), por debajo de los 27 dB del modelo provisorio, así que sus rangos son algo más anchos que los de
+  la tabla provisoria de antes. El instrumento no tiene una versión propia (supuesto 14 de `arquitectura.md`).
+  La visión de cada control es un escenario ficticio, no sale de la tomografía.
+- Los registros viejos guardados en un navegador por la versión provisoria llevan `PROVISIONAL_ENGINE_VERSION`
+  y la pantalla de resultado sigue avisando que sus números no se midieron sobre una imagen; no se renombran
+  ni se borran.
 
 ## Mapa del código
 
@@ -54,6 +92,12 @@ astronauta no puede salir solo de este número.
 | `src/engine/segment.ts` | Un corte: calidad, ILM, BM, puntos de la abertura, movimiento y controles (6.1 a 6.3) |
 | `src/engine/measure.ts` | Elipse, anillos, MRW y rugosidad (6.4, 6.5) |
 | `src/engine/analyze.ts` | `analyzeExamSteps`, `analyzeExam`, `summarize`, `compareWithBaseline`, límites del examen (6.4, 6.6, 6.7) |
+| `src/dataset/measuredHistory.ts` | `getHistory` y `getHistoryInfo`: leen `measured-history.json` y entregan copias (especificación 07) |
+| `src/dataset/measured-history.json` | La historia de los cuatro tripulantes medida por el motor, generada por `history:generate`. Sin fechas de generación ni tiempos |
+| `src/dataset/historyChecks.ts` | `checkHistoryDataset`: comprobaciones de integridad del archivo (rápidas, sin píxeles). Las usan el generador y las pruebas |
+| `src/dataset/visionScenarios.ts` | `visionScenario(crewId, día)`: cuestionario, agudeza y Amsler ficticios de cada sesión (no salen de una tomografía) |
+| `src/dataset/provisional.ts` | Solo `PROVISIONAL_ENGINE_VERSION`, para reconocer registros viejos guardados en un navegador |
+| `../validation/src/historySuite.ts`, `history.ts` | Generador de la historia (`simulateCrew`, `captureEye`) y su programa |
 
 ## Decisiones
 

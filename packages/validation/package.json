@@ -7,7 +7,9 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --exclude test/performance.test.ts && vitest run test/performance.test.ts",
     "preview": "tsx src/preview.ts",
-    "accuracy": "tsx src/accuracy.ts"
+    "accuracy": "tsx src/accuracy.ts",
+    "history:generate": "tsx src/history.ts",
+    "history:check": "tsx src/history.ts --check"
   },
   "dependencies": {
     "@app/core": "workspace:*"
