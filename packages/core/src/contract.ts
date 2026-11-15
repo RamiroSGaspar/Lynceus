@@ -328,3 +328,195 @@ export interface ThresholdAssessment {
   probabilityExceeded: number;
   word: LikelihoodWord;
 }
+
+// ----------------------------------------------------- Capture attempts
+
+/** What happened with one capture attempt of one eye. */
+export interface CaptureAttemptRecord {
+  attempt: number;
+  request: CaptureRequest;
+  status: 'measured' | 'cannot-measure';
+  rejections: ExamRejection[];
+  /** Reasons given by individual scans, most frequent first. */
+  scanRejections: ScanRejection[];
+  usableScans: number;
+  meanQualityDb: number;
+}
+
+/** Outcome of imaging one eye in one session: up to three attempts. */
+export interface EyeCaptureResult {
+  eye: Eye;
+  attempts: CaptureAttemptRecord[];
+  /** The accepted exam, or null when no attempt could be measured. */
+  accepted: ExamSummary | null;
+}
+
+// ----------------------------------------------------------- Vision tests
+
+/** How the screen was calibrated, so sizes on screen are true sizes. */
+export interface ScreenCalibration {
+  /** Device pixels per millimetre, from the card-matching step. */
+  pxPerMm: number;
+  viewingDistanceCm: number;
+  /** Smallest logMAR this screen can draw with a stroke of at least one pixel at that distance. */
+  floorLogMar: number;
+}
+
+export interface AcuityResult {
+  eye: Eye;
+  /** Near visual acuity. Lower is better; 0.0 is 20/20. Null when the test could not converge. */
+  logMar: number | null;
+  /** True when the result is limited by the screen (`floorLogMar`) and not by the eye. */
+  atScreenFloor: boolean;
+  trials: number;
+  correct: number;
+  /** Whether the astronaut wore their usual near correction. */
+  withCorrection: boolean;
+}
+
+export type AmslerMarkKind = 'wavy' | 'blurred' | 'missing';
+
+export interface AmslerResult {
+  eye: Eye;
+  /** Squares per side. */
+  gridSize: number;
+  /** Visual angle of one square at the test distance, degrees. */
+  cellDeg: number;
+  marks: { col: number; row: number; kind: AmslerMarkKind }[];
+  /** Fraction of the grid that was marked, 0 to 1. */
+  markedFraction: number;
+  /** Any mark within the central 2 degrees around the fixation dot. */
+  centralMarked: boolean;
+  /** The astronaut confirmed seeing the four corners while fixating. */
+  cornersSeen: boolean;
+}
+
+export type SymptomId =
+  | 'near-blur'
+  | 'distance-blur'
+  | 'distortion'
+  | 'dark-spot'
+  | 'sudden-vision-loss'
+  | 'double-vision'
+  | 'transient-obscuration'
+  | 'eye-pain'
+  | 'headache';
+
+export interface SymptomAnswer {
+  present: boolean;
+  /** Since when, if present. */
+  onset?: 'today' | 'this-week' | 'longer';
+  /** Which eye, when it applies. */
+  eye?: Eye | 'both';
+  /** 0 to 10, asked for headache only. */
+  intensity?: number;
+}
+
+export type SymptomAnswers = Readonly<Record<SymptomId, SymptomAnswer>>;
+
+/** The functional part of a session. Every part is optional: a skipped test is recorded as not done. */
+export interface VisionSession {
+  calibration: ScreenCalibration | null;
+  acuity: { OD: AcuityResult | null; OS: AcuityResult | null };
+  amsler: { OD: AmslerResult | null; OS: AmslerResult | null };
+  symptoms: SymptomAnswers | null;
+}
+
+// ------------------------------------------------------------ Assessment
+
+export type FindingId =
+  | 'swelling-first-sign'
+  | 'swelling-clinically-concerning'
+  | 'folds-new'
+  | 'eye-not-measured'
+  | 'near-vision-worse'
+  | 'amsler-marked'
+  | 'amsler-marked-central'
+  | 'symptom-acute'
+  | 'symptom-near-blur'
+  | 'symptom-headache'
+  | 'symptom-other';
+
+export interface EyeAssessment {
+  eye: Eye;
+  /** False when no attempt could be measured: `level` is then null. */
+  measured: boolean;
+  level: Level | null;
+  alert: AlertClass;
+  change: ChangeFromBaseline | null;
+  thresholds: ThresholdAssessment[];
+  /** A threshold has between 10 % and 90 % probability of having been crossed. */
+  borderline: boolean;
+  /** Change since the previous control of this eye, when there is one. */
+  sincePrevious: { flightDay: number; trtRingUm: Quantity } | null;
+  findings: FindingId[];
+}
+
+export type ContactUrgency = 'routine-report' | 'without-delay' | 'now';
+
+export type NextStepId =
+  | 'oct-routine'
+  | 'oct-in-4-weeks'
+  | 'oct-in-3-weeks'
+  | 'oct-repeat-soon'
+  | 'amsler-at-controls'
+  | 'amsler-twice-a-week'
+  | 'amsler-three-times-a-week'
+  | 'report-routine'
+  | 'notify-surgeon-without-delay'
+  | 'contact-surgeon-now'
+  | 'try-stronger-glasses'
+  | 'post-flight-exams';
+
+export interface NextStep {
+  id: NextStepId;
+  /** Values the text needs, e.g. `{ flightDay: 118 }`. */
+  params: Readonly<Record<string, number | string>>;
+  /** Whether the step is NASA practice or an assumption of this project. */
+  basis: 'nasa' | 'assumption';
+  sources: readonly string[];
+}
+
+export type LimitationId =
+  | 'not-a-diagnosis'
+  | 'simulated-data'
+  | 'not-validated-on-people'
+  | 'no-choroid'
+  | 'no-macula'
+  | 'no-globe-flattening'
+  | 'no-refraction'
+  | 'no-intracranial-pressure'
+  | 'ground-confirms';
+
+export interface SessionAssessment {
+  crewId: CrewId;
+  flightDay: number;
+  eyes: { OD: EyeAssessment; OS: EyeAssessment };
+  /** Highest level of both eyes, or `acute-visual-symptom` when the functional tests demand it. */
+  level: Level;
+  alert: AlertClass;
+  findings: FindingId[];
+  contact: ContactUrgency;
+  /** Flight day of the next tomography, or null when the mission ends before it. */
+  nextOct: {
+    flightDay: number;
+    reason: 'routine' | 'first-sign' | 'clinically-concerning' | 'not-measured';
+  } | null;
+  amslerPerWeek: number;
+  nextSteps: NextStep[];
+  limitations: LimitationId[];
+  rulesVersion: string;
+}
+
+/** One past or present control of one crew member, as stored and shown in the history. */
+export interface SessionRecord {
+  crewId: CrewId;
+  flightDay: number;
+  /** `precomputed` sessions come with the application; `live` ones were done in this browser. */
+  origin: 'precomputed' | 'live';
+  eyes: { OD: EyeCaptureResult; OS: EyeCaptureResult };
+  vision: VisionSession | null;
+  assessment: SessionAssessment;
+  /** Questions the astronaut wrote for the flight surgeon. */
+  questions: string[];
+}
