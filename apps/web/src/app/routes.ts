@@ -9,6 +9,8 @@ export type Route =
   | { name: 'report'; crewId: CrewId; flightDay: number }
   | { name: 'brain' }
   | { name: 'how' }
+  /** Development pages (`#/dev/…`): not linked from the application. */
+  | { name: 'dev'; page: string }
   | { name: 'not-found'; path: string };
 
 const CREW_IDS: readonly CrewId[] = ['A', 'B', 'C', 'D'];
@@ -56,6 +58,8 @@ export function parseRoute(hash: string): Route {
     case 'brain':
     case 'how':
       return segments.length === 1 ? { name: head } : notFound;
+    case 'dev':
+      return second !== undefined && segments.length === 2 ? { name: 'dev', page: second } : notFound;
     default:
       return notFound;
   }
@@ -74,6 +78,8 @@ export function formatRoute(route: Route): string {
     case 'brain':
     case 'how':
       return `#/${route.name}`;
+    case 'dev':
+      return `#/dev/${route.page}`;
     case 'not-found':
       return `#${route.path}`;
   }

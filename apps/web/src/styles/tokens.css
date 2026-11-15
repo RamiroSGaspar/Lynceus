@@ -69,4 +69,8 @@
 
   --duration-fast: 120ms;
   --duration-normal: 240ms;
+
+  /* Chart series: one colour per eye. The marks and the lines also differ in shape. */
+  --series-od: #f2f5f8;
+  --series-os: #f5a3e6;
 }

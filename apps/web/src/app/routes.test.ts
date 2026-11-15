@@ -12,6 +12,12 @@ describe('parseRoute', () => {
     expect(parseRoute('#/how')).toEqual({ name: 'how' });
   });
 
+  it('reads development pages, which the application does not link to', () => {
+    expect(parseRoute('#/dev/charts')).toEqual({ name: 'dev', page: 'charts' });
+    expect(parseRoute('#/dev').name).toBe('not-found');
+    expect(parseRoute('#/dev/charts/x').name).toBe('not-found');
+  });
+
   it('treats an empty or bare hash as the start screen', () => {
     for (const hash of ['', '#', '#/', '#//']) expect(parseRoute(hash)).toEqual({ name: 'home' });
   });
@@ -58,6 +64,7 @@ describe('formatRoute', () => {
     { name: 'report', crewId: 'D', flightDay: 150 },
     { name: 'brain' },
     { name: 'how' },
+    { name: 'dev', page: 'charts' },
   ];
 
   it('round-trips with parseRoute', () => {

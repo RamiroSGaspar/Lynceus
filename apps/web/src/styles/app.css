@@ -513,3 +513,9 @@ a.btn {
 .link-card__text {
   color: var(--color-text-secondary);
 }
+
+/* ---- Development pages */
+.dev-narrow {
+  width: 22rem;
+  max-width: 100%;
+}

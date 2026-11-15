@@ -8,6 +8,7 @@ import { useAppState } from './app/StoreContext';
 import { useRoute } from './app/useRoute';
 import { useMessages } from './i18n';
 import { appMessages } from './i18n/app';
+import { ChartsGallery } from './screens/dev/ChartsGallery';
 import { HomeScreen } from './screens/HomeScreen';
 import { NotFoundScreen } from './screens/NotFoundScreen';
 import { PendingScreen } from './screens/PendingScreen';
@@ -22,6 +23,9 @@ function Screen({ route }: { route: Route }) {
   switch (route.name) {
     case 'home':
       return <HomeScreen />;
+    case 'dev':
+      if (route.page === 'charts') return <ChartsGallery />;
+      return <NotFoundScreen message={t('notFound.text', { path: `/dev/${route.page}` })} />;
     case 'not-found':
       return <NotFoundScreen message={t('notFound.text', { path: route.path })} />;
     default:

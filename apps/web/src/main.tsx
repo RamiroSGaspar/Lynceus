@@ -9,6 +9,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/ui.css';
 import './styles/app.css';
+import './styles/charts.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element');
