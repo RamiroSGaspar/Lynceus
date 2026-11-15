@@ -391,28 +391,47 @@ export interface AmslerResult {
   cornersSeen: boolean;
 }
 
+/**
+ * The topics follow what NASA's in-flight eye questionnaire asks, as described in
+ * its 2017 evidence report (the form itself is not public; research doc
+ * `pruebas-de-vision-en-pantalla.md`, section 6.1). The wording is ours.
+ */
 export type SymptomId =
-  | 'near-blur'
-  | 'distance-blur'
+  // Changes in vision
+  | 'near-vision'
+  | 'intermediate-vision'
+  | 'distance-vision'
   | 'distortion'
-  | 'dark-spot'
-  | 'sudden-vision-loss'
+  | 'low-light-vision'
+  | 'fluctuating-vision'
+  | 'depth-perception'
   | 'double-vision'
-  | 'transient-obscuration'
-  | 'eye-pain'
-  | 'headache';
+  | 'transient-vision-loss'
+  // Asked apart because they cannot wait for a routine report (assumption of this project)
+  | 'sudden-vision-loss'
+  | 'new-dark-spot'
+  // Other symptoms the questionnaire records, without claiming a link to the eye findings
+  | 'headache'
+  | 'tinnitus'
+  | 'nausea'
+  | 'difficulty-thinking';
+
+/** NASA's three grades: mild does not affect activities; moderate needed adapting; severe affected or prevented activities. */
+export type SymptomSeverity = 'mild' | 'moderate' | 'severe';
 
 export interface SymptomAnswer {
   present: boolean;
-  /** Since when, if present. */
-  onset?: 'today' | 'this-week' | 'longer';
+  severity?: SymptomSeverity;
   /** Which eye, when it applies. */
   eye?: Eye | 'both';
-  /** 0 to 10, asked for headache only. */
-  intensity?: number;
 }
 
-export type SymptomAnswers = Readonly<Record<SymptomId, SymptomAnswer>>;
+export interface SymptomAnswers {
+  /** NASA's opening question: any change in vision since launch or since the last exam. */
+  changeNoticed: boolean;
+  answers: Readonly<Record<SymptomId, SymptomAnswer>>;
+  glasses: 'none' | 'reading' | 'bifocal' | 'progressive' | 'adjustable';
+}
 
 /** The functional part of a session. Every part is optional: a skipped test is recorded as not done. */
 export interface VisionSession {
