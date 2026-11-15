@@ -23,10 +23,15 @@ export const DROPOUT_LIMIT = 0.15;
 export const TRUNCATION_ROWS = 8;
 /** A column needs this much more (natural log) than the noise floor to count as signal (~6.5 dB). */
 const SIGNAL_MARGIN = 1.5;
-/** Vertical jumps between neighbouring columns, in rows, that count as a motion step. */
-const MOTION_STEP_ROWS = 3;
+/** Columns compared to find motion steps (wider than the blur that movement adds). */
+const MOTION_GAP = 12;
+/** Vertical shift over MOTION_GAP columns, in rows, that counts as a motion step… */
+const MOTION_STEP_ROWS = 8;
+/** …if it exceeds the mean shift of the neighbouring stretches by this much (a fold does not). */
+const MOTION_SCORE_ROWS = 6;
+const MOTION_SEARCH = 16;
 /** Motion steps in one scan that reject it. */
-const MOTION_STEPS_LIMIT = 3;
+const MOTION_STEPS_LIMIT = 2;
 /** The epithelium band must keep at least this contrast (natural log) outside the opening. */
 const MIN_BAND_CONTRAST = 0.8;
 /** Columns past the end of the band that must stay without it (≈ 140 µm), so a narrow shadow cannot pass for the opening. */
@@ -356,21 +361,29 @@ export function segmentScan(scan: BScan, g: ScanGeometry): SegmentedScan {
     }
   }
 
-  // ---- Band contrast along the tracked membrane: epithelium above against what lies below.
-  // A vessel shadow darkens the whole column, so the difference of logs survives it.
+  // ---- Band contrast: epithelium above the membrane against what lies below. A vessel
+  // shadow darkens the whole column, so the difference of logs survives it. In each column
+  // the better of the two estimates of the membrane is kept: the global path (reliable far
+  // from the nerve, where strong folds can throw the local tracking off) or the tracking
+  // (reliable near the edge).
+  const bandAt = (j: number, p: number): number => {
+    const c = j * H;
+    let above = 0;
+    for (let r = p - 3; r <= p - 1; r++) above += ST[c + Math.max(0, r)]!;
+    let below = 0;
+    for (let r = p + 3; r <= p + 6; r++) below += ST[c + Math.min(H - 1, r)]!;
+    return above / 3 - below / 4;
+  };
   const contrastSide: [Float64Array, Float64Array] = [new Float64Array(W), new Float64Array(W)];
   for (let side = 0; side < 2; side++) {
     const contrast = new Float64Array(W).fill(NaN);
     const rows = tracked[side]!;
     for (let j = 0; j < W; j++) {
       if (!hasSignal[j]) continue;
-      const p = rows[j]!;
-      const c = j * H;
-      let above = 0;
-      for (let r = p - 3; r <= p - 1; r++) above += ST[c + Math.max(0, r)]!;
-      let below = 0;
-      for (let r = p + 3; r <= p + 6; r++) below += ST[c + Math.min(H - 1, r)]!;
-      contrast[j] = above / 3 - below / 4;
+      const viaTrack = bandAt(j, rows[j]!);
+      const viaPath = bandAt(j, bmPath[j]!);
+      if (viaPath > viaTrack) rows[j] = bmPath[j]!;
+      contrast[j] = Math.max(viaTrack, viaPath);
     }
     const smooth = contrastSide[side]!;
     for (let j = 0; j < W; j++) {
@@ -487,19 +500,28 @@ export function segmentScan(scan: BScan, g: ScanGeometry): SegmentedScan {
   // opening, so the shift that best aligns two neighbouring columns there is 0 or ±1 row;
   // a step of 3 rows or more is movement. (The inner surface is not used: it legitimately
   // drops several rows per column on the walls of the cup.)
+  // Columns well outside the opening (or the outer quarter of each side if it was not found);
+  // the band is not required at the column itself, since a step breaks its tracking.
+  // Columns MOTION_GAP apart are compared: movement also blurs the image across, which
+  // spreads a step over several columns. A shift of MOTION_STEP_ROWS or more over the gap
+  // is a step; consecutive flagged columns are one step.
+  // Only well away from the opening (≥ 60 columns, ~340 µm), where swelling does not
+  // reshape the layers quickly.
   let motionSteps = 0;
-  for (let j = 0; j + 1 < W; j++) {
-    if (!hasSignal[j] || !hasSignal[j + 1]) continue;
-    const band = Math.min(bandProfile[j]!, bandProfile[j + 1]!);
-    if (!(band > 0.6 * Math.max(bandContrast[0] || 0, bandContrast[1] || 0))) continue;
+  const outerLeft = Number.isNaN(leftEnd) ? W / 4 : leftEnd - 60;
+  const outerRight = Number.isNaN(rightEnd) ? (3 * W) / 4 : rightEnd + 60;
+  const shiftAt = new Float64Array(W).fill(NaN);
+  for (let j = 0; j + MOTION_GAP < W; j++) {
+    const k = j + MOTION_GAP;
+    if (!(hasSignal[j] && hasSignal[k] && (k < outerLeft || j > outerRight))) continue;
     const p = memRow[j]!;
-    const r0 = Math.max(9, p - 24);
-    const r1 = Math.min(H - 10, p + 8);
+    const r0 = Math.max(MOTION_SEARCH + 1, p - 28);
+    const r1 = Math.min(H - MOTION_SEARCH - 2, p + 10);
     const a = j * H;
-    const b = (j + 1) * H;
+    const b = k * H;
     let best = Infinity;
     let arg = 0;
-    for (let s = -8; s <= 8; s++) {
+    for (let s = -MOTION_SEARCH; s <= MOTION_SEARCH; s++) {
       let acc = 0;
       for (let i = r0; i <= r1; i++) {
         const d = ST[a + i]! - ST[b + i + s]!;
@@ -510,7 +532,24 @@ export function segmentScan(scan: BScan, g: ScanGeometry): SegmentedScan {
         arg = s;
       }
     }
-    if (Math.abs(arg) >= MOTION_STEP_ROWS) motionSteps++;
+    shiftAt[j] = arg;
+  }
+  // A step is a large shift with flat stretches on both sides; a fold keeps rising or
+  // falling over the neighbouring stretches (for a sinusoid the score below is about half
+  // the shift; for a step, about all of it).
+  let inStep = false;
+  for (let j = MOTION_GAP; j + 2 * MOTION_GAP < W; j++) {
+    const o = shiftAt[j]!;
+    const before = shiftAt[j - MOTION_GAP]!;
+    const after = shiftAt[j + MOTION_GAP]!;
+    if (Number.isNaN(o) || Number.isNaN(before) || Number.isNaN(after)) {
+      inStep = false;
+      continue;
+    }
+    const score = Math.abs(o) - 0.5 * (Math.abs(before) + Math.abs(after));
+    const flagged = Math.abs(o) >= MOTION_STEP_ROWS && score >= MOTION_SCORE_ROWS;
+    if (flagged && !inStep) motionSteps++;
+    inStep = flagged;
   }
 
   // ---- Checks (spec 6.1).

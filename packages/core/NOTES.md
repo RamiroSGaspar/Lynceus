@@ -12,7 +12,19 @@ especificación y qué falta.
 | 2. Ojo virtual, tripulación y valor verdadero | Hecho |
 | 3. Instrumento virtual y `preview` | Hecho |
 | 4. Motor | Hecho |
-| 5. `accuracy`, precisión, rechazo y rendimiento | Pendiente |
+| 5. `accuracy`, precisión, rechazo y rendimiento | Hecho |
+
+**Resultados** (`packages/validation/out/accuracy.md`): cambio del anillo 0–250 µm con error ≤ 6 µm en
+32 de 32 casos, error máximo 0,7 µm, RMS 0,24 µm; cambio de rugosidad con error máximo 0,36 µm. Sin
+ruido (prueba 5), en los 8 ojos: anillo ≤ 0,7 µm, MRW 1,7 a 6 µm, área ≤ 0,6 %, centro ≤ 3 µm. Un examen
+completo (dibujo, fondo de ojo y análisis) tarda ~6 s con la máquina tranquila y 8,9 s con carga.
+Pruebas: 130 en `packages/core` y 9 en `packages/validation`.
+
+**Cuidado al leer esa precisión:** es el error del motor contra un ojo virtual dibujado por nuestro
+propio instrumento, con el mismo modelo de capas que el motor espera. Las imágenes reales tienen
+variaciones que acá no existen (anatomía irregular, opacidades, vasos dentro de la copa que tapan la
+superficie, artefactos de seguimiento). No es una validación con personas; el margen que vea el
+astronauta no puede salir solo de este número.
 
 ## Mapa del código
 
@@ -149,9 +161,22 @@ anillo el día 150 (P3: +50 con +38 en promedio); D OD +186 µm con +203 µm el 
     la membrana lo mata. El punto es donde el contraste suavizado cae a la mitad del de afuera, si sigue
     bajo las 25 columnas siguientes (~140 µm). Fila: recta por las últimas 12 columnas de BM,
     evaluada en el punto. Confianza: caída relativa del contraste.
-27. **Movimiento:** desplazamiento que mejor alinea dos columnas vecinas en la retina externa y la franja
-    (horizontales fuera de la abertura); un salto de 3 filas o más es un escalón; 3 escalones rechazan
-    el corte. La ILM no sirve para esto: en las paredes de la copa salta varias filas por columna.
+27. **Movimiento:** desplazamiento que mejor alinea dos columnas separadas por 12 (el movimiento también
+    desenfoca a lo ancho y reparte el escalón en varias columnas) en la retina externa y la franja, a más
+    de 60 columnas del borde de la abertura. Es escalón si el desplazamiento es de 8 filas o más y supera
+    en 6 al promedio de los tramos vecinos (un pliegue sigue subiendo o bajando a los lados; un escalón
+    tiene tramos planos). 2 escalones rechazan el corte. La ILM no sirve: en las paredes de la copa
+    salta varias filas por columna. Umbrales elegidos para que los pliegues más fuertes (D) no disparen
+    y el movimiento fuerte sí.
+33. **Contraste de la franja:** en cada columna se usa el mejor de los dos caminos de la BM (el global,
+    fiable lejos del nervio, o el seguimiento local, fiable junto al borde): con pliegues fuertes el
+    seguimiento de ±1 fila a veces perdía la franja lejos del nervio y aparecían finales falsos.
+34. **Fallas en el instrumento:** el movimiento corre bloques de 30 a 100 columnas con desvío de
+    14·movimiento filas (54 µm en el peor caso) y desenfoca de más desde 0,2; el movimiento "leve" que sale
+    de la semilla es de 0 a 0,06 (escalones de menos de una fila). El borde que se apaga pierde señal en
+    dB linealmente hasta 40 dB en la última columna (antes era un factor cuadrático: la señal recién se
+    perdía en el último 3 % y el motor medía igual, con razón, porque el contraste en logaritmos no
+    depende de la ganancia).
 28. **Señal:** una columna tiene señal si su máximo supera el piso de ruido en 1,5 (logaritmo natural,
     ~6,5 dB). `validColumnFraction` se cuenta sobre las columnas fuera de la abertura (adentro no hay BM
     por definición).
@@ -212,7 +237,30 @@ coordinador lo indique.
     escalones por corte, contraste mínimo de la franja 0,8, confirmación de 25 columnas, rechazo de
     puntos de la elipse a 20 µm, mitad de columnas para contar un radio (decisiones 26 a 31).
 11. Corrección de oblicuidad del MRW (cambio 3) y peso por distancia al centro del patrón (cambio 2).
+12. Modelo de las fallas en el dibujo: tamaño de los escalones de movimiento, movimiento leve de la
+    semilla entre 0 y 0,06, borde apagado hasta 40 dB, parpadeo de los eventos guionados desde el 40 %
+    del ancho (decisión 34).
+13. Umbrales del detector de movimiento (decisión 27).
 
-## Pendientes
+## Pendientes y puntos flojos
 
-- Todo lo de los pasos 2 a 5.
+1. **Calidad de una captura limpia ~25 dB** (cambio 1): hay que decidir entre cambiar la definición de Q
+   o los grises. Afecta lo que verá la interfaz y el modelo de calidad de la etapa siguiente.
+2. **Rendimiento:** 6 s en promedio, 8,9 s con la máquina cargada: cumple los 10 s con poco margen y no
+   el objetivo de 6 s. La prueba de rendimiento corre sola al final de `pnpm test` para no competir por
+   el procesador; en una máquina más cargada podría fallar. Lo más caro: granulado (~15 ms por corte),
+   dibujo de capas (~16 ms), filtros (~10 ms), segmentación (~19 ms), calidad (2 × 5 ms), fondo de ojo
+   (0,7 s, se calcula solo si se pide).
+3. **La precisión es demasiado buena para ser un margen real:** el motor y el instrumento comparten el
+   modelo de capas (por diseño de la tarea). La etapa de validación tendría que agregar variabilidad que
+   el motor no conozca (otras formas de copa, vasos en la copa, opacidades, error de registro mayor)
+   antes de usar este error como incertidumbre del astronauta.
+4. **MRW:** queda un sesgo positivo de 2 a 6 µm sin explicar del todo (inclinación del corte, polilínea).
+   La ILM tiene un pequeño zigzag en el fondo de copas muy angostas (D hinchado).
+5. **Detección de movimiento:** depende de umbrales elegidos sobre nuestros propios pliegues; un pliegue
+   real más empinado podría dar un falso "movimiento" (el corte se descarta, no se mide mal).
+6. **Supuestos en un solo lugar:** quedaron en este archivo; falta pasarlos a `docs/assumptions.md` o a
+   la sección 12 de `arquitectura.md` (la especificación no me deja tocar esas carpetas).
+7. **Fondo de ojo:** plausible pero simple (sin mácula, sin reflejos de vasos, disco sin bordes finos).
+8. **Un perfil de CPU** (`*.cpuprofile`) quedó escrito por error en `/home/ramiro/orca/workspaces/.tmp/prof`,
+   fuera del proyecto; no tengo permiso para borrarlo.
