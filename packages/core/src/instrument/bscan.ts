@@ -8,7 +8,7 @@ import type { CaptureConditions } from '../contract';
 import { SCALE_X_UM, SCALE_Z_UM, SCAN_COLUMNS, SCAN_ROWS } from '../constants';
 import { emptyProfile, LAMINA_THICKNESS_UM, LAMINA_TOP_UM, LAYER_FRACTIONS, swellAngular, swellRadial, type EyeState } from '../eye/model';
 import type { VesselHit } from '../eye/vessels';
-import { convolveColumns, convolveRows, gaussianKernel } from '../math/filter';
+import { binomial3Columns, binomial5Rows, convolveColumns, convolveRows, gaussianKernel } from '../math/filter';
 import { smoothstep } from '../math/interp';
 import { createRng, normalTable16 } from '../rng';
 import type { ScanSetup } from './capture';
@@ -314,13 +314,14 @@ export function renderBScan(input: ScanRenderInput): Float32Array {
     }
   }
 
-  // ---- System blur, more with motion (blurred edges, spec 5.5).
-  const blurred = convolveColumns(
-    convolveRows(clean, W, H, gaussianKernel(BLUR_SIGMA_X_PX + 3 * motion, 2.6)),
-    W,
-    H,
-    gaussianKernel(BLUR_SIGMA_Z_PX + 1.2 * motion, 2.6),
-  );
+  // ---- System blur, more with marked motion (blurred edges, spec 5.5). Otherwise binomial
+  // kernels: [1 4 6 4 1] across (σ = 1.0 px ≈ 13 µm FWHM) and [1 2 1] in depth, which with
+  // the integration over each pixel gives σ = 0.77 px (7 µm FWHM). Slight motion (< 0.2)
+  // still shifts blocks of columns but adds no blur.
+  const blurred =
+    motion >= 0.2
+      ? convolveColumns(convolveRows(clean, W, H, gaussianKernel(BLUR_SIGMA_X_PX + 3 * motion, 2.6)), W, H, gaussianKernel(BLUR_SIGMA_Z_PX + 1.2 * motion, 2.6))
+      : binomial3Columns(binomial5Rows(clean, W, H), W, H);
 
   // ---- Column factors: gain, blink and edge fade.
   const gain = Math.pow(10, input.gainDb / 10);
@@ -381,13 +382,35 @@ function speckleField(key: string): Float32Array {
     }
   }
   const s = SPECKLE_SIGMA / Math.sqrt((1 + 4 + 1) * (1 + 9 + 9 + 1));
-  const mean = -(SPECKLE_SIGMA * SPECKLE_SIGMA) / 2;
   const g = raw;
+  const expT = speckleExpTable();
+  const scale = EXP_STEPS / (2 * EXP_RANGE);
   for (let i = 0; i < H; i++) {
     const up = (i === 0 ? H - 1 : i - 1) * W;
     const mid = i * W;
     const down = (i + 1 < H ? i + 1 : 0) * W;
-    for (let j = 0; j < W; j++) g[mid + j] = Math.exp(s * (across[up + j]! + 2 * across[mid + j]! + across[down + j]!) + mean);
+    for (let j = 0; j < W; j++) {
+      // exp(σ·z − σ²/2) by table, z a unit normal: linear interpolation, clamped at ±6σ.
+      let u = (s * (across[up + j]! + 2 * across[mid + j]! + across[down + j]!) + EXP_RANGE) * scale;
+      if (u < 0) u = 0;
+      else if (u > EXP_STEPS - 1) u = EXP_STEPS - 1;
+      const k = u | 0;
+      g[mid + j] = expT[k]! + (u - k) * (expT[k + 1]! - expT[k]!);
+    }
   }
   return g;
+}
+
+const EXP_STEPS = 4096;
+const EXP_RANGE = 6 * SPECKLE_SIGMA;
+let expTable: Float64Array | null = null;
+
+/** exp(x − σ²/2) for x in [−6σ, 6σ], sampled finely enough for linear interpolation (error < 1e-5). */
+function speckleExpTable(): Float64Array {
+  if (expTable) return expTable;
+  const t = new Float64Array(EXP_STEPS + 1);
+  const mean = -(SPECKLE_SIGMA * SPECKLE_SIGMA) / 2;
+  for (let k = 0; k <= EXP_STEPS; k++) t[k] = Math.exp(-EXP_RANGE + (2 * EXP_RANGE * k) / EXP_STEPS + mean);
+  expTable = t;
+  return t;
 }

@@ -17,6 +17,9 @@ export { acquire, type AcquireOptions } from './instrument/acquire';
 export { SCRIPTED_EVENTS } from './instrument/capture';
 export { qualityDb } from './quality';
 
+// Measurement engine (sees only the exam)
+export { analyzeExam, analyzeExamSteps, summarize, compareWithBaseline, ENGINE_VERSION } from './engine/analyze';
+
 // Exam file format
 export { readVol, writeVol, writeVolBlocks } from './vol/io';
 export { toDisplayGray, displayGray } from './vol/display';
