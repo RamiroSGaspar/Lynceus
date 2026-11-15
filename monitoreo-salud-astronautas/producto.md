@@ -128,7 +128,7 @@ Es opcional: un panel para hacer preguntas, que responde con un modelo de lengua
 
 ## 12. En qué se apoya
 
-**De la NASA y de artículos con datos de astronautas:** qué se mide y cómo (el grosor de la retina en un anillo pegado al nervio óptico), los dos umbrales, los cuatro niveles, el calendario de controles, el aparato y su formato de archivo, las medidas de los ojos antes del vuelo y las curvas de evolución. Las fuentes principales son el informe de evidencia sobre el síndrome (2022), el informe técnico médico de la NASA (2024) y seis artículos con datos de entre 2 y 36 astronautas. Cada número del producto lleva su fuente; el detalle está en [investigaciones/](investigaciones/).
+**De la NASA y de artículos con datos de astronautas:** qué se mide y cómo (el grosor de la retina en un anillo pegado al nervio óptico), los dos umbrales, los cuatro niveles, el calendario de controles, el aparato y su formato de archivo, las medidas de los ojos antes del vuelo y las curvas de evolución. Las fuentes principales son el informe de evidencia sobre el síndrome (2022), el informe técnico médico de la NASA (2024) y seis artículos con datos de entre 1 y 36 astronautas. Cada número del producto lleva su fuente; el detalle está en [investigaciones/](investigaciones/).
 
 **Supuestos nuestros, declarados en el producto:**
 
