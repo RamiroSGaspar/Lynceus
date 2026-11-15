@@ -101,13 +101,17 @@ export function BScanCanvas({ frame, layers, distancesUm, mask, size = 'fit', sc
       ctx.setLineDash([2, 4]);
       ctx.font = '600 11px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      for (const { column, limitUm } of ringLimitColumns(distancesUm)) {
+      let lastLabelX = -Infinity;
+      for (const { column, limitUm } of ringLimitColumns(distancesUm).sort((a, b) => a.column - b.column)) {
         const x = (column + 0.5) * colW;
         ctx.beginPath();
         ctx.moveTo(x, 12);
         ctx.lineTo(x, h);
         ctx.stroke();
+        // On a narrow screen neighbouring limits get close: skip a label rather than overlap it.
+        if (x - lastLabelX < 30) continue;
         ctx.fillText(String(limitUm), x, 22);
+        lastLabelX = x;
       }
       ctx.setLineDash([]);
       ctx.textAlign = 'start';

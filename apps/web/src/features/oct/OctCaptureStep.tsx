@@ -15,8 +15,9 @@ import { useExamJob } from './useExamJob';
 import './oct.css';
 
 /**
- * Typical time to take and analyse one exam on a laptop, seconds. Measured in the
- * browser (see the delivery report); shown so the astronaut knows how long to wait.
+ * Typical time to take and analyse one exam on a laptop, seconds, shown so the astronaut
+ * knows how long to wait. Measured in Chromium on the development laptop (shared with
+ * other processes): 9 to 11 s per exam, 15 s the first time while the code warms up.
  */
 export const EXPECTED_SECONDS = 10;
 

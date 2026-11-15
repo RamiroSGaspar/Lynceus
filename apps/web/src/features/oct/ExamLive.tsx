@@ -33,7 +33,10 @@ export function ExamLive({ store, version, eye, showProgress = true }: { store: 
   const total = store.header?.numBScans ?? 48;
   const visible = visibleCount(store.taken, total, reduced);
   const shownOrder = store.order.slice(0, visible);
-  const latest = shownOrder.length > 0 ? shownOrder[shownOrder.length - 1]! : null;
+  // Once finished (a rejected capture), show the first scan that could not be used: that is where the problem shows.
+  const firstUnusable = showProgress ? -1 : store.scans.findIndex((f) => f !== undefined && !f.analysis.usable);
+  const latest = firstUnusable >= 0 ? firstUnusable : shownOrder.length > 0 ? shownOrder[shownOrder.length - 1]! : null;
+  const highlightKind = showProgress ? 'current' : 'selected';
   const frame = latest !== null ? store.scans[latest] : undefined;
   const series = useMemo(() => scanSeries(store, new Set(shownOrder)), [store, version, visible]);
   const view = progressView(store.progress, { header: store.header !== null, fundus: store.fundus !== null });
@@ -64,7 +67,7 @@ export function ExamLive({ store, version, eye, showProgress = true }: { store: 
               lines={series.lines}
               usable={series.usable}
               highlight={latest}
-              highlightKind="current"
+              highlightKind={highlightKind}
               label={fundusLabel}
               mark={t('simulatedMark')}
             />
@@ -82,7 +85,7 @@ export function ExamLive({ store, version, eye, showProgress = true }: { store: 
             </span>
             <span>
               <span className="oct-swatch oct-swatch--current" aria-hidden="true" />
-              {t('legend.current')}
+              {t(showProgress ? 'legend.current' : 'legend.selected')}
             </span>
           </p>
         </figure>
