@@ -14,7 +14,8 @@ import { SessionScreen } from './SessionScreen';
  * The pieces other people build are replaced by markers that show what the
  * session hands them. They have their own tests; these are about the session.
  */
-vi.mock('../slots', () => ({
+vi.mock('../slots', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../slots')>()),
   SymptomsStep: () => <h1 data-slot="symptoms">symptoms step</h1>,
   AcuityStep: () => <h1 data-slot="acuity">acuity step</h1>,
   AmslerStep: ({ calibration }: { calibration: ScreenCalibration | null }) => (

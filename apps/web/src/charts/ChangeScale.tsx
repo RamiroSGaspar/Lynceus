@@ -2,6 +2,7 @@ import type { Eye, Quantity } from '@app/core';
 import { useI18n, useMessages } from '../i18n';
 import { chartMessages } from '../i18n/charts';
 import { commonMessages } from '../i18n/common';
+import { LevelShape, type LevelKind } from '../ui';
 import { layoutChangeScale } from './changeScaleLayout';
 import { formatExact, formatPlain } from '../app/format';
 import { formatChange } from './format';
@@ -37,18 +38,28 @@ export function changeScaleDomain(today: ScaleMark | null, previous: readonly Sc
 }
 
 const BAND_IDS: readonly BandId[] = ['normal-variation', 'first-sign', 'clinically-concerning'];
+/** The alert class each band of the scale belongs to: its colour and its shape. */
+const BAND_KIND: Readonly<Record<BandId, LevelKind>> = {
+  'normal-variation': 'none',
+  'first-sign': 'advisory',
+  'clinically-concerning': 'caution',
+};
 
 /**
  * The change number line: where today's value falls between "before the flight"
  * and NASA's two thresholds. A line and not a table, because on a table people
  * rate a slightly raised value and a very raised one as equally urgent (research
  * doc `comunicar-resultados-de-salud.md`, table row 3).
+ *
+ * The axis is the line, and it changes colour at every threshold. The thresholds are
+ * dashed lines with their value above. Today is the large white disc, with its range as a
+ * bar; earlier controls are small hollow discs, so what is past is told from what is current.
  */
 export function ChangeScale({ eye, today, previous, thresholds, domain }: Props) {
   const { locale } = useI18n();
   const t = useMessages(chartMessages);
   const tc = useMessages(commonMessages);
-  const { ref, width, fontPx, valueFontPx, measure } = useChartBox<HTMLDivElement>();
+  const { ref, width, fontPx, measure } = useChartBox<HTMLDivElement>();
 
   const signed = (valueUm: number, like: number = valueUm): string => formatChange(valueUm, thresholds, locale, like);
   const first = formatExact(thresholds.firstSignUm, locale);
@@ -63,28 +74,18 @@ export function ChangeScale({ eye, today, previous, thresholds, domain }: Props)
   const layout = layoutChangeScale({
     width,
     fontPx,
-    valueFontPx,
     measure,
     domain: domain ?? changeScaleDomain(today, previous),
     thresholds,
     bandNames,
-    zero: { value: formatPlain(0, 0, locale), note: t('scale.zero.note') },
-    firstSign: { value: t('threshold.value', { value: first }), note: t('nasa') },
-    clinicallyConcerning: { value: t('threshold.value', { value: second }), note: t('nasa') },
+    zeroLabel: formatPlain(0, 0, locale),
+    firstSignLabel: t('threshold.value', { value: first }),
+    clinicallyConcerningLabel: t('threshold.value', { value: second }),
     tickLabel: (valueUm) => formatPlain(valueUm, 0, locale),
-    today:
-      today && todayValue !== null
-        ? {
-            valueUm: today.change.value,
-            lowUm: range?.[0] ?? null,
-            highUm: range?.[1] ?? null,
-            valueLabel: t('value', { value: todayValue }),
-            rangeLabel: todayLow !== null && todayHigh !== null ? t('range', { low: todayLow, high: todayHigh }) : null,
-          }
-        : null,
+    today: today ? { valueUm: today.change.value, lowUm: range?.[0] ?? null, highUm: range?.[1] ?? null } : null,
     previous: previous.map((mark) => ({
       valueUm: mark.change.value,
-      label: tc('flightDay.short', { day: mark.flightDay }),
+      label: `${tc('flightDay', { day: mark.flightDay })}: ${t('value', { value: signed(mark.change.value) })}`,
     })),
   });
 
@@ -115,12 +116,11 @@ export function ChangeScale({ eye, today, previous, thresholds, domain }: Props)
     sentences.push(t('scale.alt.previous', { list }));
   }
 
-  const { plot, lineHeight } = layout;
-  const axisTop = plot.bottom + layout.tickLength;
+  const { lineY } = layout;
 
   return (
     <figure className="chart change-scale">
-      <figcaption className="chart__caption">{t('scale.caption', { eye: eyeName })}</figcaption>
+      <figcaption className="co-oculto">{t('scale.caption', { eye: eyeName })}</figcaption>
       <div ref={ref} className="chart__canvas">
         <svg
           role="img"
@@ -130,49 +130,41 @@ export function ChangeScale({ eye, today, previous, thresholds, domain }: Props)
           viewBox={`0 0 ${layout.width} ${layout.height}`}
         >
           {layout.bands.map((band) => (
-            <rect
+            <line
               key={band.id}
-              className={`chart-band chart-band--${band.id}`}
-              x={band.x}
-              y={plot.top}
-              width={band.width}
-              height={plot.bottom - plot.top}
+              className={`change-scale__stretch change-scale__stretch--${BAND_KIND[band.id]}`}
+              x1={band.x}
+              x2={band.x + band.width}
+              y1={lineY}
+              y2={lineY}
             />
           ))}
-          <line
-            className="chart-zero"
-            x1={layout.zeroX}
-            x2={layout.zeroX}
-            y1={layout.contentTop}
-            y2={axisTop}
-          />
           {layout.thresholdLines.map((line) => (
-            <line
-              key={line.kind}
-              className="chart-threshold"
-              x1={line.x}
-              x2={line.x}
-              y1={plot.top}
-              y2={axisTop}
-            />
+            <line key={line.kind} className="change-scale__threshold" x1={line.x} x2={line.x} y1={line.y1} y2={line.y2} />
+          ))}
+          {layout.zero && <line className="change-scale__zero" x1={layout.zero.x} x2={layout.zero.x} y1={layout.zero.y1} y2={layout.zero.y2} />}
+          {layout.tickMarks.map((mark) => (
+            <line key={mark.x} className="change-scale__tick-mark" x1={mark.x} x2={mark.x} y1={mark.y1} y2={mark.y2} />
+          ))}
+
+          {layout.axisLabels.map((label) => (
+            <text
+              key={`${label.kind}-${label.valueUm}`}
+              className={label.kind === 'tick' || label.kind === 'zero' ? 'change-scale__tick' : 'change-scale__mark'}
+              textAnchor="middle"
+              x={label.x}
+              y={label.baseline}
+            >
+              {label.text}
+            </text>
           ))}
 
           {layout.bandLabels.map((label) => (
-            <g key={label.id}>
-              {label.extent && (
-                <path
-                  className={`change-scale__extent change-scale__extent--${label.id}`}
-                  d={`M${label.extent.x1} ${label.extent.y - 4}V${label.extent.y}H${label.extent.x2}V${label.extent.y - 4}`}
-                />
-              )}
-              <text
-                className={`change-scale__band-name${label.extent ? '' : ' chart__over'}`}
-                textAnchor={label.anchor}
-                x={label.x}
-                y={label.baseline}
-              >
+            <g key={label.id} className={`change-scale__band change-scale__band--${BAND_KIND[label.id]}`}>
+              <LevelShape kind={BAND_KIND[label.id]} x={label.shape.x} y={label.shape.y} size={label.shape.size} />
+              <text className="change-scale__band-name" x={label.textX} y={label.baseline}>
                 {label.lines.map((line, index) => (
-                  <tspan key={line} x={label.x} dy={index === 0 ? 0 : lineHeight}>
+                  <tspan key={`${index}-${line}`} x={label.textX} dy={index === 0 ? 0 : layout.lineHeight}>
                     {line}
                   </tspan>
                 ))}
@@ -180,123 +172,24 @@ export function ChangeScale({ eye, today, previous, thresholds, domain }: Props)
             </g>
           ))}
 
-          {layout.previous.map((mark) => (
-            <g key={`${mark.label}-${mark.x}`} className="change-scale__previous">
-              <line x1={mark.x} y1={mark.y + mark.r} x2={mark.labelX} y2={mark.labelBaseline - fontPx * 0.9} />
-              <circle cx={mark.x} cy={mark.y} r={mark.r} />
-              <text className="chart__over" textAnchor="middle" x={mark.labelX} y={mark.labelBaseline}>
-                {mark.label}
-              </text>
-            </g>
-          ))}
-
-          {layout.today && (
-            <g className="change-scale__today">
-              {layout.today.range && (
-                <path
-                  className="change-scale__range"
-                  d={
-                    `M${layout.today.range.x1} ${layout.today.y - layout.today.range.cap}v${2 * layout.today.range.cap}` +
-                    `M${layout.today.range.x1} ${layout.today.y}H${layout.today.range.x2}` +
-                    `M${layout.today.range.x2} ${layout.today.y - layout.today.range.cap}v${2 * layout.today.range.cap}`
-                  }
-                />
-              )}
-              <line
-                className="change-scale__pointer"
-                x1={layout.today.pointer.x}
-                x2={layout.today.pointer.x}
-                y1={layout.today.pointer.y1}
-                y2={layout.today.pointer.y2}
-              />
-              <path
-                className="change-scale__marker"
-                d={
-                  `M${layout.today.x} ${layout.today.y - layout.today.half}` +
-                  `L${layout.today.x + layout.today.half} ${layout.today.y}` +
-                  `L${layout.today.x} ${layout.today.y + layout.today.half}` +
-                  `L${layout.today.x - layout.today.half} ${layout.today.y}Z`
-                }
-              />
-              <rect
-                className="change-scale__chip"
-                x={layout.today.chip.x - layout.today.chip.width / 2}
-                y={layout.today.chip.y}
-                width={layout.today.chip.width}
-                height={layout.today.chip.height}
-                rx={4}
-              />
-              <text
-                className="change-scale__value"
-                textAnchor="middle"
-                x={layout.today.chip.x}
-                y={layout.today.chip.valueBaseline}
-              >
-                {todayValue !== null && t('value', { value: todayValue })}
-              </text>
-              {layout.today.chip.rangeBaseline !== null && todayLow !== null && todayHigh !== null && (
-                <text
-                  className="change-scale__value-range"
-                  textAnchor="middle"
-                  x={layout.today.chip.x}
-                  y={layout.today.chip.rangeBaseline}
-                >
-                  {t('range', { low: todayLow, high: todayHigh })}
-                </text>
-              )}
-            </g>
+          {layout.today?.range && (
+            <rect
+              className="change-scale__range"
+              x={layout.today.range.x1}
+              y={lineY - layout.today.range.height / 2}
+              width={Math.max(layout.today.range.x2 - layout.today.range.x1, 1)}
+              height={layout.today.range.height}
+              rx={layout.today.range.height / 2}
+            />
           )}
-
-          <g className="change-scale__axis">
-            <line x1={plot.left} x2={plot.right} y1={plot.bottom} y2={plot.bottom} />
-            {layout.tickMarks.map((tickX) => (
-              <line key={tickX} x1={tickX} x2={tickX} y1={plot.bottom} y2={axisTop} />
-            ))}
-            {layout.axisLabels.map((label) => (
-              <g key={`${label.kind}-${label.valueUm}`}>
-                {Math.abs(label.x - label.anchorX) > 1 && label.kind !== 'tick' && (
-                  <line x1={label.anchorX} y1={axisTop} x2={label.x} y2={label.baseline - fontPx * 0.9} />
-                )}
-                <text
-                  className={label.kind === 'tick' ? 'change-scale__tick' : 'change-scale__mark'}
-                  textAnchor="middle"
-                  x={label.x}
-                  y={label.baseline}
-                >
-                  {label.lines.map((line, index) => (
-                    <tspan
-                      key={`${index}-${line}`}
-                      className={index === 0 ? undefined : 'change-scale__note'}
-                      x={label.x}
-                      dy={index === 0 ? 0 : lineHeight}
-                    >
-                      {line}
-                    </tspan>
-                  ))}
-                </text>
-              </g>
-            ))}
-          </g>
+          {layout.previous.map((mark, index) => (
+            <circle key={`${index}-${mark.x}`} className="change-scale__previous" cx={mark.x} cy={mark.y} r={mark.r}>
+              <title>{mark.label}</title>
+            </circle>
+          ))}
+          {layout.today && <circle className="change-scale__today" cx={layout.today.x} cy={layout.today.y} r={layout.today.r} />}
         </svg>
       </div>
-      <p className="chart__axis-title">{t('scale.axis')}</p>
-      <ul className="chart__legend">
-        <li>
-          <svg width="34" height="16" viewBox="0 0 34 16" aria-hidden="true" focusable="false">
-            <path className="change-scale__range" d="M2 3v10M2 8H32M32 3v10" />
-            <path className="change-scale__marker" d="M17 1L24 8L17 15L10 8Z" />
-          </svg>
-          {t('scale.legend.today')}
-        </li>
-        {previous.length > 0 && (
-          <li>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <circle className="change-scale__previous-symbol" cx="8" cy="8" r="5" />
-            </svg>
-            {t('scale.legend.previous')}
-          </li>
-        )}
-      </ul>
     </figure>
   );
 }

@@ -2,7 +2,7 @@ import { CREW, summarize, type CaptureRequest, type CrewId, type Eye, type EyeCa
 import { useEffect, useState } from 'react';
 import { commonMessages } from '../../i18n/common';
 import { useI18n, useMessages } from '../../i18n';
-import { Button, Card, LanguageToggle } from '../../ui';
+import { BrandStill, Button, Group, LanguageToggle, Notice, SimulatedTag } from '../../ui';
 import { ExamViewer } from './ExamViewer';
 import { octDevMessages } from './messages';
 import { OctCaptureStep } from './OctCaptureStep';
@@ -44,82 +44,99 @@ export function DevOctPage() {
   const mb = (bytes: number | null | undefined) => (bytes == null ? t('metrics.unknown') : `${formatNumber(bytes / 1e6, { maximumFractionDigits: 1 })} MB`);
 
   return (
-    <main className="shell oct-dev">
-      <LanguageToggle />
-      <h1>{t('title')}</h1>
-      <p>{t('intro')}</p>
-      <div className="oct-dev__controls">
-        <label>
-          {t('crew')}
-          <select value={crewId} onChange={(event) => setCrewId(event.target.value as CrewId)}>
-            {CREW.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.id} · {member.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {t('eye')}
-          <select value={eye} onChange={(event) => setEye(event.target.value as Eye)}>
-            <option value="OD">{common('eye.OD')}</option>
-            <option value="OS">{common('eye.OS')}</option>
-          </select>
-        </label>
-        <label>
-          {t('day')}
-          <select value={flightDay} onChange={(event) => setFlightDay(Number(event.target.value))}>
-            {DAYS.map((day) => (
-              <option key={day} value={day}>
-                {day === 0 ? common('preflight') : common('flightDay', { day })}
-              </option>
-            ))}
-          </select>
-        </label>
-        <Button variant="primary" onClick={start}>
-          {t('start')}
-        </Button>
-      </div>
+    <main className="co-dev">
+      <header className="co-dev__cabeza co-velo">
+        <div className="co-fila">
+          <BrandStill />
+          <SimulatedTag />
+          <LanguageToggle />
+        </div>
+        <h1 className="co-titulo">{t('title')}</h1>
+        <p className="co-nota">{t('intro')}</p>
+        <div className="co-dev__controles">
+          <label>
+            <span className="co-rotulo">{t('crew')}</span>
+            <select className="co-entrada" value={crewId} onChange={(event) => setCrewId(event.target.value as CrewId)}>
+              {CREW.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.id} · {member.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span className="co-rotulo">{t('eye')}</span>
+            <select className="co-entrada" value={eye} onChange={(event) => setEye(event.target.value as Eye)}>
+              <option value="OD">{common('eye.OD')}</option>
+              <option value="OS">{common('eye.OS')}</option>
+            </select>
+          </label>
+          <label>
+            <span className="co-rotulo">{t('day')}</span>
+            <select className="co-entrada" value={flightDay} onChange={(event) => setFlightDay(Number(event.target.value))}>
+              {DAYS.map((day) => (
+                <option key={day} value={day}>
+                  {day === 0 ? common('preflight') : common('flightDay', { day })}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Button variant="primary" icon="play" onClick={start}>
+            {t('start')}
+          </Button>
+        </div>
+        <h2 className="co-micro">{t('capture')}</h2>
+        {reference.status === 'running' && (
+          <p className="co-nota" role="status">
+            {t('baseline', { n: store?.taken ?? 0, total: 48 })}
+          </p>
+        )}
+        {(reference.status === 'error' || reference.status === 'unavailable') && <Notice title={t('baselineFailed', { detail: reference.error ?? '' })} />}
+      </header>
 
-      <h2>{t('capture')}</h2>
-      {reference.status === 'running' && <p role="status">{t('baseline', { n: store?.taken ?? 0, total: 48 })}</p>}
-      {(reference.status === 'error' || reference.status === 'unavailable') && <p className="oct-notice">{t('baselineFailed', { detail: reference.error ?? '' })}</p>}
       {baseline && started && (
-        <OctCaptureStep key={run} crewId={started.crewId} eye={started.eye} flightDay={started.flightDay} baseline={baseline.summary} onComplete={setResult} />
+        <div className="co-cabina co-cabina--captura">
+          <OctCaptureStep key={run} crewId={started.crewId} eye={started.eye} flightDay={started.flightDay} baseline={baseline.summary} onComplete={setResult} />
+        </div>
       )}
 
-      {store?.elapsedMs != null && (
-        <Card title={t('metrics')}>
-          <p>{t('metrics.time', { seconds: formatNumber(store.elapsedMs / 1000, { maximumFractionDigits: 1 }) })}</p>
-          <p>{t('metrics.memory', { mb: mb(store.retainedBytes), screen: mb(memory), worker: mb(store.workerHeapBytes) })}</p>
-        </Card>
-      )}
+      <div className="co-dev__cuerpo co-velo">
+        {store?.elapsedMs != null && (
+          <Group icon="clock" title={t('metrics')}>
+            <p className="co-nota">{t('metrics.time', { seconds: formatNumber(store.elapsedMs / 1000, { maximumFractionDigits: 1 }) })}</p>
+            <p className="co-nota">{t('metrics.memory', { mb: mb(store.retainedBytes), screen: mb(memory), worker: mb(store.workerHeapBytes) })}</p>
+          </Group>
+        )}
 
-      <Card title={t('output')}>
-        {result ? <pre className="oct-dev__output">{JSON.stringify(result, null, 2)}</pre> : <p>{t('none')}</p>}
-      </Card>
+        <Group icon="clipboard-list" title={t('output')}>
+          {result ? <pre className="co-dev__salida">{JSON.stringify(result, null, 2)}</pre> : <p className="co-nota">{t('none')}</p>}
+        </Group>
 
-      <h2>{t('viewer')}</h2>
-      <div className="oct-dev__controls">
-        <label>
-          {t('attempt')}
-          <select value={attempt} onChange={(event) => setAttempt(Number(event.target.value))}>
-            {[1, 2, 3].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
-        <Button onClick={() => setViewerRequest({ crewId, eye, flightDay, attempt })}>{t('openViewer')}</Button>
+        <Group icon="layers" title={t('viewer')}>
+          <div className="co-dev__controles">
+            <label>
+              <span className="co-rotulo">{t('attempt')}</span>
+              <select className="co-entrada" value={attempt} onChange={(event) => setAttempt(Number(event.target.value))}>
+                {[1, 2, 3].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button icon="layers" onClick={() => setViewerRequest({ crewId, eye, flightDay, attempt })}>
+              {t('openViewer')}
+            </Button>
+          </div>
+        </Group>
+        {viewerRequest && (
+          <ExamViewer
+            key={JSON.stringify(viewerRequest)}
+            request={viewerRequest}
+            baseline={baseline && baseline.eye === viewerRequest.eye && baseline.crewId === viewerRequest.crewId ? baseline.summary : undefined}
+          />
+        )}
       </div>
-      {viewerRequest && (
-        <ExamViewer
-          key={JSON.stringify(viewerRequest)}
-          request={viewerRequest}
-          baseline={baseline && baseline.eye === viewerRequest.eye && baseline.crewId === viewerRequest.crewId ? baseline.summary : undefined}
-        />
-      )}
     </main>
   );
 }

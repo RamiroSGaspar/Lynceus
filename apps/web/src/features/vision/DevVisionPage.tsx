@@ -1,7 +1,7 @@
 import type { ScreenCalibration } from '@app/core';
 import { useState } from 'react';
 import { useMessages } from '../../i18n';
-import { Button, Card, LanguageToggle } from '../../ui';
+import { BrandStill, Button, Group, LanguageToggle, SimulatedTag } from '../../ui';
 import { AcuityStep } from './AcuityStep';
 import { AmslerStep } from './AmslerStep';
 import { devMessages } from './messages';
@@ -22,26 +22,32 @@ export function DevVisionPage() {
   const result = output[tab];
 
   return (
-    <main className="shell vt-root" style={{ maxWidth: 'var(--content-width)' }}>
-      <LanguageToggle />
-      <h1>{t('title')}</h1>
-      <p>{t('intro')}</p>
-      <nav className="vt-dev-tabs" aria-label={t('title')}>
-        {TABS.map((key) => (
-          <Button
-            key={key}
-            variant={tab === key ? 'primary' : 'secondary'}
-            aria-pressed={tab === key}
-            onClick={() => {
-              setTab(key);
-              setRun((value) => value + 1);
-            }}
-          >
-            {t(`tab.${key}`)}
-          </Button>
-        ))}
-      </nav>
-      <div key={`${tab}/${run}`}>
+    <main className="co-dev co-dev--prueba">
+      <header className="co-dev__cabeza">
+        <div className="co-fila">
+          <BrandStill />
+          <SimulatedTag />
+          <LanguageToggle />
+        </div>
+        <h1 className="co-titulo">{t('title')}</h1>
+        <p className="co-nota">{t('intro')}</p>
+        <nav className="co-fila" aria-label={t('title')}>
+          {TABS.map((key) => (
+            <Button
+              key={key}
+              variant={tab === key ? 'primary' : 'secondary'}
+              aria-pressed={tab === key}
+              onClick={() => {
+                setTab(key);
+                setRun((value) => value + 1);
+              }}
+            >
+              {t(`tab.${key}`)}
+            </Button>
+          ))}
+        </nav>
+      </header>
+      <div key={`${tab}/${run}`} className="co-prueba__paso">
         {tab === 'symptoms' && <SymptomsStep onComplete={done('symptoms')} onSkip={skipped('symptoms')} />}
         {tab === 'acuity' && (
           <AcuityStep
@@ -54,15 +60,17 @@ export function DevVisionPage() {
         )}
         {tab === 'amsler' && <AmslerStep calibration={calibration} onComplete={done('amsler')} onSkip={skipped('amsler')} />}
       </div>
-      <Card title={t('result')}>
-        {result === undefined ? (
-          <p>{t('none')}</p>
-        ) : result === 'skipped' ? (
-          <p>{t('skipped')}</p>
-        ) : (
-          <pre className="vt-dev-output">{JSON.stringify(result, null, 2)}</pre>
-        )}
-      </Card>
+      <div className="co-dev__cuerpo">
+        <Group icon="clipboard-list" title={t('result')}>
+          {result === undefined ? (
+            <p className="co-nota">{t('none')}</p>
+          ) : result === 'skipped' ? (
+            <p className="co-nota">{t('skipped')}</p>
+          ) : (
+            <pre className="co-dev__salida">{JSON.stringify(result, null, 2)}</pre>
+          )}
+        </Group>
+      </div>
     </main>
   );
 }

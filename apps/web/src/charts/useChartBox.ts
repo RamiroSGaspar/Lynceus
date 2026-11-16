@@ -12,7 +12,7 @@ export interface ChartBox<T extends HTMLElement> {
 }
 
 /** What is assumed before the browser has been asked: the first paint and the tests. */
-const DEFAULT_BOX = { width: 720, fontPx: 15.75, valueFontPx: 24.75 };
+const DEFAULT_BOX = { width: 720, fontPx: 14, valueFontPx: 22 };
 
 function canvasMeasure(fontFamily: string): Measure | null {
   try {

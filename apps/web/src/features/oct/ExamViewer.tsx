@@ -1,9 +1,10 @@
-import type { CaptureRequest, ExamSummary } from '@app/core';
+import { RADIAL_SCANS, type CaptureRequest, type ExamSummary } from '@app/core';
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
+import { commonMessages } from '../../i18n/common';
 import { useI18n, useMessages } from '../../i18n';
-import { Button, SimulatedNotice } from '../../ui';
+import { Action, BrandWorking, Notice, NoticeText, Readout, SimulatedNotice } from '../../ui';
 import { ALL_LAYERS, BScanCanvas, LAYER_KEYS, type LayerSet } from './BScanCanvas';
-import { ExamLive, LayerSwatch, scanSeries } from './ExamLive';
+import { CaptureOcular, scanSeries, useLiveView } from './ExamLive';
 import type { ExamStore, ScanFrame } from './examStore';
 import { FundusCanvas } from './FundusCanvas';
 import {
@@ -19,8 +20,10 @@ import {
   type Point,
 } from './geometry';
 import { octMessages } from './messages';
+import { RadialLegend } from './RadialLegend';
 import { QualityBars } from './QualityBars';
 import { reasonText, SCAN_REJECTIONS } from './reasons';
+import { StrokeSample } from './ScanFigure';
 import { useExamJob } from './useExamJob';
 import { ComparePanel, DownloadPanel, NumberSource, SimulationPanel, type MeasureId, type Selection } from './ViewerPanels';
 import './oct.css';
@@ -45,6 +48,7 @@ function maskDots(masks: readonly Uint8Array[], inputs: MeasureInputs, step = 3)
  */
 export function ExamViewerPanel({ store, request, baseline }: { store: ExamStore; request: CaptureRequest; baseline?: ExamSummary }) {
   const t = useMessages(octMessages);
+  const common = useMessages(commonMessages);
   const { locale, formatNumber } = useI18n();
   const analysis = store.analysis;
   const header = store.header;
@@ -124,19 +128,21 @@ export function ExamViewerPanel({ store, request, baseline }: { store: ExamStore
   ].join(' ');
 
   return (
-    <section className="oct-viewer" aria-labelledby="oct-viewer-title">
-      <h3 id="oct-viewer-title" className="oct-viewer__title">
-        {t('viewer.title')}
-      </h3>
-      <p className="oct-muted">{t('viewer.intro')}</p>
-      {analysis.status !== 'measured' && <p className="oct-notice">{t('viewer.notMeasured')}</p>}
+    <section className="oct-visor" aria-labelledby="oct-viewer-title">
+      <header className="co-pila oct-visor__cabeza">
+        <h3 id="oct-viewer-title" className="co-micro">
+          {t('viewer.title')}
+        </h3>
+        <p className="co-nota">{t('viewer.intro')}</p>
+        {analysis.status !== 'measured' && <Notice kind="unmeasured" title={t('viewer.notMeasured')} />}
+      </header>
 
-      <div className="oct-nav" role="group" aria-label={t('viewer.slider')}>
-        <Button onClick={() => go((index - 1 + total) % total)} aria-label={t('viewer.prev')}>
-          ‹
-        </Button>
-        <label className="oct-nav__slider">
-          <span>{t('viewer.slider')}</span>
+      <div className="oct-visor__nav" role="group" aria-label={t('viewer.slider')}>
+        <Action icon="chevron-left" size="sm" hideLabel onClick={() => go((index - 1 + total) % total)}>
+          {t('viewer.prev')}
+        </Action>
+        <label className="oct-visor__deslizador">
+          <span className="co-rotulo">{t('viewer.slider')}</span>
           <input
             type="range"
             min={1}
@@ -147,19 +153,19 @@ export function ExamViewerPanel({ store, request, baseline }: { store: ExamStore
             aria-valuetext={t('scan.title', { n: index + 1, total })}
           />
         </label>
-        <Button onClick={() => go((index + 1) % total)} aria-label={t('viewer.next')}>
-          ›
-        </Button>
-        <output className="oct-nav__value" aria-live="polite">
-          {t('scan.title', { n: index + 1, total })}
+        <Action icon="chevron-right" size="sm" hideLabel onClick={() => go((index + 1) % total)}>
+          {t('viewer.next')}
+        </Action>
+        <output className="co-micro oct-visor__valor" aria-live="polite">
+          {t('scan.title', { n: index + 1, total })} · {common(`eye.${header.scanPosition}`)}
         </output>
       </div>
-      <p className="oct-muted">{t('viewer.keys')}</p>
+      <p className="co-rotulo">{t('viewer.keys')}</p>
 
-      <div className="oct-viewer__images">
-        <figure className="oct-figure oct-figure--fundus">
-          <figcaption>{t('fundus.title')}</figcaption>
-          <div tabIndex={0} onKeyDown={onKeyDown} className="oct-focusable" aria-label={fundusLabel} role="group">
+      <div className="oct-visor__imagenes">
+        <figure className="co-corte">
+          <figcaption className="co-micro">{t('fundus.title')}</figcaption>
+          <div tabIndex={0} onKeyDown={onKeyDown} className="co-corte__marco co-marco oct-foco" aria-label={fundusLabel} role="group">
             <FundusCanvas
               fundus={fundus}
               scaleXMm={header.scaleXSloMm}
@@ -167,7 +173,6 @@ export function ExamViewerPanel({ store, request, baseline }: { store: ExamStore
               lines={lines}
               usable={series.usable}
               highlight={index}
-              highlightKind="selected"
               ellipse={placement?.ellipse ?? null}
               showRings={layers.rings}
               points={layers.bmo || measure === 'mrw' ? points : undefined}
@@ -178,64 +183,51 @@ export function ExamViewerPanel({ store, request, baseline }: { store: ExamStore
               mark={t('simulatedMark')}
             />
           </div>
-          <label className="oct-check">
+          <label className="co-casilla">
             <input type="checkbox" checked={whole} onChange={(event) => setWhole(event.target.checked)} />
             {t('fundus.whole')}
           </label>
-          <p className="oct-legend">
-            <span>
-              <span className="oct-swatch oct-swatch--usable" aria-hidden="true" />
-              {t('legend.usable')}
-            </span>
-            <span>
-              <span className="oct-swatch oct-swatch--unusable" aria-hidden="true" />
-              {t('legend.unusable')}
-            </span>
-            <span>
-              <span className="oct-swatch oct-swatch--selected" aria-hidden="true" />
-              {t('legend.selected')}
-            </span>
-          </p>
+          <RadialLegend />
         </figure>
-        <figure className="oct-figure oct-figure--scan">
-          <figcaption>
-            {t('scan.title', { n: index + 1, total })}
+        <figure className="co-corte">
+          <figcaption className="co-pila oct-visor__titulo">
+            <span className="co-micro">{t('scan.title', { n: index + 1, total })}</span>
             {line && scan && (
-              <span className="oct-muted oct-block">
+              <span className="co-rotulo">
                 {t('viewer.scanInfo', { angle: one(scanAngleDeg(line), 2), quality: one(scan.qualityDb) })} · {scanState}
               </span>
             )}
           </figcaption>
           {frame && (
-            <BScanCanvas
-              frame={frame}
-              layers={layers}
-              distancesUm={distances}
-              mask={selection?.contribution?.masks[index] ?? null}
-              size={size}
-              scaleUm={{ x: header.scaleXMm * 1000, z: header.scaleZMm * 1000 }}
-              scaleText={t('viewer.scale')}
-              label={scanLabel}
-              mark={t('simulatedMark')}
-              onKeyDown={onKeyDown}
-            />
+            <div className="co-corte__marco co-marco">
+              <BScanCanvas
+                frame={frame}
+                layers={layers}
+                distancesUm={distances}
+                mask={selection?.contribution?.masks[index] ?? null}
+                size={size}
+                scaleUm={{ x: header.scaleXMm * 1000, z: header.scaleZMm * 1000 }}
+                scaleText={t('viewer.scale')}
+                label={scanLabel}
+                mark={t('simulatedMark')}
+                onKeyDown={onKeyDown}
+              />
+            </div>
           )}
-          <fieldset className="oct-fieldset">
-            <legend>{t('layers.title')}</legend>
+          <fieldset className="co-casillas">
+            <legend className="co-micro">{t('layers.title')}</legend>
             {LAYER_KEYS.map((key) => (
-              <label key={key} className="oct-check">
+              <label key={key} className="co-casilla">
                 <input type="checkbox" checked={layers[key]} onChange={(event) => setLayers((current) => ({ ...current, [key]: event.target.checked }))} />
-                <LayerSwatch layer={key} />
-                <span>
-                  {t(`layer.${key}`)} <span className="oct-muted">({t(`layer.${key}.style`)})</span>
-                </span>
+                <StrokeSample kind={key} />
+                {t(`layer.${key}`)}
               </label>
             ))}
           </fieldset>
-          <fieldset className="oct-fieldset">
-            <legend>{t('viewer.size')}</legend>
+          <fieldset className="co-casillas">
+            <legend className="co-micro">{t('viewer.size')}</legend>
             {(['fit', 'actual'] as const).map((value) => (
-              <label key={value} className="oct-check">
+              <label key={value} className="co-casilla">
                 <input type="radio" name="oct-size" checked={size === value} onChange={() => setSize(value)} />
                 {t(`viewer.size.${value}`)}
               </label>
@@ -244,7 +236,13 @@ export function ExamViewerPanel({ store, request, baseline }: { store: ExamStore
         </figure>
       </div>
 
-      <QualityBarsForViewer store={store} index={index} onSelect={go} />
+      <figure className="co-pila oct-visor__calidad">
+        <figcaption className="co-micro">
+          {t('quality.title')} ({t('quality.axis')})
+        </figcaption>
+        <QualityBarsForViewer store={store} index={index} onSelect={go} />
+        <p className="co-rotulo">{t('quality.lineHelp')}</p>
+      </figure>
 
       <NumberSource analysis={analysis} placement={placement} selection={selection} measure={measure} onMeasure={setMeasure} index={index} />
       <ComparePanel request={request} baseline={baseline} index={index} today={store} />
@@ -257,7 +255,7 @@ export function ExamViewerPanel({ store, request, baseline }: { store: ExamStore
 
 function QualityBarsForViewer({ store, index, onSelect }: { store: ExamStore; index: number; onSelect: (index: number) => void }) {
   const bars = useMemo(() => scanSeries(store, null).bars, [store]);
-  return <QualityBars scans={bars} highlight={index} onSelect={onSelect} />;
+  return <QualityBars scans={bars} highlight={index} onSelect={onSelect} tall />;
 }
 
 /** A finished exam on its own, regenerated from its request: the same request gives the same image. */
@@ -270,19 +268,29 @@ export function ExamViewer({ request, baseline }: { request: CaptureRequest; bas
     // Restart only when the request itself changes.
   }, [key]);
   const store = job.store;
+  const live = useLiveView(store, job.version, 'running');
   if (job.status === 'done' && store?.analysis) return <ExamViewerPanel store={store} request={request} baseline={baseline} />;
   if (job.status === 'error' || job.status === 'unavailable')
     return (
-      <p className="oct-notice" role="alert">
-        {t('viewer.failed', { detail: job.error ?? '' })}
-      </p>
+      <Notice role="alert" title={t('viewer.title')}>
+        <NoticeText>{t('viewer.failed', { detail: job.error ?? '' })}</NoticeText>
+      </Notice>
     );
+  const total = store?.header?.numBScans ?? RADIAL_SCANS;
   return (
-    <section className="oct-viewer" aria-busy="true">
-      <h3 className="oct-viewer__title">{t('viewer.title')}</h3>
-      <p role="status">{t('viewer.regenerating', { n: store?.taken ?? 0, total: store?.header?.numBScans ?? 48 })}</p>
-      {store && <ExamLive store={store} version={job.version} eye={request.eye} />}
+    <section className="oct-visor oct-visor--cargando" aria-busy="true">
+      <h3 className="co-micro">{t('viewer.title')}</h3>
+      <p className="co-nota" role="status">
+        {t('viewer.regenerating', { n: store?.taken ?? 0, total })}
+      </p>
+      <CaptureOcular
+        store={store}
+        live={live}
+        eye={request.eye}
+        working
+        foot={<Readout size="lg" value={live?.shown ?? 0} unit={t('steps.count', { n: '', total }).trim()} label={t('steps.take')} origin="measured" />}
+      />
+      {!store?.fundus && <BrandWorking size="sm" />}
     </section>
   );
 }
-

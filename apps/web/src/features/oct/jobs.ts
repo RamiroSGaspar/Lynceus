@@ -14,7 +14,7 @@ export type JobFailure =
   /** The worker started but stopped with an error. */
   | { kind: 'crashed'; detail: string };
 
-const FINAL: ReadonlySet<WorkerMessage['type']> = new Set(['done', 'vol-done', 'ground-truth', 'error']);
+const FINAL: ReadonlySet<WorkerMessage['type']> = new Set(['done', 'vol-done', 'ground-truth', 'preview', 'error']);
 
 export function startJob(job: WorkerJob, onMessage: (message: WorkerMessage) => void, onFailure: (failure: JobFailure) => void): JobHandle {
   let worker: Worker;

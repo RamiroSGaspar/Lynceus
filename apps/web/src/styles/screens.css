@@ -1,0 +1,238 @@
+/*
+ * What the application adds to the design system: the frame around every screen and the few
+ * pieces that are particular to a screen. Built with the same tokens and the same rules as
+ * system.css and layout.css: no boxes, thin lines, not one colour written here.
+ */
+
+/* ---- Frame */
+.co-pantalla--sin-nav { padding-bottom: 0; }
+.co-principal { display: block; min-width: 0; }
+.co-principal:focus { outline: none; }
+.co-salto { position: absolute; top: var(--space-2); left: var(--space-2); z-index: 60; padding: var(--space-2) var(--space-4); border-radius: var(--radius-sm); background: var(--color-accent); color: var(--color-accent-contrast); font-size: var(--text-xs); font-weight: var(--weight-semibold); letter-spacing: var(--tracking-caps); text-transform: uppercase; text-decoration: none; transform: translateY(-300%); }
+.co-salto:focus { transform: none; }
+.co-pie-marco { position: relative; }
+.co-pie__enlaces { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin: 0; padding: 0; list-style: none; font-size: var(--text-sm); }
+.co-pie__enlaces a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--color-text); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.co-pie__enlaces a:hover { text-decoration-thickness: 2px; }
+.co-pie .co-leyenda li { cursor: help; }
+/* Top strip: the short word of the simulated-data tag on a narrow screen, the whole one otherwise. */
+.co-ficha__corta { display: none; }
+.co-hud .co-ficha { background: var(--color-bg); }
+@media (max-width: 48rem) {
+  .co-hud .co-ficha__larga { display: none; }
+  .co-hud .co-ficha__corta { display: inline; }
+}
+/* A destination that does not exist yet: dashed, like everything that is not firm. */
+.co-accion.is-ausente { color: var(--color-text-muted); cursor: not-allowed; }
+.co-accion.is-ausente .co-accion__icono { border-style: dashed; color: var(--color-text-muted); }
+.co-accion:disabled { color: var(--color-text-muted); cursor: not-allowed; }
+/* An action is over the field as often as over a veil: its disc carries its own black. */
+.co-accion__icono { background: var(--color-bg); }
+.co-nav--fija .co-accion { background: none; }
+/* In Spanish the words are longer: the navigation fits across between the two veils only from 1600 px. Under that, the word goes under the disc. */
+@media (min-width: 87.5625rem) and (max-width: 99.9375rem) {
+  :lang(es) .co-nav--fija { gap: var(--space-5); bottom: var(--space-2); padding: var(--space-1) var(--space-4); }
+  :lang(es) .co-nav--fija .co-accion { flex-direction: column; gap: var(--space-1); text-align: center; }
+  :lang(es) .co-nav--fija .co-nav__separador { align-self: flex-start; margin-top: 0.625rem; }
+}
+a.co-boton, a.co-accion { -webkit-tap-highlight-color: transparent; }
+
+/* ---- Shared pieces */
+.co-origen { display: inline-flex; }
+.co-origen svg { display: block; width: 100%; height: 100%; }
+.co-cifra { white-space: nowrap; }
+.co-cifra__unidad { color: var(--color-text-secondary); }
+.co-cifra__rango { color: var(--color-text-secondary); }
+.co-cifra .co-origen { margin-left: var(--space-2); vertical-align: -0.05em; }
+.co-apagado { color: var(--color-text-secondary); }
+.co-simulado { padding-left: var(--space-3); border-left: 1px dashed var(--color-border-strong); }
+.co-pila--holgada { gap: var(--space-6); }
+.co-pila--inicio { justify-items: start; }
+.co-estado:empty { display: none; }
+.co-lista { display: grid; gap: var(--space-2); max-width: var(--reading-width); margin: 0; padding-left: var(--space-5); font-size: var(--text-sm); line-height: var(--leading-normal); color: var(--color-text-secondary); }
+.co-lista strong { color: var(--color-text); font-weight: var(--weight-medium); }
+.co-lista--lisa { padding: 0; list-style: none; color: inherit; }
+.co-lista--numerada { color: var(--color-text); }
+.co-lista a, .co-nota a, .co-texto a { color: var(--color-text); text-decoration-thickness: 1px; text-underline-offset: 0.2em; overflow-wrap: anywhere; }
+.co-aviso__acciones, .co-aviso > .co-lista { grid-column: 2; }
+.co-aviso__acciones { margin-top: var(--space-2); }
+.co-certeza__voz { display: inline-block; }
+.co-certeza__voz::first-letter { text-transform: uppercase; }
+/* Something that opens in place: its word in capitals and a chevron that turns. */
+.co-desplegable > summary { display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--target-min); color: var(--color-text); font-size: var(--text-xs); font-weight: var(--weight-medium); letter-spacing: var(--tracking-caps); text-transform: uppercase; cursor: pointer; list-style: none; }
+.co-desplegable > summary::-webkit-details-marker, .co-paso__porque summary::-webkit-details-marker { display: none; }
+.co-paso__porque summary { list-style: none; }
+.co-desplegable[open] > summary .co-ic, .co-paso__porque[open] summary .co-ic { transform: rotate(180deg); }
+.co-desplegable > * + * { margin-top: var(--space-3); }
+/* Check boxes and radio buttons that are not answers of a test: a square or a disc with a thin edge, filled when chosen. */
+.co-casillas { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-5); min-width: 0; margin: 0; padding: 0; border: 0; }
+.co-casillas > legend { float: left; margin-right: var(--space-5); padding: 0; line-height: var(--target-min); }
+.co-casilla { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-min); font-size: var(--text-sm); cursor: pointer; }
+.co-casilla input { flex: none; appearance: none; width: 1.125rem; height: 1.125rem; margin: 0; border: 1.5px solid var(--color-border-strong); background: var(--color-bg); cursor: pointer; }
+.co-casilla input[type='radio'] { border-radius: var(--radius-round); }
+.co-casilla input:checked { border-color: var(--color-text); background: var(--color-text); box-shadow: inset 0 0 0 3px var(--color-bg); }
+.co-casilla input:disabled { border-style: dashed; cursor: not-allowed; }
+.co-casilla:has(input:disabled) { color: var(--color-text-muted); cursor: not-allowed; }
+.co-entrada--area { min-height: 4.5rem; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-bg); line-height: var(--leading-snug); resize: vertical; }
+.co-entrada--area:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; border: 1px solid var(--color-border-strong); }
+select.co-entrada { background: var(--color-bg); }
+.co-tabla--ancha { --_minimo: 58rem; }
+/* A table wider than a phone scrolls in its box; its caption stays as wide as the screen, so it is read whole without scrolling. */
+.co-tabla caption { caption-side: top; max-width: calc(100vw - 2 * var(--space-5)); }
+.co-tabla td .co-cifra { white-space: nowrap; }
+.co-tabla__celda { display: inline-grid; justify-items: end; gap: var(--space-1); }
+.co-tabla__apoyo { text-align: right; }
+.co-tabla--controles { --_minimo: 44rem; }
+.co-tabla--controles .co-tabla__control { min-width: 11rem; }
+.co-entero { white-space: nowrap; }
+/* Where a control comes from, in one small line: a sign and its words. */
+.origin-mark { display: inline-flex; align-items: center; gap: var(--space-2); }
+.origin-mark .co-ic, .co-sujeto__estado .co-ic { flex: none; width: 0.875rem; height: 0.875rem; }
+.co-marca--trabajo .co-marca__iso { width: min(11rem, 44vw); }
+.co-marca--trabajo-sm .co-marca__iso { width: 2.5rem; }
+.co-segmento button[aria-pressed='true'] { cursor: default; }
+
+/* ---- Mission line: a stop that is not a link, the stop in view, and the stops that are options */
+/*
+ * 35rem and not 36: the whole line then fits between the two veils at 1280 px, with its first mark in view.
+ * More room on the left than on the right: the mark of the first stop is the longest one in Spanish.
+ */
+.co-mision { --_minimo: 35rem; margin: 0; padding-left: 4.5rem; border: 0; min-inline-size: 0; }
+.co-mision__control--fijo { cursor: default; }
+.co-mision li.is-actual .co-mision__control { color: var(--color-text); font-weight: var(--weight-semibold); }
+.co-mision li.is-actual .co-mision__punto:not(.co-mision__punto--dia):not(.co-mision__punto--tope) { width: 1.625rem; height: 1.625rem; }
+.co-mision li.is-actual .co-mision__punto--dia { border-color: var(--color-text); background: var(--color-text); box-shadow: 0 0 0 4px var(--color-bg), 0 0 0 5px var(--color-text); }
+.co-mision label.co-mision__control:has(input:focus-visible) .co-mision__punto { outline: 2px solid var(--color-focus); outline-offset: 6px; }
+.co-mision label.co-mision__control:hover .co-mision__punto--dia { border-color: var(--color-text); }
+
+/* ---- Cockpit */
+.co-cabina__lado { display: grid; align-content: start; gap: var(--space-6); min-width: 0; }
+.co-cabina__lado > .co-grupo + .co-grupo { margin-top: 0; }
+.co-cabina__lado[hidden] { display: none; }
+.co-cabina__respuesta .co-texto { font-size: var(--text-md); }
+.co-cabina__paso { display: contents; }
+.co-cabina__bajo { grid-column: 1 / -1; }
+.co-cabina__escena--texto { align-items: stretch; justify-content: flex-start; }
+.co-cabina__escena--texto > .co-halo { width: 100%; max-width: 46rem; margin: 0 auto; }
+.co-cabina__escena--evaluacion { justify-content: center; gap: var(--space-7); min-height: 70vh; }
+.co-cabina__escena--captura { --ocular-size: min(19rem, 64vw); }
+.co-paso-sesion { display: grid; justify-items: start; gap: var(--space-5); padding: var(--space-4); }
+.co-paso-sesion--centro { justify-items: center; max-width: 40rem; text-align: center; }
+.co-paso-sesion .co-columnas { width: 100%; }
+.co-sesion__paso.is-salteado .co-sesion__nodo { border-style: dashed; }
+.co-sesion-nav { display: grid; justify-items: start; gap: var(--space-1); }
+.co-cabina__salidas { padding: var(--space-5) var(--space-5) var(--space-7); border-top: 1px solid var(--color-border); }
+@media (min-width: 80rem) { .co-cabina__solo-angosto { display: none; } }
+@media (min-width: 80rem) {
+  .co-cabina--captura { grid-template-columns: var(--panel-width) minmax(0, 1fr) var(--panel-width); }
+  .co-cabina__escena--captura { --ocular-size: clamp(13rem, 30vh, 24rem); }
+  .co-cabina__escena--texto { padding-inline: clamp(var(--space-6), 5vw, var(--space-9)); }
+  .co-cabina__escena.co-cabina__escena--texto, .co-cabina__escena.co-cabina__escena--captura { position: static; height: auto; min-height: 100vh; }
+}
+@media (min-width: 40rem) and (max-width: 79.9375rem) {
+  .co-cabina--captura .co-cabina__lado.co-velo--der { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: var(--space-6); }
+}
+/* Short screen: the eye being captured gives way so that its readout and the next action stay in the first view. */
+@media (min-width: 80rem) and (max-height: 53rem) {
+  .co-cabina__escena--captura { --ocular-size: clamp(11rem, 28vh, 22rem); }
+}
+/* A vision test: plain black, nothing but the test. As wide as the test itself, so its header and the way out line up with it. */
+.co-prueba { display: grid; gap: var(--space-6); width: min(100% - 2 * var(--space-4), 44rem); margin: 0 auto; padding: calc(var(--hud-height) + var(--space-5)) 0 var(--space-8); }
+.co-prueba__cabeza { display: grid; gap: var(--space-1); }
+.co-prueba__paso { min-width: 0; }
+.co-prueba .co-sesion-nav { padding-top: var(--space-5); border-top: 1px solid var(--color-border); }
+
+/* ---- Detail and its variants */
+.co-detalle--primera, .co-hoja-simple { padding-top: var(--hud-height); }
+.co-detalle--primera::before { display: none; }
+.co-detalle--inicio { margin-top: var(--space-6); }
+.co-seccion > * { min-width: 0; }
+.co-seccion__cabeza :focus { outline: none; }
+/* The sign of a limit sits on the first line of its sentence, like the marker of a list. */
+.co-limites .co-origen { flex: none; align-self: flex-start; margin-top: calc((var(--leading-normal) * 1em - 0.75rem) / 2); }
+.co-medidas { gap: var(--space-5); }
+.co-medidas + .co-medidas { padding-top: var(--space-6); border-top: 1px solid var(--color-border); }
+.co-intentos { gap: var(--space-2); }
+.co-hoja-simple { display: grid; align-content: center; justify-items: start; gap: var(--space-5); min-height: 100vh; padding-inline: max(var(--space-5), calc((100% - 44rem) / 2)); padding-bottom: var(--space-8); }
+.co-grafico-caja { display: grid; gap: var(--space-4); padding: var(--space-3) 0; }
+.co-casillas--fila { gap: var(--space-1) var(--space-6); }
+
+/* ---- Start */
+.co-bloque--mision { max-width: 56rem; }
+.co-portada__mision { display: grid; gap: var(--space-5); padding: var(--space-3) 0; }
+.co-portada__dia { display: grid; justify-items: center; gap: var(--space-2); text-align: center; }
+.co-portada__lema, .co-portada__pregunta { padding: 0 var(--space-4); }
+.co-tripulacion__rutina { margin-top: calc(-1 * var(--space-4)); }
+.co-tripulante__acciones { gap: var(--space-3); }
+.co-guardado { width: 100%; max-width: 26rem; }
+
+/* ---- Medical conference: a column of reading width; on paper, dark ink on white */
+.co-informe { display: grid; gap: var(--space-7); width: min(100% - 2 * var(--space-5), 54rem); margin: 0 auto; padding: var(--space-7) 0 var(--space-8); }
+.co-informe__cabeza { display: grid; justify-items: start; gap: var(--space-4); }
+.screen__section { display: grid; justify-items: start; gap: var(--space-4); min-width: 0; padding-top: var(--space-6); border-top: 1px solid; border-image: var(--line-fade-h) 1; }
+.screen__section > .co-desliza, .screen__section > form, .screen__section > ol, .screen__section > .co-pila { width: 100%; }
+.questions { display: grid; gap: var(--space-3); margin: 0; padding-left: var(--space-5); }
+.questions__item { padding-left: var(--space-1); }
+.questions__item, .questions__add { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--space-2) var(--space-3); }
+.questions__item { display: list-item; }
+.questions__item > * { vertical-align: top; }
+.questions__item .co-entrada { display: inline-block; width: calc(100% - 3.25rem); }
+.questions__add > label { grid-column: 1 / -1; }
+.questions__suggested { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.questions__suggested li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px dashed var(--color-border-strong); font-size: var(--text-sm); }
+.print-only { display: none; }
+
+/* ---- What is known about the brain: three columns that fall to one. Nothing here is an alert */
+.certainty { cursor: help; }
+.certainty--established { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-accent-contrast); }
+.certainty--limited-evidence { border-style: solid; }
+.certainty--unknown { border-style: dashed; color: var(--color-text-secondary); }
+.certainty--not-measurable-on-board { border-style: dotted; color: var(--color-text-secondary); }
+.brain__legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--space-4) var(--space-6); margin: 0; }
+.brain__legend > div { display: grid; justify-items: start; align-content: start; gap: var(--space-2); }
+.brain__columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--space-7) var(--space-6); align-items: start; }
+.brain__column { display: grid; align-content: start; gap: var(--space-5); min-width: 0; padding-top: var(--space-5); border-top: 1px solid var(--color-border-strong); }
+.brain__statements { display: grid; gap: var(--space-6); margin: 0; padding: 0; list-style: none; }
+.statement { display: grid; justify-items: start; gap: var(--space-2); }
+.statement + .statement { padding-top: var(--space-6); border-top: 1px solid var(--color-border); }
+.statement__certainty { margin: 0; }
+.statement__sources { display: grid; gap: var(--space-2); margin: 0; padding-left: var(--space-5); font-size: var(--text-xs); }
+
+/* ---- How it works: the real and the simulated side by side; the simulated one, dashed */
+.how__split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: var(--space-6); }
+.how__side { display: grid; align-content: start; gap: var(--space-4); padding-top: var(--space-5); border-top: 1px solid var(--color-border-strong); }
+.how__side--fictional { border-top-style: dashed; }
+.how__steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--space-7) var(--space-6); margin: 0; padding: 0; list-style: none; }
+.how__step { display: grid; align-content: start; gap: var(--space-4); min-width: 0; }
+.how__step h3 { display: flex; align-items: center; gap: var(--space-3); margin: 0; font-size: var(--text-md); font-weight: var(--weight-semibold); line-height: var(--leading-snug); }
+.how__number { flex: none; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border: 1px solid var(--color-border-strong); border-radius: var(--radius-round); font-size: var(--text-xs); font-weight: var(--weight-semibold); line-height: 1; }
+.how__step dl { display: grid; gap: var(--space-4); margin: 0; }
+.how__step dt { font-size: var(--text-xs); font-weight: var(--weight-medium); letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--color-text-secondary); }
+.how__step dd { margin: var(--space-1) 0 0; padding-top: var(--space-2); border-top: 1px solid var(--color-border); font-size: var(--text-sm); color: var(--color-text-secondary); }
+.how__assumptions { display: grid; gap: var(--space-3); max-width: var(--reading-width); margin: 0; padding-left: var(--space-5); font-size: var(--text-sm); color: var(--color-text-secondary); }
+.co-formulas code { font-family: var(--font-mono); font-size: var(--text-xs); overflow-wrap: anywhere; }
+
+/* ---- Development pages */
+.co-dev { min-height: 100vh; }
+.co-dev__cabeza, .co-dev__cuerpo { display: grid; justify-items: start; gap: var(--space-5); padding: var(--space-6) max(var(--space-5), calc((100% - var(--content-width)) / 2)); }
+.co-dev__controles { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-4); }
+.co-dev__controles label { display: grid; gap: var(--space-1); min-width: 10rem; }
+.co-dev__salida { max-width: 100%; max-height: 24rem; margin: 0; padding-left: var(--space-4); overflow: auto; border-left: 1px solid var(--color-border-strong); color: var(--color-text-secondary); font-family: var(--font-mono); font-size: var(--text-xs); }
+.co-dev__angosto { width: 21rem; max-width: 100%; }
+.co-dev--prueba .co-prueba__paso { width: min(100% - 2 * var(--space-4), 44rem); margin: 0 auto; }
+
+/* ---- Printing: dark ink on white, no field, no strip, no navigation */
+@page { margin: 16mm 14mm; }
+@media print {
+  .co-salto, .co-pie-marco nav, .no-print, .co-hoja { display: none !important; }
+  .print-only { display: block; }
+  ol.print-only { display: grid; }
+  .co-pantalla { padding-bottom: 0; }
+  .co-detalle--primera { padding-top: 0; }
+  .co-informe { width: 100%; padding: 0; gap: var(--space-5); }
+  .report__section, .screen__section { break-inside: avoid-page; }
+  .co-desliza { overflow: visible; }
+  .co-tabla { --_minimo: 0; }
+  a { text-decoration: none; }
+  .certainty--established { border-color: var(--color-text); }
+}

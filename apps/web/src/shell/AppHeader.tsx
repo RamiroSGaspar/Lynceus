@@ -1,84 +1,43 @@
-import { useLayoutEffect, useRef } from 'react';
-import { PRODUCT, type CrewId } from '@app/core';
-import { crewMember } from '../app/hooks';
+import { PRODUCT } from '@app/core';
+import { MISSION } from '../app/core';
+import { formatFlightDate } from '../app/dates';
 import { formatRoute } from '../app/routes';
-import { useAppState } from '../app/StoreContext';
 import { useI18n, useMessages } from '../i18n';
 import { appMessages } from '../i18n/app';
 import { commonMessages } from '../i18n/common';
-import { LanguageToggle, SimulatedNotice } from '../ui';
+import { BrandLink, Icon, LanguageToggle, SimulatedTag } from '../ui';
 
 interface Props {
-  /** The crew member the current screen is about, or the last one chosen. */
-  crewId: CrewId | null;
+  /** The flight day the screen is about: the control on screen, or the chosen mission day. 0 is the pre-flight exam. */
+  flightDay: number;
 }
 
-/** The same on every screen: product, crew member, mission day, language and the simulated-data notice. */
-export function AppHeader({ crewId }: Props) {
+/**
+ * The top strip, the same on every screen. It is not a bar: three loose groups fixed at the
+ * top over a black fade. The brand, which leads to the start screen; when and with which data;
+ * and the language. The simulated-data tag lives here and never leaves. Whose screen it is
+ * goes on the left veil of each screen, and the navigation at the bottom.
+ */
+export function AppHeader({ flightDay }: Props) {
   const { locale } = useI18n();
   const t = useMessages(appMessages);
   const tc = useMessages(commonMessages);
-  const { missionDay } = useAppState();
-  const member = crewId ? crewMember(crewId) : null;
-
-  // The page needs the real heights of the two bars: to let the header scroll away on a small
-  // screen while the notice stays, and to keep a focused element clear of whatever stays.
-  const headerRef = useRef<HTMLElement>(null);
-  const noticeRef = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const header = headerRef.current;
-    const notice = noticeRef.current;
-    if (!header || !notice || typeof ResizeObserver === 'undefined') return;
-    const root = document.documentElement;
-    const apply = (): void => {
-      root.style.setProperty('--app-header-height', `${header.offsetHeight}px`);
-      root.style.setProperty('--app-notice-height', `${notice.offsetHeight}px`);
-    };
-    apply();
-    const observer = new ResizeObserver(apply);
-    observer.observe(header);
-    observer.observe(notice);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <div className="app-top">
-      <header ref={headerRef} className="app-header">
-        <div className="app-header__inner">
-          <a
-            className="app-header__brand"
-            href={formatRoute({ name: 'home' })}
-            aria-label={t('header.home', { product: PRODUCT.name })}
-          >
-            {PRODUCT.name}
-          </a>
-          <dl className="app-header__context" aria-label={t('header.context')}>
-            <div className="app-header__item">
-              <dt>{t('header.crew')}</dt>
-              <dd>
-                {member ? (
-                  <>
-                    {member.name}
-                    <span className="app-header__role"> · {member.role[locale]}</span>
-                  </>
-                ) : (
-                  t('header.crew.none')
-                )}
-              </dd>
-            </div>
-            <div className="app-header__item">
-              <dt>{t('header.missionDay')}</dt>
-              <dd>{tc('flightDay', { day: missionDay })}</dd>
-            </div>
-          </dl>
-          <div className="app-header__language">
-            <LanguageToggle />
-          </div>
-        </div>
-      </header>
-      <div ref={noticeRef} className="app-notice">
-        <SimulatedNotice />
+    <header className="co-hud">
+      <BrandLink href={formatRoute({ name: 'home' })} label={t('header.home', { product: PRODUCT.name })} />
+      <div className="co-hud__centro">
+        <span className="co-hud__fecha">
+          <Icon name="calendar-days" />
+          {formatFlightDate(MISSION, flightDay, locale)}
+        </span>
+        <span className="co-ficha" title={flightDay > 0 ? tc('flightDay', { day: flightDay }) : undefined}>
+          {flightDay > 0 ? tc('flightDay.short', { day: flightDay }) : tc('preflight')}
+        </span>
+        <SimulatedTag />
       </div>
-    </div>
+      <div className="co-hud__lado">
+        <LanguageToggle />
+      </div>
+    </header>
   );
 }

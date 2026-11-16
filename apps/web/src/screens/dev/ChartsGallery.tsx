@@ -64,32 +64,28 @@ function mixedPoints(): Record<'OD' | 'OS', ChangePoint[]> {
 export function ChartsGallery() {
   useDocumentTitle('Charts');
   return (
-    <div className="screen">
-      <ScreenTitle>Charts (development page, sample values)</ScreenTitle>
+    <div className="co-detalle co-velo co-detalle--primera">
+      <section className="co-seccion co-seccion--apilada">
+        <ScreenTitle>Charts (development page, sample values)</ScreenTitle>
+      </section>
       {CREW.map((member) => (
-        <section key={member.id} className="screen__section">
-          <h2>Evolution: {member.name}</h2>
-          <div className="card">
-            <HistoryChart points={crewPoints(member.id)} mission={MISSION} thresholds={THRESHOLDS} currentDay={150} />
-          </div>
-          <div className="card dev-narrow">
+        <section key={member.id} className="co-seccion co-seccion--apilada">
+          <h2 className="co-subtitulo">Evolution: {member.name}</h2>
+          <HistoryChart points={crewPoints(member.id)} mission={MISSION} thresholds={THRESHOLDS} currentDay={150} nextScanDay={171} />
+          <div className="co-dev__angosto">
             <HistoryChart points={crewPoints(member.id)} mission={MISSION} thresholds={THRESHOLDS} currentDay={150} />
           </div>
         </section>
       ))}
-      <section className="screen__section">
-        <h2>Evolution: one eye not measured, last control done here</h2>
-        <div className="card">
-          <HistoryChart points={mixedPoints()} mission={MISSION} thresholds={THRESHOLDS} currentDay={150} />
-        </div>
+      <section className="co-seccion co-seccion--apilada">
+        <h2 className="co-subtitulo">Evolution: one eye not measured, last control done here</h2>
+        <HistoryChart points={mixedPoints()} mission={MISSION} thresholds={THRESHOLDS} currentDay={150} />
       </section>
       {SCALE_CASES.map(({ name, today, previous }) => (
-        <section key={name} className="screen__section">
-          <h2>{name}</h2>
-          <div className="card">
-            <ChangeScale eye="OD" today={today} previous={previous} thresholds={THRESHOLDS} />
-          </div>
-          <div className="card dev-narrow">
+        <section key={name} className="co-seccion co-seccion--apilada">
+          <h2 className="co-subtitulo">{name}</h2>
+          <ChangeScale eye="OD" today={today} previous={previous} thresholds={THRESHOLDS} />
+          <div className="co-dev__angosto">
             <ChangeScale eye="OS" today={today} previous={previous} thresholds={THRESHOLDS} />
           </div>
         </section>

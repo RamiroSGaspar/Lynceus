@@ -1,6 +1,6 @@
 # Lynceus · Campo oscuro: sistema de diseño y vistas
 
-v2.0, 15/11/2026. Identidad visual y sistema de diseño de Lynceus: negro puro, blanco puro, campo de estrellas y lecturas de instrumento. Reemplaza a la v1 («Ocular»), que se descartó. Es una propuesta para aplicar: **la aplicación no se tocó**.
+v2.0, 15/11/2026. Identidad visual y sistema de diseño de Lynceus: negro puro, blanco puro, campo de estrellas y lecturas de instrumento. Reemplaza a la v1 («Ocular»), que se descartó. **Ya está aplicado a toda la aplicación** (`apps/web`): las variables, los componentes y las vistas de esta carpeta son la referencia con la que se compara cada pantalla.
 
 ## Qué hay
 

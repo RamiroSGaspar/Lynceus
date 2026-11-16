@@ -12,7 +12,7 @@ import {
 import { useState } from 'react';
 import { commonMessages } from '../../i18n/common';
 import { useI18n, useMessages } from '../../i18n';
-import { Button, Card, OriginTag } from '../../ui';
+import { Button, EyeTag, OriginTag } from '../../ui';
 import { AmslerGrid, type AmslerTool } from './AmslerGrid';
 import { Calibration } from './Calibration';
 import { ChoiceGroup } from './ChoiceGroup';
@@ -214,9 +214,10 @@ export function AmslerStep({ calibration: given, onComplete, onSkip }: Props) {
         <FocusHeading>{t('result.title')}</FocusHeading>
         <div className="vt-columns">
           {EYES.map((eye) => (
-            <Card key={eye} as="article" title={tc(`eye.${eye}`)}>
+            <article key={eye} className="vt-eye">
+              <EyeTag eye={eye} />
               <AmslerResultView result={results[eye]!} />
-            </Card>
+            </article>
           ))}
         </div>
         <FixedTexts />

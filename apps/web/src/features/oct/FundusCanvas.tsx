@@ -2,13 +2,55 @@ import { useLayoutEffect, useRef, type MouseEvent } from 'react';
 import type { Ellipse } from '@app/core/math/ellipse';
 import { RINGS_UM } from '@app/core';
 import type { FundusFrame } from './examStore';
-import { ellipseOffset, nearestScan, patternCentre, type Point, type ScanLine } from './geometry';
-import { cssColor, drawSimulatedMark, grayCanvas, prepareCanvas, useDevicePixelRatio, useElementWidth } from './canvasKit';
+import { ellipseOffset, nearestScan, ocularWindow, patternCentre, type FundusWindow, type Point, type ScanLine } from './geometry';
+import { drawSimulatedMark, grayCanvas, overlayInk, prepareCanvas, strokeMark, useDevicePixelRatio, useElementWidth } from './canvasKit';
 
-/** Side of the square shown around the pattern when not showing the whole image, mm. */
-const WINDOW_MM = 6;
 /** A tap selects a scan when it falls this close to its line, mm. */
 const PICK_DISTANCE_MM = 0.25;
+
+/** The square of fundus a view shows: the window around the pattern, or the whole image. */
+export function fundusWindow(fundus: FundusFrame, scaleXMm: number, scaleYMm: number, centre: Point | null, whole = false): FundusWindow {
+  const fieldXMm = fundus.width * scaleXMm;
+  const fieldYMm = fundus.height * scaleYMm;
+  if (whole) return { x0: 0, y0: 0, side: Math.max(fieldXMm, fieldYMm) };
+  return ocularWindow(fieldXMm, fieldYMm, centre ?? { x: fieldXMm / 2, y: fieldYMm / 2 });
+}
+
+/** Draws the window of the fundus image, untouched: no filter, no added contrast, no colour. */
+function drawFundus(ctx: CanvasRenderingContext2D, fundus: FundusFrame, scaleXMm: number, scaleYMm: number, window: FundusWindow, size: number): void {
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(
+    grayCanvas(fundus.gray, fundus.width, fundus.height),
+    window.x0 / scaleXMm,
+    window.y0 / scaleYMm,
+    window.side / scaleXMm,
+    window.side / scaleYMm,
+    0,
+    0,
+    size,
+    size,
+  );
+}
+
+/** The fundus image alone, for the ocular: what is drawn over it there is vector, laid on top. */
+export function FundusImage({ fundus, scaleXMm, scaleYMm, window }: { fundus: FundusFrame; scaleXMm: number; scaleYMm: number; window: FundusWindow }) {
+  const wrap = useRef<HTMLDivElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const size = useElementWidth(wrap);
+  const dpr = useDevicePixelRatio();
+  useLayoutEffect(() => {
+    const element = canvas.current;
+    if (!element || size <= 0) return;
+    const ctx = prepareCanvas(element, size, size, dpr);
+    if (ctx) drawFundus(ctx, fundus, scaleXMm, scaleYMm, window, size);
+  }, [fundus, scaleXMm, scaleYMm, window.x0, window.y0, window.side, size, dpr]);
+  return (
+    <div ref={wrap} className="co-ocular__imagen">
+      <canvas ref={canvas} aria-hidden="true" />
+    </div>
+  );
+}
 
 interface Props {
   fundus: FundusFrame;
@@ -18,7 +60,6 @@ interface Props {
   /** Whether each scan taken so far is usable; undefined while not taken. */
   usable: readonly (boolean | undefined)[];
   highlight: number | null;
-  highlightKind: 'current' | 'selected';
   ellipse?: Ellipse | null;
   showRings?: boolean;
   points?: readonly Point[];
@@ -29,42 +70,41 @@ interface Props {
   mark: string;
 }
 
-/** The fundus image with the star pattern, the opening ellipse and the rings. */
+/**
+ * The fundus image of the viewer, square and whole, with the star pattern, the opening and
+ * the rings. What the engine marked is white over a dark casing and is told apart by its
+ * stroke: solid (the opening), dashed (the 250 µm limit), dotted (the outer limits).
+ */
 export function FundusCanvas(props: Props) {
-  const { fundus, scaleXMm, scaleYMm, lines, usable, highlight, highlightKind, ellipse, showRings, points, columnDots, whole, onSelect, label, mark } = props;
+  const { fundus, scaleXMm, scaleYMm, lines, usable, highlight, ellipse, showRings, points, columnDots, whole, onSelect, label, mark } = props;
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const size = useElementWidth(wrap);
   const dpr = useDevicePixelRatio();
-  const fieldXMm = fundus.width * scaleXMm;
-  const fieldYMm = fundus.height * scaleYMm;
-  const centre = patternCentre(lines) ?? { x: fieldXMm / 2, y: fieldYMm / 2 };
-  const side = whole ? Math.max(fieldXMm, fieldYMm) : Math.min(WINDOW_MM, fieldXMm, fieldYMm);
-  const x0 = whole ? 0 : Math.min(Math.max(centre.x - side / 2, 0), fieldXMm - side);
-  const y0 = whole ? 0 : Math.min(Math.max(centre.y - side / 2, 0), fieldYMm - side);
+  const window = fundusWindow(fundus, scaleXMm, scaleYMm, patternCentre(lines), whole);
+  const { x0, y0, side } = window;
 
   useLayoutEffect(() => {
     const element = canvas.current;
     if (!element || size <= 0) return;
     const ctx = prepareCanvas(element, size, size, dpr);
     if (!ctx) return;
+    const ink = overlayInk(element);
     const k = size / side;
     const at = (p: Point): Point => ({ x: (p.x - x0) * k, y: (p.y - y0) * k });
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(grayCanvas(fundus.gray, fundus.width, fundus.height), x0 / scaleXMm, y0 / scaleYMm, side / scaleXMm, side / scaleYMm, 0, 0, size, size);
+    drawFundus(ctx, fundus, scaleXMm, scaleYMm, { x0, y0, side }, size);
 
-    const usableColor = cssColor(element, '--oct-usable');
-    const unusableColor = cssColor(element, '--oct-unusable');
+    // The scans: a thin line each; dashed and fainter when not usable.
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = ink.line;
     lines.forEach((line, index) => {
       if (!line || index === highlight) return;
       const a = at({ x: line.startXMm, y: line.startYMm });
       const b = at({ x: line.endXMm, y: line.endYMm });
       const ok = usable[index] !== false;
-      ctx.strokeStyle = ok ? usableColor : unusableColor;
-      ctx.lineWidth = ok ? 1 : 1.5;
-      ctx.setLineDash(ok ? [] : [5, 4]);
-      ctx.globalAlpha = ok ? 0.5 : 0.9;
+      ctx.lineWidth = 1;
+      ctx.setLineDash(ok ? [] : [2, 5]);
+      ctx.globalAlpha = ok ? 0.5 : 0.75;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
@@ -74,8 +114,6 @@ export function FundusCanvas(props: Props) {
     ctx.globalAlpha = 1;
 
     if (ellipse) {
-      ctx.strokeStyle = cssColor(element, '--oct-ellipse');
-      ctx.lineWidth = 2;
       const contour = (pts: Point[]) => {
         ctx.beginPath();
         pts.forEach((p, i) => {
@@ -84,19 +122,29 @@ export function FundusCanvas(props: Props) {
           else ctx.lineTo(q.x, q.y);
         });
         ctx.closePath();
-        ctx.stroke();
       };
       contour(ellipseOffset(ellipse, 0));
+      strokeMark(ctx, ink, 1.5);
       if (showRings) {
-        ctx.strokeStyle = cssColor(element, '--oct-ring');
-        ctx.lineWidth = 1.25;
-        ctx.setLineDash([2, 3]);
-        for (const [, outer] of RINGS_UM) contour(ellipseOffset(ellipse, outer));
-        ctx.setLineDash([]);
+        RINGS_UM.forEach(([, outer], ring) => {
+          contour(ellipseOffset(ellipse, outer));
+          // The first limit closes the measured band: dashed. The outer ones: dotted.
+          if (ring === 0) strokeMark(ctx, ink, 1.5, [7, 5]);
+          else {
+            ctx.save();
+            ctx.globalAlpha = 0.75;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = ink.line;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([0.1, 6]);
+            ctx.stroke();
+            ctx.restore();
+          }
+        });
       }
     }
     if (columnDots) {
-      ctx.fillStyle = cssColor(element, '--oct-measure');
+      ctx.fillStyle = ink.line;
       for (const dot of columnDots) {
         const q = at(dot);
         ctx.globalAlpha = dot.used ? 0.9 : 0.3;
@@ -105,8 +153,6 @@ export function FundusCanvas(props: Props) {
       ctx.globalAlpha = 1;
     }
     if (points) {
-      ctx.strokeStyle = cssColor(element, '--oct-bmo');
-      ctx.lineWidth = 1.5;
       for (const p of points) {
         const q = at(p);
         ctx.beginPath();
@@ -114,26 +160,28 @@ export function FundusCanvas(props: Props) {
         ctx.lineTo(q.x + 3, q.y + 3);
         ctx.moveTo(q.x - 3, q.y + 3);
         ctx.lineTo(q.x + 3, q.y - 3);
-        ctx.stroke();
+        strokeMark(ctx, ink, 1.25);
       }
     }
     const line = highlight !== null ? lines[highlight] : undefined;
     if (line) {
       const a = at({ x: line.startXMm, y: line.startYMm });
       const b = at({ x: line.endXMm, y: line.endYMm });
-      ctx.strokeStyle = cssColor(element, highlightKind === 'current' ? '--oct-current' : '--oct-selected');
-      ctx.lineWidth = 3.5;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
-      ctx.stroke();
-      ctx.fillStyle = ctx.strokeStyle;
+      strokeMark(ctx, ink, 3);
+      // A dot at its start: the left edge of the scan.
       ctx.beginPath();
-      ctx.arc(a.x, a.y, 5, 0, 2 * Math.PI);
+      ctx.arc(a.x, a.y, 4.5, 0, 2 * Math.PI);
+      ctx.fillStyle = ink.line;
       ctx.fill();
+      ctx.strokeStyle = ink.casing;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
     }
-    drawSimulatedMark(ctx, mark, size, size);
-  }, [fundus, scaleXMm, scaleYMm, lines, usable, highlight, highlightKind, ellipse, showRings, points, columnDots, size, dpr, side, x0, y0, mark]);
+    drawSimulatedMark(ctx, mark, ink, size);
+  }, [fundus, scaleXMm, scaleYMm, lines, usable, highlight, ellipse, showRings, points, columnDots, size, dpr, side, x0, y0, mark]);
 
   const onClick = onSelect
     ? (event: MouseEvent<HTMLCanvasElement>) => {
@@ -146,8 +194,8 @@ export function FundusCanvas(props: Props) {
     : undefined;
 
   return (
-    <div ref={wrap} className="oct-canvas-wrap oct-canvas-wrap--square">
-      <canvas ref={canvas} className={`oct-canvas${onSelect ? ' oct-canvas--pick' : ''}`} role="img" aria-label={label} onClick={onClick} />
+    <div ref={wrap} className="oct-lienzo oct-lienzo--cuadrado">
+      <canvas ref={canvas} className={onSelect ? 'is-elegible' : undefined} role="img" aria-label={label} onClick={onClick} />
     </div>
   );
 }

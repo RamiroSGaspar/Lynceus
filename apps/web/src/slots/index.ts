@@ -4,9 +4,9 @@
  * swapping one is changing its line in this file.
  *
  *   features/vision    -> SymptomsStep, AcuityStep, AmslerStep
- *   features/oct       -> OctCaptureStep, ExamViewer
+ *   features/oct       -> OctCaptureStep, CaptureSummary, QualityReadouts, ExamViewer, ExamOcular, ExamScan, OcularLegend
  *   features/assistant -> AssistantPanel
  */
 export { AcuityStep, AmslerStep, SymptomsStep } from '../features/vision';
-export { ExamViewer, OctCaptureStep } from '../features/oct';
+export { CaptureSummary, ExamOcular, ExamScan, ExamViewer, OcularLegend, OctCaptureStep, QualityReadouts } from '../features/oct';
 export { AssistantPanel } from '../features/assistant';

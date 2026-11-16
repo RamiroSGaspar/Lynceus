@@ -274,3 +274,46 @@ export function thicknessProfileUm(scan: Pick<ScanAnalysis, 'ilmPx' | 'bmPx'>, s
   for (let j = 0; j < out.length; j++) out[j] = (scan.bmPx[j]! - scan.ilmPx[j]!) * scaleZUm;
   return out;
 }
+
+/** Side of the square of fundus the ocular shows, mm: it holds the whole scan pattern and the 1500 µm ring. */
+export const OCULAR_WINDOW_MM = 5.4;
+
+/** A square window of the fundus image, fundus mm. */
+export interface FundusWindow {
+  x0: number;
+  y0: number;
+  side: number;
+}
+
+/** The window of the ocular: centred on the scan pattern, kept inside the image. */
+export function ocularWindow(fieldXMm: number, fieldYMm: number, centre: Point, sideMm: number = OCULAR_WINDOW_MM): FundusWindow {
+  const side = Math.min(sideMm, fieldXMm, fieldYMm);
+  return {
+    x0: Math.min(Math.max(centre.x - side / 2, 0), fieldXMm - side),
+    y0: Math.min(Math.max(centre.y - side / 2, 0), fieldYMm - side),
+    side,
+  };
+}
+
+/** Fundus mm → the 0 to 100 units of a drawing laid over a window. */
+export function toWindowUnits(window: FundusWindow, point: Point): Point {
+  return { x: ((point.x - window.x0) / window.side) * 100, y: ((point.y - window.y0) / window.side) * 100 };
+}
+
+/** A closed curve of fundus points as the `d` of an SVG path, in window units. */
+export function windowPath(window: FundusWindow, points: readonly Point[]): string {
+  const round = (value: number): number => Math.round(value * 100) / 100;
+  return `${points
+    .map((point, index) => {
+      const p = toWindowUnits(window, point);
+      return `${index === 0 ? 'M' : 'L'}${round(p.x)} ${round(p.y)}`;
+    })
+    .join('')}Z`;
+}
+
+/** The lowest point on screen of a curve of fundus points (largest y): where the guide to the figure starts. */
+export function lowestPoint(points: readonly Point[]): Point | null {
+  let lowest: Point | null = null;
+  for (const point of points) if (!lowest || point.y > lowest.y) lowest = point;
+  return lowest;
+}

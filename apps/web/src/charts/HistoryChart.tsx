@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { Eye, Level, Mission } from '@app/core';
 import type { ChangePoint } from '../app/history';
 import { useI18n, useMessages } from '../i18n';
 import { chartMessages } from '../i18n/charts';
 import { commonMessages } from '../i18n/common';
+import { Icon, LevelShape, type LevelKind } from '../ui';
 import { formatExact, formatPlain } from '../app/format';
 import { formatChange } from './format';
 import { layoutHistoryChart, type PlacedText } from './historyChartLayout';
@@ -20,10 +21,19 @@ interface Props {
   thresholds: ChangeThresholds;
   /** Flight day of today's control, marked on the day axis. */
   currentDay?: number | null;
+  /** Flight day of the next tomography, when it is still to come: marked on the day axis as a control to do. */
+  nextScanDay?: number | null;
 }
 
 const EYES: readonly Eye[] = ['OD', 'OS'];
 const BAND_IDS: readonly BandId[] = ['normal-variation', 'first-sign', 'clinically-concerning'];
+/** The alert class each band belongs to: its colour and its shape. */
+const BAND_KIND: Readonly<Record<BandId, LevelKind>> = {
+  'normal-variation': 'none',
+  'first-sign': 'advisory',
+  'clinically-concerning': 'caution',
+};
+const THRESHOLD_KIND = { 'first-sign': 'advisory', 'clinically-concerning': 'caution' } as const;
 
 function Label({ label, className }: { label: PlacedText; className?: string }) {
   return (
@@ -33,13 +43,13 @@ function Label({ label, className }: { label: PlacedText; className?: string }) 
   );
 }
 
-/** The mark of one eye: a circle for the right eye, a square for the left. Filled when the control was done here. */
-function SeriesMark({ eye, x, y, size, live }: { eye: Eye; x: number; y: number; size: number; live: boolean }) {
-  const className = `history-chart__mark history-chart__mark--${eye}${live ? ' history-chart__mark--live' : ''}`;
+/** The eyes are told apart by shape, not by colour: the right eye is a filled disc on a solid line, the left a hollow diamond on a dashed one. */
+function SeriesMark({ eye, x, y, size }: { eye: Eye; x: number; y: number; size: number }) {
+  const className = `history-chart__mark history-chart__mark--${eye}`;
   return eye === 'OD' ? (
     <circle className={className} cx={x} cy={y} r={size} />
   ) : (
-    <rect className={className} x={x - size * 0.9} y={y - size * 0.9} width={size * 1.8} height={size * 1.8} />
+    <rect className={className} x={x - size * 0.82} y={y - size * 0.82} width={size * 1.64} height={size * 1.64} transform={`rotate(45 ${x} ${y})`} />
   );
 }
 
@@ -47,12 +57,13 @@ function SeriesMark({ eye, x, y, size, live }: { eye: Eye; x: number; y: number;
  * Evolution: the change of each eye at every control, against flight day, over
  * the same bands as the number line. An equivalent table follows the drawing.
  */
-export function HistoryChart({ points, eyes = EYES, mission, thresholds, currentDay = null }: Props) {
+export function HistoryChart({ points, eyes = EYES, mission, thresholds, currentDay = null, nextScanDay = null }: Props) {
   const { locale } = useI18n();
   const t = useMessages(chartMessages);
   const tc = useMessages(commonMessages);
   const { ref, width, fontPx, measure } = useChartBox<HTMLDivElement>();
   const [activeDay, setActiveDay] = useState<number | null>(null);
+  const hazeId = useId();
 
   const shown = EYES.filter((eye) => eyes.includes(eye));
   const signed = (valueUm: number, like: number = valueUm): string => formatChange(valueUm, thresholds, locale, like);
@@ -149,10 +160,17 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
 
   const { plot, mark } = layout;
   const active = activeDay !== null && days.includes(activeDay) ? activeDay : null;
+  // The next tomography, when no control has been done on that day yet: a control to do, on the day axis.
+  const nextX =
+    nextScanDay !== null && nextScanDay <= mission.durationDays && !days.includes(nextScanDay)
+      ? plot.left + (nextScanDay / mission.durationDays) * (plot.right - plot.left)
+      : null;
+  const nextLabel = t('history.next');
+  const nextLabelWidth = measure(nextLabel, fontPx);
 
   return (
     <figure className="chart history-chart">
-      <figcaption className="chart__caption">{t('history.caption')}</figcaption>
+      <figcaption className="co-nota chart__caption">{t('history.caption')}</figcaption>
       <div ref={ref} className="chart__canvas">
         <svg
           role="group"
@@ -165,31 +183,49 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
           }}
         >
           <g aria-hidden="true">
-            {layout.bands.map((band) => (
-              <rect
-                key={band.id}
-                className={`chart-band chart-band--${band.id}`}
-                x={plot.left}
-                y={band.y}
-                width={plot.right - plot.left}
-                height={band.height}
-              />
-            ))}
-            {layout.routineLines.map((lineX) => (
-              <line key={lineX} className="history-chart__routine" x1={lineX} x2={lineX} y1={plot.top} y2={plot.bottom} />
-            ))}
-            <line className="chart-zero" x1={plot.left} x2={plot.right} y1={layout.zero.y} y2={layout.zero.y} />
+            {/* No grid and no filled bands: each zone starts at its line, with a haze that rises from it and fades. */}
+            <defs>
+              {(['advisory', 'caution'] as const).map((kind) => (
+                <linearGradient key={kind} id={`${hazeId}-${kind}`} className={`history-chart__haze history-chart__haze--${kind}`} x1="0" y1="1" x2="0" y2="0">
+                  <stop offset="0" stopOpacity="0.16" />
+                  <stop offset="1" stopOpacity="0" />
+                </linearGradient>
+              ))}
+            </defs>
+            {layout.bands
+              .filter((band) => band.id !== 'normal-variation' && band.height > 0)
+              .map((band) => (
+                <rect
+                  key={band.id}
+                  fill={`url(#${hazeId}-${BAND_KIND[band.id]})`}
+                  x={plot.left}
+                  y={band.y}
+                  width={plot.right - plot.left}
+                  height={band.height}
+                />
+              ))}
+            <line className="history-chart__zero" x1={plot.left} x2={plot.right} y1={layout.zero.y} y2={layout.zero.y} />
             {layout.thresholdLines.map((line) => (
-              <line key={line.kind} className="chart-threshold" x1={plot.left} x2={plot.right} y1={line.y} y2={line.y} />
+              <line
+                key={line.kind}
+                className={`history-chart__threshold history-chart__threshold--${THRESHOLD_KIND[line.kind]}`}
+                x1={plot.left}
+                x2={plot.right}
+                y1={line.y}
+                y2={line.y}
+              />
             ))}
             {layout.current && (
-              <path
-                className="history-chart__current"
-                d={
-                  `M${layout.current.x - fontPx * 0.4} ${plot.top - fontPx * 0.35}` +
-                  `h${fontPx * 0.8}L${layout.current.x} ${plot.top + fontPx * 0.25}Z`
-                }
-              />
+              <>
+                <line className="history-chart__today" x1={layout.current.x} x2={layout.current.x} y1={plot.top} y2={plot.bottom} />
+                <path
+                  className="history-chart__today-mark"
+                  d={
+                    `M${layout.current.x - fontPx * 0.36} ${plot.top - fontPx * 0.5}` +
+                    `h${fontPx * 0.72}L${layout.current.x} ${plot.top - fontPx * 0.05}Z`
+                  }
+                />
+              </>
             )}
             {active !== null &&
               layout.columns
@@ -210,16 +246,12 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
               <Label key={line.kind} label={line.label} className="history-chart__threshold-label chart__over" />
             ))}
             <Label label={layout.zero.label} className="history-chart__note chart__over" />
-            {layout.current && <Label label={layout.current.label} className="history-chart__current-label" />}
+            {layout.current && <Label label={layout.current.label} className="history-chart__today-label" />}
 
             <g className="history-chart__axis">
-              <line x1={plot.left} x2={plot.left} y1={plot.top} y2={plot.bottom} />
               <line x1={plot.left} x2={plot.right} y1={plot.bottom} y2={plot.bottom} />
               {layout.yTicks.map((tick) => (
-                <g key={tick.value}>
-                  <line x1={plot.left - layout.tickLength} x2={plot.left} y1={tick.y} y2={tick.y} />
-                  <Label label={tick.label} className={tick.value === 0 ? 'history-chart__tick--strong' : undefined} />
-                </g>
+                <Label key={tick.value} label={tick.label} className={tick.value === 0 ? 'history-chart__tick--strong' : undefined} />
               ))}
               {layout.xTicks.map((tick) => (
                 <g key={tick.day}>
@@ -232,6 +264,20 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
               <Label label={layout.yTitle} className="history-chart__title" />
               <Label label={layout.xTitle} className="history-chart__title" />
             </g>
+
+            {nextX !== null && (
+              <g className="history-chart__next">
+                <LevelShape kind="unmeasured" x={nextX - fontPx * 0.57} y={plot.bottom - fontPx * 0.57} size={fontPx * 1.14} />
+                <text
+                  className="chart__over"
+                  textAnchor="middle"
+                  x={Math.min(Math.max(nextX, plot.left + nextLabelWidth / 2), plot.right - nextLabelWidth / 2)}
+                  y={plot.bottom - fontPx * 0.95}
+                >
+                  {nextLabel}
+                </text>
+              </g>
+            )}
 
             {layout.series.map((series) => (
               <g key={series.eye} className={`history-chart__series history-chart__series--${series.eye}`}>
@@ -252,19 +298,18 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
                       eye={series.eye}
                       x={point.x}
                       y={point.y}
-                      size={point.flightDay === active ? mark.radius * 1.35 : mark.radius}
-                      live={point.live}
+                      size={point.flightDay === currentDay || point.flightDay === active ? mark.radius * 1.4 : mark.radius}
                     />
                   </g>
                 ))}
                 {series.unmeasured.map((point) => (
-                  <path
+                  <LevelShape
                     key={point.flightDay}
+                    kind="unmeasured"
                     className="history-chart__unmeasured"
-                    d={
-                      `M${point.x - mark.radius} ${point.y - mark.radius}l${2 * mark.radius} ${2 * mark.radius}` +
-                      `M${point.x + mark.radius} ${point.y - mark.radius}l${-2 * mark.radius} ${2 * mark.radius}`
-                    }
+                    x={point.x - mark.radius * 1.4}
+                    y={point.y - mark.radius * 1.4}
+                    size={mark.radius * 2.8}
                   />
                 ))}
               </g>
@@ -295,11 +340,11 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
 
       <div className="history-chart__readout" aria-hidden="true">
         {active === null ? (
-          <p className="history-chart__hint">{days.length > 0 ? t('history.readout.hint') : t('history.empty')}</p>
+          <p className="co-rotulo">{days.length > 0 ? t('history.readout.hint') : t('history.empty')}</p>
         ) : (
           <>
-            <p className="history-chart__readout-title">
-              <strong>{controlTitle(active)}</strong> · {originText(active)}
+            <p className="co-micro history-chart__readout-title">
+              {controlTitle(active)} · {originText(active)}
             </p>
             <ul>
               {controlLines(active).map((line) => (
@@ -310,55 +355,48 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
         )}
       </div>
 
-      <ul className="chart__legend">
+      <ul className="co-leyenda chart__legend">
         {shown.map((eye) => (
           <li key={eye}>
-            <svg
-              className={`history-chart__series history-chart__series--${eye}`}
-              width="38"
-              height="16"
-              viewBox="0 0 38 16"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <line className="history-chart__line" x1="1" x2="37" y1="8" y2="8" />
-              <SeriesMark eye={eye} x={19} y={8} size={5} live={false} />
+            <svg className={`co-muestra history-chart__series history-chart__series--${eye}`} viewBox="0 0 28 10" aria-hidden="true" focusable="false">
+              <line className="history-chart__line" x1="1" x2="27" y1="5" y2="5" />
+              <SeriesMark eye={eye} x={14} y={5} size={3.6} />
             </svg>
             {tc(`eye.${eye}`)}
           </li>
         ))}
         <li>
-          <svg className="history-chart__series history-chart__series--OD" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path className="history-chart__range" d="M4 2h8M8 2V14M4 14h8" />
+          <svg className="co-muestra history-chart__series history-chart__series--OD" viewBox="0 0 28 10" aria-hidden="true" focusable="false">
+            <path className="history-chart__range" d="M10 0.5h8M14 0.5V9.5M10 9.5h8" />
           </svg>
           {t('history.legend.range')}
         </li>
         <li>
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <line className="history-chart__routine" x1="8" x2="8" y1="0" y2="16" />
-          </svg>
-          {t('history.legend.routine')}
-        </li>
-        <li>
-          <svg className="history-chart__series history-chart__series--OD" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-            <path className="history-chart__unmeasured" d="M3 3l10 10M13 3L3 13" />
-          </svg>
+          <LevelShape kind="unmeasured" className="history-chart__legend-shape" />
           {t('history.legend.unmeasured')}
         </li>
-        <li>{t('history.legend.live')}</li>
-        <li>{t('history.legend.precomputed')}</li>
+        {BAND_IDS.map((id) => (
+          <li key={id} className={`history-chart__band history-chart__band--${BAND_KIND[id]}`}>
+            <LevelShape kind={BAND_KIND[id]} className="history-chart__legend-shape" />
+            <span>
+              <strong>{t(`band.${id}`)}</strong> · {t(`band.range.${id}`, { first, second })}
+            </span>
+          </li>
+        ))}
       </ul>
 
-      <details className="chart__table">
-        <summary>{t('history.table.summary')}</summary>
-        <div className="table-scroll">
-          <table>
+      <details className="chart__table co-desplegable">
+        <summary>
+          {t('history.table.summary')} <Icon name="chevron-down" />
+        </summary>
+        <div className="co-desliza">
+          <table className="co-tabla">
             <caption>{t('history.table.caption')}</caption>
             <thead>
               <tr>
                 <th scope="col">{t('history.table.day')}</th>
                 {shown.map((eye) => (
-                  <th key={eye} scope="col">
+                  <th key={eye} scope="col" className="es-cifra">
                     {t('history.table.change', { eye: tc(`eye.${eye}`) })}
                   </th>
                 ))}
@@ -383,7 +421,7 @@ export function HistoryChart({ points, eyes = EYES, mission, thresholds, current
                     const change = pointAt(eye, flightDay)?.change;
                     const range = change?.interval95;
                     return (
-                      <td key={eye}>
+                      <td key={eye} className="es-cifra">
                         {change
                           ? `${t('value', { value: signed(change.value) })}${
                               range

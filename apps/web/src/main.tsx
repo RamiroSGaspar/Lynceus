@@ -9,8 +9,7 @@ import './styles/tokens.css';
 import './styles/base.css';
 import './styles/system.css';
 import './styles/layout.css';
-import './styles/ui.css';
-import './styles/app.css';
+import './styles/screens.css';
 import './styles/charts.css';
 
 const root = document.getElementById('root');

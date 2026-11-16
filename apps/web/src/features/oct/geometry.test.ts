@@ -9,8 +9,10 @@ import {
   ellipseOffset,
   fundusMmToPx,
   fundusPxToMm,
+  lowestPoint,
   navigate,
   nearestScan,
+  ocularWindow,
   patternCentre,
   ringContribution,
   ringLimitColumns,
@@ -19,6 +21,8 @@ import {
   scanAngleDeg,
   scanToCanvas,
   thicknessProfileUm,
+  toWindowUnits,
+  windowPath,
 } from './geometry';
 
 const CENTRE = { x: 4.4, y: 4.3 };
@@ -151,5 +155,31 @@ describe('rings and where a number comes from', () => {
     expect(p[0]).toBeCloseTo(387, 6);
     expect(Number.isNaN(p[1]!)).toBe(true);
     expect(Number.isNaN(p[2]!)).toBe(true);
+  });
+});
+
+describe('ocular window', () => {
+  it('centres on the scan pattern and stays inside the image', () => {
+    expect(ocularWindow(8.755, 8.755, { x: 4.4, y: 4.3 })).toEqual({ x0: 4.4 - 2.7, y0: 4.3 - 2.7, side: 5.4 });
+    const corner = ocularWindow(8.755, 8.755, { x: 0.5, y: 8.5 });
+    expect(corner.x0).toBe(0);
+    expect(corner.y0).toBeCloseTo(8.755 - 5.4);
+    expect(ocularWindow(4, 6, { x: 2, y: 3 }).side).toBe(4);
+  });
+
+  it('maps fundus millimetres to the 0–100 units of the drawing over the window', () => {
+    const window = { x0: 1, y0: 2, side: 5 };
+    expect(toWindowUnits(window, { x: 1, y: 2 })).toEqual({ x: 0, y: 0 });
+    expect(toWindowUnits(window, { x: 6, y: 7 })).toEqual({ x: 100, y: 100 });
+    expect(toWindowUnits(window, { x: 3.5, y: 4.5 })).toEqual({ x: 50, y: 50 });
+    expect(windowPath(window, [{ x: 1, y: 2 }, { x: 6, y: 2 }, { x: 3.5, y: 7 }])).toBe('M0 0L100 0L50 100Z');
+  });
+
+  it('finds the lowest point on screen of a ring, where the guide to the figure starts', () => {
+    const ring = ellipseOffset({ cx: 4, cy: 4, a: 0.8, b: 0.7, angle: Math.PI / 2 }, 125);
+    const lowest = lowestPoint(ring);
+    expect(lowest?.x).toBeCloseTo(4, 1);
+    expect(lowest?.y).toBeCloseTo(4 + 0.8 + 0.125, 2);
+    expect(lowestPoint([])).toBeNull();
   });
 });

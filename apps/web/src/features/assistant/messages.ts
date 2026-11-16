@@ -3,6 +3,7 @@ import { defineMessages } from '../../i18n';
 export const assistantMessages = defineMessages(
   {
     open: 'Ask the assistant',
+    'open.short': 'Ask',
     title: 'Assistant',
     close: 'Close the assistant',
     'consent.title': 'Before your first question',
@@ -54,6 +55,7 @@ export const assistantMessages = defineMessages(
   },
   {
     open: 'Preguntarle al asistente',
+    'open.short': 'Preguntar',
     title: 'Asistente',
     close: 'Cerrar el asistente',
     'consent.title': 'Antes de tu primera pregunta',

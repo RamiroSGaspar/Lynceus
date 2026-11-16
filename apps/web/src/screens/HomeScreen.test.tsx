@@ -77,12 +77,14 @@ describe('start screen', () => {
     expect(text).toContain('Resume today’s control');
     expect(text).toContain('In progress: step 2 of 7.');
     expect(text).toContain('done in this browser');
-    expect(text).toContain('Controls done here: 1. Controls in progress: 1.');
+    // What is saved is said as two readouts: the figure, a line, and what it counts.
+    expect(text).toMatch(/\b1 Controls done here\b/);
+    expect(text).toMatch(/\b1 Controls in progress\b/);
   });
 
   it('says so when nothing is saved, and keeps the delete action disabled', () => {
     const html = renderHtml(<HomeScreen />, 'es');
     expect(textOf(html)).toContain('Todavía no hay nada guardado en este navegador.');
-    expect(html).toMatch(/<button[^>]*disabled[^>]*>Borrar lo guardado en este navegador/);
+    expect(html).toMatch(/<button[^>]*disabled[^>]*>(?:<svg[\s\S]*?<\/svg>)?Borrar lo guardado en este navegador/);
   });
 });

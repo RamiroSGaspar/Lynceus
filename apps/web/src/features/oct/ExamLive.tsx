@@ -1,14 +1,18 @@
-import type { Eye } from '@app/core';
-import { useMemo } from 'react';
-import { useMessages } from '../../i18n';
-import { BScanCanvas, CAPTURE_LAYERS } from './BScanCanvas';
+import type { Ellipse } from '@app/core/math/ellipse';
+import { radialScanEndpoints } from '@app/core/instrument/geometry';
+import { RADIAL_SCANS, type Eye } from '@app/core';
+import { useMemo, type ReactNode } from 'react';
+import { useI18n, useMessages } from '../../i18n';
+import { Group, Readout } from '../../ui';
 import { usePrefersReducedMotion } from './canvasKit';
-import type { ExamStore } from './examStore';
-import { FundusCanvas } from './FundusCanvas';
-import type { ScanLine } from './geometry';
+import type { ExamStore, ScanFrame } from './examStore';
+import { fundusWindow } from './FundusCanvas';
+import { patternCentre, type ScanLine } from './geometry';
 import { octMessages } from './messages';
-import { progressView, visibleCount, type StepState } from './progress';
-import { QualityBars, type BarScan } from './QualityBars';
+import { Ocular, RadialMarks, RingMarks, type RadialState } from './Ocular';
+import { progressView, visibleCount, type ProgressView, type StepState } from './progress';
+import { QualityBars, meanQualityDb, type BarScan } from './QualityBars';
+import { ScanFigure } from './ScanFigure';
 
 /** Lines, usable flags and quality of the scans that are shown. */
 export function scanSeries(store: ExamStore, shown: ReadonlySet<number> | null) {
@@ -24,140 +28,187 @@ export function scanSeries(store: ExamStore, shown: ReadonlySet<number> | null) 
   return { lines, usable, bars };
 }
 
-const STATE_MARK: Record<StepState, string> = { done: '✓', current: '▶', pending: '○' };
+/** What the screen shows of an exam while the instrument takes the scans and the engine analyses them, and once it has finished. */
+export interface LiveView {
+  total: number;
+  /** Scans on screen, in the order they arrived. With reduced motion they appear in whole chunks. */
+  shown: number;
+  /** The scan drawn thick on the eye: the one being taken or, once finished, the first that could not be used. */
+  highlight: number | null;
+  frame: ScanFrame | undefined;
+  series: ReturnType<typeof scanSeries>;
+  progress: ProgressView;
+  unusable: number;
+}
 
-/** What the screen shows while the instrument takes the scans and the engine analyses them. */
-export function ExamLive({ store, version, eye, showProgress = true }: { store: ExamStore; version: number; eye: Eye; showProgress?: boolean }) {
-  const t = useMessages(octMessages);
+/**
+ * `running`: scans arrive and the last one is the current one. Once finished, everything
+ * taken is shown; `problem` then points at the first scan that could not be used: that is
+ * where the problem shows.
+ */
+export function useLiveView(store: ExamStore | null, version: number, mode: 'running' | 'finished' | 'problem'): LiveView | null {
   const reduced = usePrefersReducedMotion();
-  const total = store.header?.numBScans ?? 48;
-  const visible = visibleCount(store.taken, total, reduced);
-  const shownOrder = store.order.slice(0, visible);
-  // Once finished (a rejected capture), show the first scan that could not be used: that is where the problem shows.
-  const firstUnusable = showProgress ? -1 : store.scans.findIndex((f) => f !== undefined && !f.analysis.usable);
-  const latest = firstUnusable >= 0 ? firstUnusable : shownOrder.length > 0 ? shownOrder[shownOrder.length - 1]! : null;
-  const highlightKind = showProgress ? 'current' : 'selected';
-  const frame = latest !== null ? store.scans[latest] : undefined;
-  const series = useMemo(() => scanSeries(store, new Set(shownOrder)), [store, version, visible]);
-  const view = progressView(store.progress, { header: store.header !== null, fundus: store.fundus !== null });
-  const phrase = t(view.phrase.key, { n: view.phrase.n ?? 0, total: view.phrase.total ?? total });
-  const steps: { key: 'steps.take' | 'steps.mark' | 'steps.locate' | 'steps.measure'; state: StepState; count?: string }[] = [
-    { key: 'steps.take', state: view.take, count: t('steps.count', { n: store.taken, total }) },
-    { key: 'steps.mark', state: view.mark, count: t('steps.count', { n: store.taken, total }) },
-    { key: 'steps.locate', state: view.locate },
-    { key: 'steps.measure', state: view.measure },
+  const total = store?.header?.numBScans ?? RADIAL_SCANS;
+  const taken = store?.taken ?? 0;
+  const shown = mode === 'running' ? visibleCount(taken, total, reduced) : taken;
+  const series = useMemo(() => (store ? scanSeries(store, new Set(store.order.slice(0, shown))) : null), [store, version, shown]);
+  if (!store || !series) return null;
+  const order = store.order.slice(0, shown);
+  const firstUnusable = mode === 'problem' ? store.scans.findIndex((frame) => frame !== undefined && !frame.analysis.usable) : -1;
+  const highlight = mode === 'finished' ? null : firstUnusable >= 0 ? firstUnusable : order.length > 0 ? order[order.length - 1]! : null;
+  return {
+    total,
+    shown,
+    highlight,
+    frame: highlight !== null ? store.scans[highlight] : mode === 'finished' ? store.scans[0] : undefined,
+    series,
+    progress: progressView(store.progress, { header: store.header !== null, fundus: store.fundus !== null }),
+    unusable: series.usable.filter((usable) => usable === false).length,
+  };
+}
+
+interface OcularProps {
+  store: ExamStore | null;
+  live: LiveView | null;
+  eye: Eye;
+  /** The ellipse the rings were measured with: drawn once the capture is accepted, over the scans, which then go quiet. */
+  ellipse?: Ellipse | null;
+  /** Under the disc: the readout of the capture. */
+  foot?: ReactNode;
+  /** Said inside the disc while there is no image. */
+  empty?: ReactNode;
+  working?: boolean;
+}
+
+/**
+ * The eye being captured, as a disc: what moves is the datum. Each of the 48 radial scans
+ * lights up on the eye, where it was taken, when it arrives. No ring of a level: there is
+ * no result yet.
+ */
+export function CaptureOcular({ store, live, eye, ellipse, foot, empty, working }: OcularProps) {
+  const t = useMessages(octMessages);
+  const fundus = store?.fundus ?? null;
+  const header = store?.header ?? null;
+  const centre = live ? patternCentre(live.series.lines) : null;
+  const image = fundus && header ? { fundus, scaleXMm: header.scaleXSloMm, scaleYMm: header.scaleYSloMm, window: fundusWindow(fundus, header.scaleXSloMm, header.scaleYSloMm, centre) } : null;
+  const total = live?.total ?? RADIAL_SCANS;
+  // The whole pattern is in view from the first scan on: the scans still to come are faint lines.
+  const lines =
+    live && centre
+      ? Array.from({ length: total }, (_, index) => {
+          const taken = live.series.lines[index];
+          const state: RadialState = !taken
+            ? 'pending'
+            : index === live.highlight
+              ? 'current'
+              : live.series.usable[index] === false
+                ? 'unusable'
+                : ellipse
+                  ? 'quiet'
+                  : 'taken';
+          return { line: taken ?? radialScanEndpoints(centre.x, centre.y, index), state };
+        })
+      : [];
+  const label = [
+    t('fundus.alt', { eye: t(`eyeName.${eye}`), taken: live?.shown ?? 0, total, unusable: live?.unusable ?? 0 }),
+    live && live.highlight !== null ? t('fundus.alt.current', { n: live.highlight + 1 }) : '',
+    ellipse ? t('fundus.alt.ellipse') : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return (
+    <Ocular
+      level={null}
+      label={label}
+      image={image}
+      marks={
+        image && (
+          <>
+            <RadialMarks lines={lines} window={image.window} />
+            {ellipse && <RingMarks ellipse={ellipse} window={image.window} />}
+          </>
+        )
+      }
+      foot={foot}
+      empty={empty}
+      working={working}
+    />
+  );
+}
+
+const STEP_CLASS: Record<StepState, string> = { done: ' is-hecho', current: ' is-en-curso', pending: '' };
+
+/** The four steps of the analysis as a checklist on a line. Taking the scans and marking their edges run at the same time. */
+export function ProgressGroup({ progress, taken, total, live = true }: { progress: ProgressView | null; taken: number; total: number; live?: boolean }) {
+  const t = useMessages(octMessages);
+  const view: ProgressView = progress ?? { take: 'pending', mark: 'pending', locate: 'pending', measure: 'pending', phrase: { key: 'phase.start' }, stage: null };
+  const steps: { key: 'steps.take' | 'steps.mark' | 'steps.locate' | 'steps.measure'; state: StepState; counted: boolean }[] = [
+    { key: 'steps.take', state: view.take, counted: true },
+    { key: 'steps.mark', state: view.mark, counted: true },
+    { key: 'steps.locate', state: view.locate, counted: false },
+    { key: 'steps.measure', state: view.measure, counted: false },
   ];
   const stageText = view.stage === 'scans' ? t('steps.take') : view.stage === 'fit' ? t('steps.locate') : view.stage === 'measure' ? t('steps.measure') : view.stage === 'done' ? t('phase.done') : '';
-  const unusable = series.usable.filter((u) => u === false).length;
-  const fundusLabel = [
-    t('fundus.alt', { eye: t(`eyeName.${eye}`), taken: shownOrder.length, total, unusable }),
-    latest !== null ? t('fundus.alt.current', { n: latest + 1 }) : '',
-  ].join(' ');
-
   return (
-    <div className="oct-live">
-      <div className="oct-live__images">
-        <figure className="oct-figure oct-figure--fundus">
-          <figcaption>{t('fundus.title')}</figcaption>
-          {store.fundus && store.header ? (
-            <FundusCanvas
-              fundus={store.fundus}
-              scaleXMm={store.header.scaleXSloMm}
-              scaleYMm={store.header.scaleYSloMm}
-              lines={series.lines}
-              usable={series.usable}
-              highlight={latest}
-              highlightKind={highlightKind}
-              label={fundusLabel}
-              mark={t('simulatedMark')}
-            />
-          ) : (
-            <div className="oct-placeholder oct-placeholder--square">{t('phase.fundus')}</div>
-          )}
-          <p className="oct-legend">
+    <Group icon="activity" title={t('steps.label')}>
+      <ol className="co-sesion" aria-label={t('steps.label')}>
+        {steps.map((step) => (
+          <li key={step.key} className={`co-sesion__paso${STEP_CLASS[step.state]}`}>
+            <span className="co-sesion__nodo" />
             <span>
-              <span className="oct-swatch oct-swatch--usable" aria-hidden="true" />
-              {t('legend.usable')}
+              {t(step.key)}
+              {step.counted && step.state !== 'pending' && <> · {t('steps.count', { n: taken, total })}</>}
             </span>
-            <span>
-              <span className="oct-swatch oct-swatch--unusable" aria-hidden="true" />
-              {t('legend.unusable')}
-            </span>
-            <span>
-              <span className="oct-swatch oct-swatch--current" aria-hidden="true" />
-              {t(showProgress ? 'legend.current' : 'legend.selected')}
-            </span>
-          </p>
-        </figure>
-        <figure className="oct-figure oct-figure--scan">
-          <figcaption>{latest !== null ? t('scan.title', { n: latest + 1, total }) : t('scan.waiting')}</figcaption>
-          {frame ? (
-            <BScanCanvas
-              frame={frame}
-              layers={CAPTURE_LAYERS}
-              label={`${t('scan.alt', { n: frame.index + 1, total })} ${t('scan.alt.layers', { layers: [t('layer.ilm'), t('layer.bm'), t('layer.bmo')].join(', ') })}${frame.analysis.usable ? '' : ` ${t('scan.alt.unusable')}`}`}
-              mark={t('simulatedMark')}
-            />
-          ) : (
-            <div className="oct-placeholder oct-placeholder--scan">{t('scan.waiting')}</div>
-          )}
-          <LayerLegend keys={['ilm', 'bm', 'bmo']} />
-        </figure>
-      </div>
-      <QualityBars scans={series.bars} highlight={latest} />
-      {showProgress && (
-      <div className="oct-progress">
-        <ol className="oct-steps" aria-label={t('steps.label')}>
-          {steps.map((step) => (
-            <li key={step.key} className={`oct-steps__item oct-steps__item--${step.state}`}>
-              <span aria-hidden="true" className="oct-steps__mark">
-                {STATE_MARK[step.state]}
-              </span>
-              <span>{t(step.key)}</span>
-              {step.count && step.state !== 'pending' && <span className="oct-muted"> · {step.count}</span>}
-              <span className="oct-sr-only"> ({t(`steps.${step.state}`)})</span>
-            </li>
-          ))}
-        </ol>
-        <p className="oct-phase">{phrase}</p>
-        <p className="oct-sr-only" aria-live="polite">
-          {stageText}
+            <span className="co-oculto">, {t(`steps.${step.state}`)}</span>
+          </li>
+        ))}
+      </ol>
+      {progress && live && (
+        <p className="co-grupo__fuente" aria-hidden="true">
+          {t(view.phrase.key, { n: view.phrase.n ?? 0, total: view.phrase.total ?? total })}
         </p>
-      </div>
       )}
-    </div>
+      {/* A coarse stage, said politely: a screen reader is not told about every scan. */}
+      <p className="co-oculto" aria-live="polite">
+        {stageText}
+      </p>
+    </Group>
   );
 }
 
-/** Name and stroke of each layer, so nothing depends on colour alone. */
-export function LayerLegend({ keys }: { keys: readonly ('ilm' | 'bm' | 'bmo' | 'rings' | 'zone')[] }) {
+/** The quality of each scan against the limit of poor signal, and the two readouts that sum it up. */
+export function QualityGroup({ bars, highlight, usable, source }: { bars: readonly (BarScan | undefined)[]; highlight: number | null; usable: number; source?: ReactNode }) {
   const t = useMessages(octMessages);
+  const { formatNumber } = useI18n();
+  const taken = bars.filter((bar) => bar !== undefined).length;
   return (
-    <p className="oct-legend">
-      {keys.map((key) => (
-        <span key={key}>
-          <LayerSwatch layer={key} />
-          {t(`layer.${key}`)}: {t(`layer.${key}.style`)}
-        </span>
-      ))}
-    </p>
+    <Group icon="gauge" title={t('quality.title')} source={source}>
+      <div>
+        <QualityBars scans={bars} highlight={highlight} />
+        <p className="co-rotulo">{t('quality.lineHelp')}</p>
+      </div>
+      {taken > 0 && (
+        <div className="co-lecturas">
+          <Readout
+            value={formatNumber(meanQualityDb(bars), { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+            unit={t('quality.axis')}
+            label={t('accepted.quality')}
+            origin="measured"
+          />
+          <Readout value={t('accepted.usableValue', { usable, total: taken })} label={t('accepted.usable')} origin="measured" />
+        </div>
+      )}
+    </Group>
   );
 }
 
-export function LayerSwatch({ layer }: { layer: 'ilm' | 'bm' | 'bmo' | 'rings' | 'zone' }) {
+/** The scan on screen with the edges the engine has just marked on it: where the thickness comes from. */
+export function ScanGroup({ frame, total }: { frame: ScanFrame | undefined; total: number }) {
+  const t = useMessages(octMessages);
+  if (!frame) return null;
   return (
-    <svg width="28" height="14" aria-hidden="true" className={`oct-layer-swatch oct-layer-swatch--${layer}`}>
-      {layer === 'ilm' && <line x1="1" y1="7" x2="27" y2="7" />}
-      {layer === 'bm' && <line x1="1" y1="7" x2="27" y2="7" strokeDasharray="7 4" />}
-      {layer === 'bmo' && (
-        <g>
-          <circle cx="14" cy="7" r="4.5" fill="none" />
-          <line x1="8" y1="7" x2="20" y2="7" />
-          <line x1="14" y1="1" x2="14" y2="13" />
-        </g>
-      )}
-      {layer === 'rings' && <line x1="14" y1="0" x2="14" y2="14" strokeDasharray="2 3" />}
-      {layer === 'zone' && <rect x="1" y="1" width="26" height="12" />}
-    </svg>
+    <Group icon="corte" title={t('scan.title', { n: frame.index + 1, total })}>
+      <ScanFigure frame={frame} total={total} legend />
+    </Group>
   );
 }

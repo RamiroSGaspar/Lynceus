@@ -1,505 +1,247 @@
-/* OCT capture step and exam viewer. Colours and sizes come from tokens.css only. */
+/*
+ * Tomography: the capture step, the oculars of a result and the exam viewer. The pieces are
+ * the ones of the design system (system.css); this file only adds what is particular to the
+ * images. Every value comes from tokens.css.
+ */
 
-.oct,
-.oct-viewer,
-.oct-dev {
-  /* Overlay colours: each layer also has its own stroke, so colour is never the only signal. */
-  --oct-ilm: var(--level-caution);
-  --oct-bm: var(--color-accent);
-  --oct-bmo: var(--origin-reported);
-  --oct-ellipse: var(--origin-reported);
-  --oct-ring: var(--origin-measured);
-  --oct-zone: var(--origin-measured);
-  --oct-measure: var(--origin-estimated);
-  --oct-usable: var(--origin-measured);
-  --oct-unusable: var(--level-warning);
-  --oct-current: var(--color-focus);
-  --oct-selected: var(--color-focus);
-}
-
-.oct {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-.oct-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-.oct-title {
-  font-size: var(--text-xl);
-  margin: 0;
-}
-.oct-panel,
-.oct-viewer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-}
-.oct-panel > *,
-.oct-viewer > * {
-  margin: 0;
-}
-/* The viewer opened inside the accepted capture: no card inside a card. */
-.oct-panel .oct-viewer {
-  padding: var(--space-4) 0 0;
-  background: none;
-  border: 0;
-  border-top: 1px solid var(--color-border);
-  border-radius: 0;
-}
-.oct-state-heading,
-.oct-viewer__title {
-  font-size: var(--text-lg);
-  margin: 0;
-}
-.oct-state-heading:focus {
-  outline: none;
-}
-.oct-state-heading:focus-visible {
-  outline: 3px solid var(--color-focus);
-}
-.oct h4,
-.oct-viewer h4 {
-  font-size: var(--text-md);
-  margin: 0 0 var(--space-2);
-}
-.oct-muted {
-  color: var(--color-text-secondary);
-  font-size: var(--text-xs);
-}
-.oct-block {
-  display: block;
-}
-.oct-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-.oct-notice {
-  padding: var(--space-2) var(--space-3);
-  border: 2px solid var(--level-caution);
-  border-radius: var(--radius-md);
-  background: var(--level-caution-bg);
-  color: var(--color-text);
-}
-.oct-reason {
-  padding: var(--space-3) var(--space-4);
-  border-left: 4px solid var(--level-caution);
+/* ---- A picture drawn on a canvas: the image is never stretched or retouched */
+.oct-lienzo {
+  width: 100%;
   background: var(--color-surface-raised);
 }
-.oct-reason p:last-child {
-  margin-bottom: 0;
-}
-.oct-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-.oct-attempts ul {
-  margin: 0;
-  padding-left: var(--space-5);
-}
-
-/* ---- Images */
-.oct-live {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-.oct-live__images,
-.oct-viewer__images {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-  gap: var(--space-4);
-  align-items: start;
-}
-@media (max-width: 52rem) {
-  .oct-live__images,
-  .oct-viewer__images {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-.oct-figure {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  min-width: 0;
-}
-.oct-figure figcaption {
-  font-weight: 600;
-}
-.oct-canvas-wrap {
-  width: 100%;
-  background: #000000;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-.oct-canvas-wrap--actual {
-  overflow-x: auto;
-}
-.oct-canvas {
-  display: block;
-}
-.oct-canvas--pick {
-  cursor: pointer;
-}
-.oct-canvas:focus-visible,
-.oct-focusable:focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
-}
-.oct-placeholder {
-  display: grid;
-  place-items: center;
-  padding: var(--space-4);
-  border: 1px dashed var(--color-border-strong);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  text-align: center;
-}
-.oct-placeholder--square {
+.oct-lienzo--cuadrado {
   aspect-ratio: 1;
 }
-.oct-placeholder--scan {
-  aspect-ratio: 768 / 496;
+.oct-lienzo--real {
+  overflow-x: auto;
 }
-.oct-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-4);
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--text-xs);
-}
-.oct-legend > span {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.oct-swatch {
-  display: inline-block;
-  width: 24px;
-  height: 0;
-  border-top: 2px solid var(--oct-usable);
-}
-.oct-swatch--unusable {
-  border-top: 2px dashed var(--oct-unusable);
-}
-.oct-swatch--current,
-.oct-swatch--selected {
-  border-top: 4px solid var(--oct-current);
-}
-.oct-layer-swatch {
-  flex: none;
-  fill: none;
-  stroke-width: 2;
-}
-.oct-layer-swatch--ilm {
-  stroke: var(--oct-ilm);
-}
-.oct-layer-swatch--bm {
-  stroke: var(--oct-bm);
-}
-.oct-layer-swatch--bmo {
-  stroke: var(--oct-bmo);
-}
-.oct-layer-swatch--rings {
-  stroke: var(--oct-ring);
-}
-.oct-layer-swatch--zone rect {
-  fill: var(--oct-zone);
-  fill-opacity: 0.35;
-  stroke: none;
-}
-
-/* ---- Quality bars */
-.oct-quality {
-  margin: 0;
-}
-.oct-quality__caption {
-  font-weight: 600;
-}
-.oct-quality__svg {
+.oct-lienzo canvas {
   display: block;
-  width: 100%;
-  height: auto;
 }
-.oct-quality__tick,
-.oct-quality__poor-label {
-  fill: var(--color-text-secondary);
-  font-size: 11px;
-}
-.oct-quality__axis {
-  stroke: var(--color-border-strong);
-}
-.oct-quality__hit {
-  fill: transparent;
-}
-.oct-quality__slot--pick {
+.oct-lienzo canvas.is-elegible {
   cursor: pointer;
 }
-.oct-quality__slot--pick:hover .oct-quality__hit {
-  fill: var(--color-surface-raised);
-}
-.oct-quality__bar {
-  fill: var(--oct-usable);
-}
-.oct-quality__bar--unusable {
-  fill: none;
-  stroke: var(--oct-unusable);
-  stroke-width: 1.5;
-}
-.oct-quality__cross {
-  stroke: var(--oct-unusable);
-  stroke-width: 1.5;
-}
-.oct-quality__marker {
-  fill: var(--oct-selected);
-}
-.oct-quality__poor {
-  stroke: var(--color-text);
-  stroke-dasharray: 5 3;
-  stroke-width: 1.25;
+.oct-foco:focus-visible,
+.oct-lienzo canvas:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
 }
 
-/* ---- Progress */
-.oct-progress {
-  display: flex;
-  flex-direction: column;
+/* ---- Ocular: what the application adds to the component of the system */
+.co-ocular__imagen canvas {
+  display: block;
+}
+.co-ocular__lente--fija {
+  cursor: default;
+}
+/* No image yet, or none to show: the disc is a quiet lens, without its corona. */
+.co-ocular.is-sin-imagen .co-ocular__lente {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+.co-ocular.is-sin-imagen .co-ocular__lente::after {
+  display: none;
+}
+.co-ocular--unmeasured.is-sin-imagen .co-ocular__lente {
+  border: 1.5px dashed var(--level-unmeasured);
+}
+.co-ocular__vacio .co-marca__iso {
+  width: 3rem;
+}
+/* Scans already taken step back once what was measured on them is drawn over them. */
+.co-radio.is-quieto {
+  stroke-opacity: 0.3;
+}
+.co-corte__espera {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 768 / 496;
+  background: var(--color-surface-raised);
+}
+.co-corte__espera .co-marca__iso {
+  width: 2.5rem;
+}
+.co-corte > figcaption {
+  margin: 0;
+}
+
+/* ---- Bars: one per scan. Not usable: outlined. The one on screen: a mark under it */
+.co-barras--alta {
+  height: 6rem;
+}
+.co-barras > i.is-malo {
+  border: 1px solid var(--color-text);
+  border-bottom: 0;
+  background: none;
+}
+.co-barras > i.is-elegido {
+  position: relative;
+}
+.co-barras > i.is-elegido::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -0.625rem;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-bottom-color: var(--color-text);
+  border-top-width: 0;
+  transform: translateX(-50%);
+}
+.co-barras--elegible {
+  margin-bottom: var(--space-4);
+}
+.co-barras--elegible > i {
+  cursor: pointer;
+}
+.co-barras--elegible > i:hover {
+  background: var(--color-text-secondary);
+}
+
+/* ---- Capture step: the centre of the session's cockpit */
+.oct-cabeza {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  text-align: center;
+}
+.oct-texto {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 40rem;
+  padding: var(--space-3) var(--space-4);
+}
+.oct-acciones {
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+}
+.oct-lista {
   gap: var(--space-2);
 }
-.oct-steps {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.oct-steps__item {
-  color: var(--color-text-secondary);
-}
-.oct-steps__item--current {
-  color: var(--color-text);
-  font-weight: 700;
-}
-.oct-steps__item--done {
-  color: var(--color-text);
-}
-.oct-steps__mark {
-  display: inline-block;
-  width: 1.25em;
-}
-.oct-phase {
-  margin: 0;
-  font-size: var(--text-md);
+.oct-lista .co-limites {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
 }
 
-/* ---- Accepted */
-.oct-accepted {
+/* ---- Exam viewer */
+.oct-visor {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  gap: var(--space-5);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  width: min(100% - 2 * var(--space-5), var(--content-width));
+  margin: 0 auto;
+  padding: var(--space-7) 0;
+}
+/* Inside a detail section the section already gives the width and the air. */
+.co-seccion .oct-visor {
+  width: 100%;
+  padding: 0;
+}
+.oct-visor--cargando {
+  justify-items: center;
+  text-align: center;
+  --ocular-size: min(17rem, 60vw);
+}
+.oct-visor__cabeza {
+  gap: var(--space-3);
+}
+.oct-visor__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+.oct-visor__deslizador {
+  display: grid;
+  flex: 1 1 14rem;
+  gap: var(--space-1);
+}
+.oct-visor__deslizador input {
+  width: 100%;
+  min-height: var(--target-min);
+  accent-color: var(--color-accent);
+}
+.oct-visor__valor {
+  min-width: 12rem;
+  color: var(--color-text);
+}
+.oct-visor__imagenes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7) var(--space-6);
   align-items: start;
 }
-@media (max-width: 52rem) {
-  .oct-accepted {
-    grid-template-columns: minmax(0, 1fr);
+@media (min-width: 60rem) {
+  .oct-visor__imagenes {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   }
 }
-.oct-facts {
+.oct-visor__titulo {
+  gap: var(--space-1);
+}
+.oct-visor__calidad {
+  gap: var(--space-2);
+}
+.oct-panel {
   display: grid;
-  gap: var(--space-3);
-  margin: 0 0 var(--space-3);
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+  border-top: 1px solid;
+  border-image: var(--line-fade-h) 1;
 }
-.oct-facts dt {
-  color: var(--color-text-secondary);
-  font-size: var(--text-xs);
+.oct-panel > .co-casillas,
+.oct-panel > .co-desliza,
+.oct-panel__texto,
+.oct-panel__lecturas {
+  width: 100%;
 }
-.oct-facts dd {
-  margin: 0;
+.oct-panel__lecturas {
+  max-width: 44rem;
+}
+.oct-par {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-6);
+  width: 100%;
 }
 
-/* ---- Viewer */
-.oct-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3);
-}
-.oct-nav__slider {
-  display: flex;
-  flex: 1 1 14rem;
-  flex-direction: column;
-  gap: var(--space-1);
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-.oct-nav__slider input {
-  width: 100%;
-  min-height: 2.75rem;
-  accent-color: var(--color-accent);
-}
-.oct-nav__value {
-  min-width: 8rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.oct-fieldset {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-4);
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-}
-.oct-fieldset legend {
-  padding: 0 var(--space-1);
-  font-weight: 600;
-}
-.oct-check {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 2.75rem;
-  cursor: pointer;
-}
-.oct-check input {
-  width: 1.25rem;
-  height: 1.25rem;
-  accent-color: var(--color-accent);
-}
-.oct-subpanel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border);
-}
-.oct-subpanel > * {
-  margin: 0;
-}
-.oct-source {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-.oct-source p {
-  margin: 0;
-}
-.oct-details summary {
-  min-height: 2.75rem;
-  display: flex;
-  align-items: center;
-  font-weight: 700;
-  cursor: pointer;
-}
-.oct-compare {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
-}
-@media (max-width: 52rem) {
-  .oct-compare {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-.oct-profile {
+/* ---- Thickness along a scan: today solid, before the flight dashed, the difference as a haze */
+.oct-perfil {
   display: block;
   width: 100%;
   height: auto;
 }
-.oct-profile__grid {
+.oct-perfil__grilla {
   stroke: var(--color-border);
 }
-.oct-profile__tick {
+.oct-perfil__eje {
   fill: var(--color-text-secondary);
+  font-family: var(--font-sans);
   font-size: 12px;
 }
-.oct-profile__today {
+.oct-perfil__hoy {
   fill: none;
-  stroke: var(--color-text);
-  stroke-width: 2;
+  stroke: var(--series-od);
+  stroke-width: 1.5;
 }
-.oct-profile__before {
+.oct-perfil__antes {
   fill: none;
-  stroke: var(--color-accent);
-  stroke-width: 2;
-  stroke-dasharray: 6 4;
+  stroke: var(--series-os);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 5;
 }
-.oct-profile__diff {
-  fill: var(--oct-measure);
-  fill-opacity: 0.35;
+.oct-perfil__diferencia {
+  fill: var(--color-text);
+  fill-opacity: 0.22;
 }
-.oct-profile__zone {
-  fill: var(--oct-zone);
-  fill-opacity: 0.12;
-}
-.oct-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-}
-.oct-table th,
-.oct-table td {
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-  text-align: right;
-}
-.oct-table th:first-child {
-  text-align: left;
-}
-
-/* ---- Development page */
-.oct-dev {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-.oct-dev > * {
-  margin: 0;
-}
-.oct-dev__controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--space-3);
-}
-.oct-dev__controls label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-}
-.oct-dev__controls select {
-  min-height: 2.75rem;
-  padding: 0 var(--space-2);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  color: var(--color-text);
-  font: inherit;
-}
-.oct-dev__output {
-  max-height: 24rem;
-  overflow: auto;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
+.oct-perfil__zona {
+  fill: var(--color-text);
+  fill-opacity: 0.08;
 }

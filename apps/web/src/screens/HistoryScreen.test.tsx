@@ -8,7 +8,8 @@ import { sampleRecord } from '../testing/fixtures';
 import { LOCALES, renderHtml, testStore, textOf, unfilledPlaceholders } from '../testing/render';
 import { HistoryScreen } from './HistoryScreen';
 
-vi.mock('../slots', () => ({
+vi.mock('../slots', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../slots')>()),
   ExamViewer: () => <div data-slot="viewer" />,
   AssistantPanel: ({ record }: { record: SessionRecord | null }) => (
     <button data-slot="assistant" data-record={record ? `${record.crewId}:${record.flightDay}` : 'none'}>
@@ -17,7 +18,11 @@ vi.mock('../slots', () => ({
   ),
 }));
 
-const resultLinks = (html: string): string[] => [...html.matchAll(/href="#\/result\/[A-D]\/(\d+)"/g)].map((m) => m[1] ?? '');
+/** The results the list of controls opens, in the order of its rows. The navigation and the veil have their own links: they are not the list. */
+const resultLinks = (html: string): string[] => {
+  const table = html.match(/<table class="co-tabla co-tabla--controles"[\s\S]*?<\/table>/)?.[0] ?? '';
+  return [...table.matchAll(/href="#\/result\/[A-D]\/(\d+)"/g)].map((m) => m[1] ?? '');
+};
 
 describe('history screen', () => {
   it.each(LOCALES)('opens in %s for the four crew members', (locale) => {

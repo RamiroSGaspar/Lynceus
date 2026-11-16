@@ -94,6 +94,7 @@ function deps(draws: number[], overrides: Partial<RunnerDeps> = {}): RunnerDeps 
     groundTruth: () => {
       throw new Error('not used');
     },
+    segmentScan: (scan) => scanAnalysis(scan.index),
     now: () => (t += 100),
     heapBytes: () => null,
     ...overrides,
@@ -190,5 +191,41 @@ describe('OCT worker protocol', () => {
     expect(back.header.id).toBe(exam.header.id);
     expect(Array.from(back.slo)).toEqual(Array.from(exam.slo));
     expect(back.bscan(2).pixels).toEqual(exam.bscan(2).pixels);
+  });
+
+  it('answers a preview with the fundus image and the one scan asked for, with its edges, in one message', () => {
+    const draws: number[] = [];
+    const exam = tinyExam(draws);
+    const messages = collect({ type: 'preview', request: REQUEST, scan: 2 }, deps(draws, { acquire: () => exam }));
+    expect(messages).toHaveLength(1);
+    const { message, transfer } = messages[0]!;
+    if (message.type !== 'preview') throw new Error(`Unexpected message ${message.type}`);
+    expect(message.header.id).toBe(exam.header.id);
+    expect(message.fundus.gray.length).toBe(SIZE.sizeXSlo * SIZE.sizeYSlo);
+    expect(Array.from(message.fundus.gray)).toEqual(Array.from(exam.slo));
+    expect(message.scan.index).toBe(2);
+    expect(message.scan.gray).toBeInstanceOf(Uint8ClampedArray);
+    expect(message.scan.gray.length).toBe(SIZE.sizeX * SIZE.sizeZ);
+    expect(message.scan.analysis.index).toBe(2);
+    expect(message.scan.header.qualityDb).toBe(22);
+    // Only that scan is drawn, and the exam keeps its own fundus image.
+    expect(draws).toEqual([undefined, undefined, 1]);
+    expect(transfer).toEqual([message.fundus.gray.buffer, message.scan.gray.buffer]);
+    expect(message.fundus.gray.buffer).not.toBe(exam.slo.buffer);
+  });
+
+  it('reports a preview that fails as an error message', () => {
+    const messages = collect(
+      { type: 'preview', request: REQUEST, scan: 99 },
+      deps([], {
+        acquire: () => ({
+          ...tinyExam([]),
+          bscan: () => {
+            throw new RangeError('B-scan 99 out of range');
+          },
+        }),
+      }),
+    );
+    expect(messages.map((m) => m.message)).toEqual([{ type: 'error', message: 'B-scan 99 out of range' }]);
   });
 });

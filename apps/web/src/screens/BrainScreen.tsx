@@ -2,9 +2,10 @@ import { BRAIN_KNOWLEDGE, REFERENCES, type KnowledgeCertainty, type KnowledgeSta
 import { useDocumentTitle } from '../app/hooks';
 import { useI18n, useMessages } from '../i18n';
 import { brainMessages } from '../i18n/brain';
-import { LinkButton } from '../shell/LinkButton';
+import { LinkAction } from '../shell/LinkButton';
 import { ScreenTitle } from '../shell/ScreenTitle';
 import { AssistantPanel } from '../slots';
+import { Notice, Section } from '../ui';
 
 const COLUMNS = ['known', 'mriOnly', 'notKnowableOnBoard'] as const;
 const CERTAINTIES: readonly KnowledgeCertainty[] = [
@@ -16,10 +17,13 @@ const CERTAINTIES: readonly KnowledgeCertainty[] = [
 
 type T = ReturnType<typeof useMessages<keyof (typeof brainMessages)['en']>>;
 
-/** How firm a statement is, in words. The border style repeats it, so it does not rest on colour. */
+/**
+ * How firm a statement is, in words. The frame repeats it, so it does not rest on colour: the
+ * firmer, the more solid (filled, solid edge, dashed, dotted). No level colours: nothing here is an alert.
+ */
 function Certainty({ certainty, t }: { certainty: KnowledgeCertainty; t: T }) {
   return (
-    <span className={`certainty certainty--${certainty}`} title={t(`certainty.${certainty}.help`)}>
+    <span className={`co-ficha certainty certainty--${certainty}`} title={t(`certainty.${certainty}.help`)}>
       {t(`certainty.${certainty}`)}
     </span>
   );
@@ -29,12 +33,12 @@ function Statement({ statement, t }: { statement: KnowledgeStatement; t: T }) {
   const { locale } = useI18n();
   return (
     <li className="statement">
-      <p className="statement__text">{statement.text[locale]}</p>
       <p className="statement__certainty">
         <Certainty certainty={statement.certainty} t={t} />
       </p>
-      <p className="statement__sources-label">{t('sources')}</p>
-      <ul className="statement__sources">
+      <p className="co-texto statement__text">{statement.text[locale]}</p>
+      <p className="co-rotulo statement__sources-label">{t('sources')}</p>
+      <ul className="co-nota statement__sources">
         {statement.sources.map((id) => {
           const reference = REFERENCES.find((candidate) => candidate.id === id);
           return (
@@ -59,50 +63,54 @@ export function BrainScreen() {
   const t = useMessages(brainMessages);
   useDocumentTitle(t('title'));
   return (
-    <div className="screen brain">
-      <ScreenTitle>{t('title')}</ScreenTitle>
-      <p className="lead">{t('lead')}</p>
-      <p className="callout">{t('tool')}</p>
-
-      <section className="screen__section" aria-labelledby="certainty-heading">
-        <h2 id="certainty-heading" className="brain__legend-title">
-          {t('certainty.heading')}
-        </h2>
-        <dl className="brain__legend">
-          {CERTAINTIES.map((certainty) => (
-            <div key={certainty}>
-              <dt>
-                <Certainty certainty={certainty} t={t} />
-              </dt>
-              <dd>{t(`certainty.${certainty}.help`)}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      <div className="brain__columns">
-        {COLUMNS.map((column) => (
-          <section key={column} className="brain__column" aria-labelledby={`brain-${column}`}>
-            <h2 id={`brain-${column}`}>{t(`column.${column}`)}</h2>
-            <ul className="brain__statements">
-              {BRAIN_KNOWLEDGE[column].map((statement) => (
-                <Statement key={statement.id} statement={statement} t={t} />
+    <div className="co-detalle co-velo co-detalle--primera brain">
+      <Section id="cerebro" level={1} title={t('title')} note={t('lead')}>
+        <div className="co-pila co-pila--holgada">
+          <Notice title={t('tool')} />
+          <div className="co-pila">
+            <h2 className="co-micro">{t('certainty.heading')}</h2>
+            <dl className="brain__legend">
+              {CERTAINTIES.map((certainty) => (
+                <div key={certainty}>
+                  <dt>
+                    <Certainty certainty={certainty} t={t} />
+                  </dt>
+                  <dd className="co-nota">{t(`certainty.${certainty}.help`)}</dd>
+                </div>
               ))}
-            </ul>
-          </section>
-        ))}
+            </dl>
+          </div>
+        </div>
+      </Section>
+
+      <div className="co-seccion co-seccion--apilada">
+        <div className="brain__columns">
+          {COLUMNS.map((column) => (
+            <section key={column} className="brain__column" aria-labelledby={`brain-${column}`}>
+              <h2 id={`brain-${column}`} className="co-subtitulo">
+                {t(`column.${column}`)}
+              </h2>
+              <ul className="brain__statements">
+                {BRAIN_KNOWLEDGE[column].map((statement) => (
+                  <Statement key={statement.id} statement={statement} t={t} />
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       </div>
 
-      <section className="screen__section" aria-labelledby="brain-actions">
-        <h2 id="brain-actions">{t('actions.heading')}</h2>
-        <div className="actions">
+      <Section id="desde-aca" title={t('actions.heading')}>
+        <div className="co-fila">
           <AssistantPanel record={null} />
-          <LinkButton to={{ name: 'how' }}>{t('actions.how')}</LinkButton>
-          <LinkButton to={{ name: 'home' }} variant="ghost">
+          <LinkAction to={{ name: 'how' }} icon="book-open">
+            {t('actions.how')}
+          </LinkAction>
+          <LinkAction to={{ name: 'home' }} icon="house">
             {t('actions.home')}
-          </LinkButton>
+          </LinkAction>
         </div>
-      </section>
+      </Section>
     </div>
   );
 }

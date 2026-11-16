@@ -23,7 +23,13 @@ export type WorkerJob =
   /** Regenerate an exam and stream it as the blocks of a `.vol` file. */
   | { type: 'download'; request: CaptureRequest }
   /** True values of the fictional eye (transparency view only). */
-  | { type: 'ground-truth'; crewId: CrewId; eye: Eye; flightDay: number };
+  | { type: 'ground-truth'; crewId: CrewId; eye: Eye; flightDay: number }
+  /**
+   * The image behind a result without the wait of a whole exam: the fundus image and one
+   * B-scan with what the engine marks on it. The measures are not computed again: they are
+   * the ones saved with the control.
+   */
+  | { type: 'preview'; request: CaptureRequest; scan: number };
 
 export type WorkerMessage =
   | { type: 'header'; header: VolHeader }
@@ -40,6 +46,13 @@ export type WorkerMessage =
   | { type: 'vol-block'; index: number; total: number; bytes: Uint8Array }
   | { type: 'vol-done'; totalBytes: number }
   | { type: 'ground-truth'; truth: EyeGroundTruth }
+  /** Answer to a `preview` job, in one message. The two image buffers are transferred. */
+  | {
+      type: 'preview';
+      header: VolHeader;
+      fundus: { width: number; height: number; gray: Uint8Array };
+      scan: { index: number; header: BScanHeader; width: number; height: number; gray: Uint8ClampedArray; analysis: ScanAnalysis };
+    }
   | { type: 'error'; message: string };
 
 export type PostMessage = (message: WorkerMessage, transfer: Transferable[]) => void;

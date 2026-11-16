@@ -32,6 +32,8 @@ export const homeMessages = defineMessages(
     'storage.local': 'Health data stay in this browser. Nothing is sent over the network.',
     'storage.summary': 'Controls done here: {records}. Controls in progress: {drafts}.',
     'storage.none': 'Nothing is saved in this browser yet.',
+    'storage.records': 'Controls done here',
+    'storage.drafts': 'Controls in progress',
     'storage.notPersistent':
       'This browser is not saving data: what you do here will be lost when you close the page.',
     'storage.discarded':
@@ -73,6 +75,8 @@ export const homeMessages = defineMessages(
     'storage.local': 'Los datos de salud quedan en este navegador. No se envía nada por la red.',
     'storage.summary': 'Controles hechos acá: {records}. Controles en curso: {drafts}.',
     'storage.none': 'Todavía no hay nada guardado en este navegador.',
+    'storage.records': 'Controles hechos acá',
+    'storage.drafts': 'Controles en curso',
     'storage.notPersistent':
       'Este navegador no está guardando datos: lo que hagas acá se pierde al cerrar la página.',
     'storage.discarded':

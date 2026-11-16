@@ -3,6 +3,7 @@
  * 78 MB, so it never runs on the screen's thread (spec 06, section 2).
  */
 import { acquire, analyzeExamSteps, groundTruth, toDisplayGray, writeVolBlocks } from '@app/core';
+import { segmentScan } from '@app/core/engine/segment';
 import type { WorkerJob, WorkerMessage } from './protocol';
 import { runJob, type RunnerDeps } from './runner';
 
@@ -19,6 +20,8 @@ const deps: RunnerDeps = {
   toDisplayGray,
   writeVolBlocks,
   groundTruth,
+  segmentScan: (scan, header) =>
+    segmentScan(scan, { sizeX: header.sizeX, sizeZ: header.sizeZ, scaleXUm: header.scaleXMm * 1000, scaleZUm: header.scaleZMm * 1000 }).analysis,
   now: () => performance.now(),
   heapBytes: () => (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize ?? null,
 };

@@ -63,7 +63,7 @@ describe('screen "how it works"', () => {
     expect(text).toContain(VALIDATION_SUMMARY.versions.model);
     expect(text).toContain(VALIDATION_SUMMARY.versions.instrument);
     // Partitions table and error table: three parts, two measures each.
-    expect(html.match(/<table>/g)).toHaveLength(2);
+    expect(html.match(/<table\b/g)).toHaveLength(2);
     for (const p of ['development', 'test-anatomy', 'test-family'] as const) expect(text).toContain(String(VALIDATION_SUMMARY.partitions[p].captures));
     expect(text).toContain(locale === 'en' ? 'simulated exams' : 'exámenes simulados');
   });

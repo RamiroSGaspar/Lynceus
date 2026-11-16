@@ -14,7 +14,7 @@ import {
 import { useState } from 'react';
 import { commonMessages } from '../../i18n/common';
 import { useI18n, useMessages } from '../../i18n';
-import { Button, Card, QuantityValue } from '../../ui';
+import { Button, EyeTag, QuantityValue } from '../../ui';
 import { Calibration } from './Calibration';
 import { calibrationMessages, acuityMessages, visionMessages } from './messages';
 import type { StoredCalibration } from './calibrationStore';
@@ -186,12 +186,13 @@ export function AcuityStep({ onComplete, onSkip }: Props) {
         <FocusHeading>{t('summary.title')}</FocusHeading>
         <div className="vt-columns">
           {EYES.map((eye) => (
-            <Card key={eye} as="article" title={tc(`eye.${eye}`)}>
+            <article key={eye} className="vt-eye">
+              <EyeTag eye={eye} />
               <AcuityResultView result={results[eye]!} />
               {results[eye]!.logMar === null && (
                 <Button onClick={() => startEye(eye)}>{t('result.repeat')}</Button>
               )}
-            </Card>
+            </article>
           ))}
         </div>
         <VariationNote />

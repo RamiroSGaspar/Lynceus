@@ -12,10 +12,7 @@ const TEXTS = {
       'first-sign': 'First sign',
       'clinically-concerning': 'Clinically concerning',
     },
-    zero: { value: '0', note: 'before the flight' },
-    nasa: 'NASA',
-    range: (low: string, high: string) => `range ${low} to ${high} µm`,
-    day: (day: number) => `FD${day}`,
+    day: (day: number, value: number) => `Flight day ${day}: ${value} µm`,
   },
   es: {
     bandNames: {
@@ -23,10 +20,7 @@ const TEXTS = {
       'first-sign': 'Primer indicio',
       'clinically-concerning': 'Clínicamente preocupante',
     },
-    zero: { value: '0', note: 'antes del vuelo' },
-    nasa: 'NASA',
-    range: (low: string, high: string) => `rango ${low} a ${high} µm`,
-    day: (day: number) => `DV${day}`,
+    day: (day: number, value: number) => `Día de vuelo ${day}: ${value} µm`,
   },
 } as const;
 
@@ -48,98 +42,98 @@ function input({ locale = 'en', width, valueUm, halfRangeUm = 8, previous = [] }
   const high = valueUm === null ? null : valueUm + halfRangeUm;
   return {
     width,
-    fontPx: 15.75,
-    valueFontPx: 24.75,
+    fontPx: 14,
     measure: estimateTextWidth,
     domain: changeDomain([valueUm, low, high, ...previous.map(([, value]) => value)]),
     thresholds: NASA,
     bandNames: text.bandNames,
-    zero: text.zero,
-    firstSign: { value: '19.4 µm', note: text.nasa },
-    clinicallyConcerning: { value: '55 µm', note: text.nasa },
+    zeroLabel: '0',
+    firstSignLabel: '19.4 µm',
+    clinicallyConcerningLabel: '55 µm',
     tickLabel: (value) => signed(value).replace('+', ''),
-    today:
-      valueUm === null || low === null || high === null
-        ? null
-        : {
-            valueUm,
-            lowUm: low,
-            highUm: high,
-            valueLabel: `${signed(valueUm)} µm`,
-            rangeLabel: text.range(signed(low), signed(high)),
-          },
-    previous: previous.map(([day, value]) => ({ valueUm: value, label: text.day(day) })),
+    today: valueUm === null ? null : { valueUm, lowUm: low, highUm: high },
+    previous: previous.map(([day, value]) => ({ valueUm: value, label: text.day(day, value) })),
   };
 }
 
 const EPS = 0.01;
 
-/** Everything a person must be able to read: no label outside the drawing, none on top of another. */
+/** Everything a person must be able to read: no label outside the drawing, none on top of another, no mark cut. */
 function expectReadable(layout: ChangeScaleLayout, given: ChangeScaleInput): void {
   const { width } = layout;
 
-  // Axis labels: inside the drawing and clear of each other.
-  const axis = [...layout.axisLabels].sort((a, b) => a.x - b.x);
-  for (const label of axis) {
+  // Numbers above the line: inside the drawing, and clear of each other on their own row.
+  const rows = new Map<number, AxisLabel[]>();
+  for (const label of layout.axisLabels) {
     expect(label.x - label.width / 2).toBeGreaterThanOrEqual(-EPS);
     expect(label.x + label.width / 2).toBeLessThanOrEqual(width + EPS);
-  }
-  for (let index = 1; index < axis.length; index += 1) {
-    const before = axis[index - 1] as AxisLabel;
-    const after = axis[index] as AxisLabel;
-    expect(after.x - after.width / 2 - (before.x + before.width / 2)).toBeGreaterThan(0);
-  }
-
-  // Band names: inside the drawing; inside their own band when the layout is inline.
-  for (const label of layout.bandLabels) {
-    const band = layout.bands.find((candidate) => candidate.id === label.id);
-    expect(band).toBeDefined();
-    if (!band) continue;
-    for (const line of label.lines) {
-      const lineWidth = given.measure(line, given.fontPx, true);
-      const start = label.anchor === 'start' ? label.x : label.anchor === 'end' ? label.x - lineWidth : label.x - lineWidth / 2;
-      expect(start).toBeGreaterThanOrEqual(-EPS);
-      expect(start + lineWidth).toBeLessThanOrEqual(width + EPS);
-      if (layout.bandMode === 'inline') {
-        expect(start).toBeGreaterThanOrEqual(band.x - EPS);
-        expect(start + lineWidth).toBeLessThanOrEqual(band.x + band.width + EPS);
-      }
-    }
-  }
-  expect(layout.bandLabels).toHaveLength(3);
-
-  // Today's chip: inside the bands, above its mark.
-  if (layout.today) {
-    const { chip, y, half } = layout.today;
-    expect(chip.x - chip.width / 2).toBeGreaterThanOrEqual(layout.plot.left - EPS);
-    expect(chip.x + chip.width / 2).toBeLessThanOrEqual(layout.plot.right + EPS);
-    expect(chip.y).toBeGreaterThanOrEqual(layout.plot.top);
-    expect(chip.y + chip.height).toBeLessThan(y - half);
-    expect(y + half).toBeLessThan(layout.plot.bottom);
-  }
-
-  // Earlier controls: labels inside the drawing, clear of each other on the same row, under today's mark.
-  const rows = new Map<number, typeof layout.previous>();
-  for (const mark of layout.previous) {
-    rows.set(mark.labelBaseline, [...(rows.get(mark.labelBaseline) ?? []), mark]);
-    expect(mark.labelX - mark.labelWidth / 2).toBeGreaterThanOrEqual(-EPS);
-    expect(mark.labelX + mark.labelWidth / 2).toBeLessThanOrEqual(width + EPS);
-    expect(mark.labelBaseline).toBeLessThan(layout.plot.bottom);
-    if (layout.today) expect(mark.y - mark.r).toBeGreaterThan(layout.today.y + layout.today.half);
+    expect(label.baseline).toBeLessThan(layout.lineY);
+    rows.set(label.baseline, [...(rows.get(label.baseline) ?? []), label]);
   }
   for (const row of rows.values()) {
-    const sorted = [...row].sort((a, b) => a.labelX - b.labelX);
+    const sorted = [...row].sort((a, b) => a.x - b.x);
+    for (let index = 1; index < sorted.length; index += 1) {
+      const before = sorted[index - 1] as AxisLabel;
+      const after = sorted[index] as AxisLabel;
+      expect(after.x - after.width / 2 - (before.x + before.width / 2)).toBeGreaterThan(0);
+    }
+  }
+  // A threshold value is never struck through by a threshold line, and neither is a round number.
+  for (const label of layout.axisLabels) {
+    for (const line of layout.thresholdLines) {
+      if (label.kind === line.kind) continue;
+      const inside = line.x > label.x - label.width / 2 + EPS && line.x < label.x + label.width / 2 - EPS;
+      if (label.kind === 'tick' || label.kind === 'zero') expect(inside).toBe(false);
+    }
+  }
+
+  // Band names: one per band, inside the drawing, under the line, clear of each other.
+  expect(layout.bandLabels).toHaveLength(3);
+  for (const label of layout.bandLabels) {
+    expect(label.x).toBeGreaterThanOrEqual(-EPS);
+    expect(label.x + label.width).toBeLessThanOrEqual(width + EPS);
+    expect(label.shape.y).toBeGreaterThan(layout.lineY);
+    for (const line of label.lines) {
+      expect(label.textX + given.measure(line, given.fontPx)).toBeLessThanOrEqual(width + EPS);
+    }
+  }
+  if (layout.bandMode === 'inline') {
+    const sorted = [...layout.bandLabels].sort((a, b) => a.x - b.x);
     for (let index = 1; index < sorted.length; index += 1) {
       const before = sorted[index - 1] as (typeof sorted)[number];
       const after = sorted[index] as (typeof sorted)[number];
-      expect(after.labelX - after.labelWidth / 2 - (before.labelX + before.labelWidth / 2)).toBeGreaterThan(0);
+      expect(after.x - (before.x + before.width)).toBeGreaterThan(0);
     }
+  } else {
+    const tops = layout.bandLabels.map((label) => label.baseline);
+    expect([...tops].sort((a, b) => a - b)).toEqual(tops);
+    expect(new Set(tops).size).toBe(tops.length);
+  }
+
+  // Today's disc and its range, and the earlier controls: on the line, never cut by the edge of the drawing.
+  if (layout.today) {
+    const { x, y, r, range } = layout.today;
+    expect(y).toBe(layout.lineY);
+    expect(x - r).toBeGreaterThanOrEqual(-EPS);
+    expect(x + r).toBeLessThanOrEqual(width + EPS);
+    if (range) {
+      expect(range.x1).toBeGreaterThanOrEqual(layout.plot.left - EPS);
+      expect(range.x2).toBeLessThanOrEqual(layout.plot.right + EPS);
+      expect(range.x1).toBeLessThanOrEqual(x + EPS);
+      expect(range.x2).toBeGreaterThanOrEqual(x - EPS);
+    }
+  }
+  for (const mark of layout.previous) {
+    expect(mark.y).toBe(layout.lineY);
+    expect(mark.x - mark.r).toBeGreaterThanOrEqual(-EPS);
+    expect(mark.x + mark.r).toBeLessThanOrEqual(width + EPS);
+    if (layout.today) expect(mark.r).toBeLessThan(layout.today.r);
   }
 
   // The drawing contains everything.
-  const lastBaseline = Math.max(...layout.axisLabels.map((label) => label.baseline + (label.lines.length - 1) * layout.lineHeight));
+  const lastBaseline = Math.max(...layout.bandLabels.map((label) => label.baseline + (label.lines.length - 1) * layout.lineHeight));
   expect(layout.height).toBeGreaterThan(lastBaseline);
-  expect(layout.plot.bottom).toBeGreaterThan(layout.plot.top);
+  expect(layout.plot.right).toBeGreaterThan(layout.plot.left);
 }
 
 describe('layoutChangeScale', () => {
@@ -150,14 +144,14 @@ describe('layoutChangeScale', () => {
     expect(layout.today?.x).toBeCloseTo(x(24));
     expect(layout.today?.range?.x1).toBeCloseTo(x(16));
     expect(layout.today?.range?.x2).toBeCloseTo(x(32));
-    expect(layout.zeroX).toBeCloseTo(x(0));
-    expect(layout.thresholdLines).toEqual([
+    expect(layout.zero?.x).toBeCloseTo(x(0));
+    expect(layout.thresholdLines.map(({ kind, x: lineX }) => ({ kind, x: lineX }))).toEqual([
       { kind: 'first-sign', x: x(19.4) },
       { kind: 'clinically-concerning', x: x(55) },
     ]);
   });
 
-  it('draws three bands that cover the axis and meet at NASA’s thresholds', () => {
+  it('draws three stretches that cover the axis and meet at NASA’s thresholds', () => {
     const given = input({ width: 900, valueUm: 24 });
     const layout = layoutChangeScale(given);
     const [normal, first, concerning] = layout.bands;
@@ -168,61 +162,67 @@ describe('layoutChangeScale', () => {
     expect((concerning?.x ?? 0) + (concerning?.width ?? 0)).toBeCloseTo(layout.plot.right);
   });
 
-  it('always labels 0 as the pre-flight exam and the two thresholds with their value and "NASA"', () => {
+  it('always marks 0 as the pre-flight exam and writes the value of the two thresholds beside their lines', () => {
     for (const width of [300, 520, 1000]) {
       const layout = layoutChangeScale(input({ width, valueUm: 24 }));
       const kinds = layout.axisLabels.map((label) => label.kind);
       expect(kinds).toContain('zero');
       expect(kinds).toContain('first-sign');
       expect(kinds).toContain('clinically-concerning');
-      const zero = layout.axisLabels.find((label) => label.kind === 'zero');
-      expect(zero?.lines[0]).toBe('0');
-      expect(zero?.lines.slice(1).join(' ')).toBe('before the flight');
-      expect(layout.axisLabels.find((label) => label.kind === 'first-sign')?.lines).toEqual(['19.4 µm', 'NASA']);
-      expect(layout.axisLabels.find((label) => label.kind === 'clinically-concerning')?.lines).toEqual(['55 µm', 'NASA']);
+      expect(layout.axisLabels.find((label) => label.kind === 'zero')?.text).toBe('0');
+      expect(layout.zero).not.toBeNull();
+      const first = layout.axisLabels.find((label) => label.kind === 'first-sign');
+      const second = layout.axisLabels.find((label) => label.kind === 'clinically-concerning');
+      expect(first?.text).toBe('19.4 µm');
+      expect(second?.text).toBe('55 µm');
+      // Beside its own line: the value does not sit on it.
+      for (const label of [first, second]) {
+        expect(Math.abs((label?.x ?? 0) - (label?.anchorX ?? 0))).toBeGreaterThanOrEqual((label?.width ?? 0) / 2);
+      }
     }
   });
 
-  it('drops a round tick that would sit on a threshold label, and keeps the rest', () => {
-    const layout = layoutChangeScale(input({ width: 1000, valueUm: 24 }));
-    const tickValues = layout.axisLabels.filter((label) => label.kind === 'tick').map((label) => label.valueUm);
+  it('labels round values only where the scale has no other reference, each with its mark on the axis', () => {
+    const wide = layoutChangeScale(input({ width: 1000, valueUm: 120 }));
+    const tickValues = wide.axisLabels.filter((label) => label.kind === 'tick').map((label) => label.valueUm);
+    expect(tickValues).toContain(100);
     expect(tickValues).not.toContain(20);
-    expect(tickValues).toContain(-20);
-    expect(tickValues).toContain(40);
-    expect(tickValues).toContain(80);
-    expect(layout.tickMarks.length).toBeGreaterThanOrEqual(tickValues.length + 3);
+    expect(tickValues).not.toContain(40);
+    expect(tickValues.every((value) => value < 0 || value > 55)).toBe(true);
+    expect(wide.tickMarks).toHaveLength(tickValues.length);
+    // Both eyes are drawn on the same scale: the same domain gives the same round values.
+    const other = layoutChangeScale({ ...input({ width: 1000, valueUm: 12 }), domain: input({ width: 1000, valueUm: 120 }).domain });
+    expect(other.axisLabels.filter((label) => label.kind === 'tick').map((label) => label.valueUm)).toEqual(tickValues);
   });
 
-  it('writes the band names inside the bands on a wide screen', () => {
+  it('writes the band names under their own stretch on a wide drawing, on one line', () => {
     const layout = layoutChangeScale(input({ width: 1000, valueUm: 24 }));
     expect(layout.bandMode).toBe('inline');
-    expect(layout.bandLabels.every((label) => label.lines.length === 1 && label.extent === null)).toBe(true);
+    expect(layout.bandLabels.every((label) => label.lines.length === 1)).toBe(true);
+    const [normal, first] = layout.bandLabels;
+    expect(normal?.x).toBeCloseTo(layout.bands[0]?.x ?? -1);
+    expect(first?.x).toBeCloseTo(layout.bands[1]?.x ?? -1);
+    const last = layout.bandLabels[2];
+    expect((last?.x ?? 0) + (last?.width ?? 0)).toBeCloseTo(layout.plot.right);
   });
 
-  it('breaks the band names in two lines before giving up on writing them inside', () => {
-    const layout = layoutChangeScale(input({ width: 560, valueUm: 24 }));
+  it('breaks a band name in two lines before giving up on writing the names side by side', () => {
+    const layout = layoutChangeScale(input({ width: 300, valueUm: 58, halfRangeUm: 10 }));
     expect(layout.bandMode).toBe('inline');
-    expect(layout.bandLabels.find((label) => label.id === 'clinically-concerning')?.lines).toEqual([
-      'Clinically',
-      'concerning',
-    ]);
+    expect(layout.bandLabels.find((label) => label.id === 'clinically-concerning')?.lines).toEqual(['Clinically', 'concerning']);
   });
 
-  it('stacks the band names above the bands on a phone, each over a bar that spans its band', () => {
-    const layout = layoutChangeScale(input({ width: 318, valueUm: 24, locale: 'es' }));
+  it('stacks the band names, one row each, when they do not fit side by side', () => {
+    const layout = layoutChangeScale(input({ width: 200, valueUm: 24, locale: 'es' }));
     expect(layout.bandMode).toBe('stacked');
-    for (const label of layout.bandLabels) {
-      const band = layout.bands.find((candidate) => candidate.id === label.id);
-      expect(label.lines).toHaveLength(1);
-      expect(label.extent?.x1).toBeCloseTo(band?.x ?? -1);
-      expect(label.extent?.x2).toBeCloseTo((band?.x ?? 0) + (band?.width ?? 0));
-      expect(label.baseline).toBeLessThan(layout.plot.top);
-    }
+    const baselines = layout.bandLabels.map((label) => label.baseline);
+    expect(new Set(baselines).size).toBe(3);
+    for (const label of layout.bandLabels) expect(label.x + label.width).toBeLessThanOrEqual(layout.width + EPS);
   });
 
-  it('keeps today’s chip inside the drawing when the value is at either end', () => {
+  it('keeps today’s disc whole when the value is at either end of the scale', () => {
     for (const valueUm of [-12, 0, 72, 232]) {
-      const given = input({ width: 318, valueUm });
+      const given = input({ width: 272, valueUm });
       expectReadable(layoutChangeScale(given), given);
     }
   });
@@ -231,26 +231,26 @@ describe('layoutChangeScale', () => {
     const given = input({ width: 600, valueUm: null, previous: [[30, 15], [90, 24]] });
     const layout = layoutChangeScale(given);
     expect(layout.today).toBeNull();
-    expect(layout.previous.map((mark) => mark.label)).toEqual(['FD30', 'FD90']);
+    expect(layout.previous.map((mark) => mark.label)).toEqual(['Flight day 30: 15 µm', 'Flight day 90: 24 µm']);
     expectReadable(layout, given);
   });
 
-  it('spreads the days of earlier controls that are close together, without overlap', () => {
+  it('puts every earlier control where the scale says, smaller than today’s disc', () => {
     const given = input({ width: 318, valueUm: 9, previous: [[30, 6], [90, 8]] });
     const layout = layoutChangeScale(given);
-    const [first, second] = layout.previous;
-    expect(first && second && Math.abs(first.x - second.x)).toBeLessThan(first?.labelWidth ?? 0);
+    const x = linearScale(given.domain, layout.plot.left, layout.plot.right);
+    expect(layout.previous.map((mark) => mark.x)).toEqual([x(6), x(8)]);
     expectReadable(layout, given);
   });
 
-  it('has room for an empty chart', () => {
+  it('has room for an empty scale', () => {
     const given = input({ width: 600, valueUm: null });
     const layout = layoutChangeScale(given);
-    expect(layout.plot.bottom - layout.plot.top).toBeGreaterThan(given.fontPx * 2);
+    expect(layout.height).toBeGreaterThan(given.fontPx * 4);
     expectReadable(layout, given);
   });
 
-  const WIDTHS = [280, 300, 318, 340, 390, 460, 520, 600, 720, 860, 1000, 1200];
+  const WIDTHS = [200, 240, 272, 300, 318, 340, 390, 460, 520, 600, 720, 860, 1000, 1200];
   const CASES: { name: string; valueUm: number | null; halfRangeUm?: number; previous?: readonly [number, number][] }[] = [
     { name: 'no change (crew member A)', valueUm: 9, previous: [[30, 6], [90, 8]] },
     { name: 'first sign (crew member B)', valueUm: 31, previous: [[30, 15], [90, 24], [118, 27]] },

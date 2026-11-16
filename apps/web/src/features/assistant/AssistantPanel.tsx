@@ -1,8 +1,9 @@
 import type { SessionRecord } from '@app/core';
 import { Component, useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { QUESTION_MAX_CHARS, type AssistantContext } from '../../../api/_lib/contract';
 import { useI18n, useMessages } from '../../i18n';
-import { Button, SimulatedNotice } from '../../ui';
+import { Action, BrandWorking, Button, Icon, Notice, NoticeText, SimulatedNotice } from '../../ui';
 import { askAssistant, type ClientResponse } from './client';
 import { hasConsent, saveConsent } from './consent';
 import { buildAssistantContext } from './context';
@@ -12,8 +13,19 @@ import './assistant.css';
 
 type T = ReturnType<typeof useMessages<keyof (typeof assistantMessages)['en']>>;
 
-/** Side panel of questions. Optional: whatever happens inside, the rest of the application keeps working. */
-export function AssistantPanel({ record }: { record: SessionRecord | null }) {
+interface Props {
+  /** The result the questions are about, or null when no result is open. */
+  record: SessionRecord | null;
+  /** In the navigation: the short word under its disc. Elsewhere: the whole sentence. */
+  compact?: boolean;
+}
+
+/**
+ * The assistant: a veil that comes in from the right, opened from the navigation. The question,
+ * the answer with its sources, and what leaves the device, always in view. No bubbles.
+ * Optional: whatever happens inside, the rest of the application keeps working.
+ */
+export function AssistantPanel({ record, compact = false }: Props) {
   const t = useMessages(assistantMessages);
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -36,25 +48,28 @@ export function AssistantPanel({ record }: { record: SessionRecord | null }) {
 
   return (
     <>
-      <Button onClick={show} aria-expanded={open} aria-controls={panelId}>
-        {t('open')}
-      </Button>
-      {open && (
-        <aside id={panelId} className="assistant" aria-labelledby={titleId} onKeyDown={onKeyDown}>
-          <header className="assistant__header">
-            <h2 id={titleId} ref={titleRef} tabIndex={-1} className="assistant__title">
-              {t('title')}
-            </h2>
-            <Button variant="ghost" onClick={() => setOpen(false)} aria-label={t('close')}>
-              <span aria-hidden="true" className="assistant__close-icon">×</span>
-            </Button>
-          </header>
-          <PanelBoundary fallback={<Unavailable t={t} line={t('unavailable.broken')} />}>
-            <PanelBody record={record} t={t} />
-          </PanelBoundary>
-          <SimulatedNotice />
-        </aside>
-      )}
+      <Action icon="message-circle-question-mark" onClick={show} aria-expanded={open} aria-controls={panelId} aria-label={compact ? t('open') : undefined}>
+        {compact ? t('open.short') : t('open')}
+      </Action>
+      {/* The sheet belongs to the page, not to whatever opened it: the navigation is fixed and moved, and would confine it. */}
+      {open &&
+        createPortal(
+          <aside id={panelId} className="co-hoja co-velo co-velo--der assistant" aria-labelledby={titleId} onKeyDown={onKeyDown}>
+            <header className="co-hoja__cabeza">
+              <h2 id={titleId} ref={titleRef} tabIndex={-1} className="co-micro">
+                {t('title')}
+              </h2>
+              <Action icon="x" size="sm" hideLabel onClick={() => setOpen(false)}>
+                {t('close')}
+              </Action>
+            </header>
+            <PanelBoundary fallback={<Unavailable t={t} line={t('unavailable.broken')} />}>
+              <PanelBody record={record} t={t} />
+            </PanelBoundary>
+            <SimulatedNotice />
+          </aside>,
+          document.body,
+        )}
     </>
   );
 }
@@ -85,6 +100,7 @@ function PanelBody({ record, t }: { record: SessionRecord | null; t: T }) {
   const [consent, setConsent] = useState(hasConsent);
   const [question, setQuestion] = useState('');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
+  const [asked, setAsked] = useState<string | null>(null);
   const context = useMemo(() => safeContext(record), [record]);
   const inputId = useId();
   const counterId = useId();
@@ -93,6 +109,7 @@ function PanelBody({ record, t }: { record: SessionRecord | null; t: T }) {
   const send = async (text: string) => {
     const trimmed = text.trim();
     if (trimmed.length === 0 || [...trimmed].length > QUESTION_MAX_CHARS || status.kind === 'sending') return;
+    setAsked(trimmed);
     setStatus({ kind: 'sending' });
     setStatus({ kind: 'done', response: await askAssistant({ question: trimmed, locale, context }) });
   };
@@ -109,11 +126,11 @@ function PanelBody({ record, t }: { record: SessionRecord | null; t: T }) {
 
   if (!consent) {
     return (
-      <section className="assistant__section" aria-label={t('consent.title')}>
-        <h3>{t('consent.title')}</h3>
-        <p>{t('consent.what')}</p>
-        <p>{t('consent.where')}</p>
-        {!record && <p>{t('consent.noRecord')}</p>}
+      <section className="co-pila" aria-label={t('consent.title')}>
+        <h3 className="co-subtitulo">{t('consent.title')}</h3>
+        <p className="co-nota">{t('consent.what')}</p>
+        <p className="co-nota">{t('consent.where')}</p>
+        {!record && <p className="co-nota">{t('consent.noRecord')}</p>}
         <SentSummary context={context} label={t('consent.show')} t={t} />
         <Button
           variant="primary"
@@ -130,14 +147,49 @@ function PanelBody({ record, t }: { record: SessionRecord | null; t: T }) {
 
   return (
     <>
-      <section className="assistant__section" aria-label={t('suggested')}>
-        <h3 className="assistant__subtitle">{t('suggested')}</h3>
-        <ul className="assistant__suggestions">
+      <section className="co-pila" aria-live="polite" aria-busy={status.kind === 'sending'}>
+        {asked && <p className="co-mensaje co-mensaje--propio">{asked}</p>}
+        {status.kind === 'sending' && (
+          <p className="co-mensaje co-mensaje--espera">
+            <BrandWorking size="sm" />
+            <span className="co-nota">{t('sending')}</span>
+          </p>
+        )}
+        {status.kind === 'done' && <Result response={status.response} t={t} />}
+      </section>
+
+      <form className="co-pila" onSubmit={onSubmit}>
+        <label htmlFor={inputId} className="co-micro">
+          {t('input.label')}
+        </label>
+        <textarea
+          id={inputId}
+          className="co-entrada co-entrada--area"
+          value={question}
+          maxLength={QUESTION_MAX_CHARS}
+          rows={2}
+          aria-describedby={counterId}
+          onChange={(event) => setQuestion(event.target.value)}
+          onKeyDown={onInputKeyDown}
+        />
+        <div className="co-hoja__fila">
+          <span id={counterId} className="co-rotulo">
+            {t('input.counter', { count: length, max: QUESTION_MAX_CHARS })}
+          </span>
+          <Button type="submit" variant="primary" icon="send" disabled={length === 0 || status.kind === 'sending'}>
+            {t('send')}
+          </Button>
+        </div>
+      </form>
+
+      <section className="co-pila" aria-label={t('suggested')}>
+        <h3 className="co-micro">{t('suggested')}</h3>
+        <ul className="co-hoja__sugeridas">
           {suggestedQuestions(record).map((key) => (
             <li key={key}>
               <button
                 type="button"
-                className="assistant__suggestion"
+                className="co-hoja__sugerida"
                 disabled={status.kind === 'sending'}
                 onClick={() => {
                   setQuestion(t(key));
@@ -151,35 +203,7 @@ function PanelBody({ record, t }: { record: SessionRecord | null; t: T }) {
         </ul>
       </section>
 
-      <form className="assistant__section assistant__form" onSubmit={onSubmit}>
-        <label htmlFor={inputId} className="assistant__subtitle">
-          {t('input.label')}
-        </label>
-        <textarea
-          id={inputId}
-          className="assistant__input"
-          value={question}
-          maxLength={QUESTION_MAX_CHARS}
-          rows={3}
-          aria-describedby={counterId}
-          onChange={(event) => setQuestion(event.target.value)}
-          onKeyDown={onInputKeyDown}
-        />
-        <div className="assistant__form-row">
-          <span id={counterId} className="assistant__counter">
-            {t('input.counter', { count: length, max: QUESTION_MAX_CHARS })}
-          </span>
-          <Button type="submit" variant="primary" disabled={length === 0 || status.kind === 'sending'}>
-            {t('send')}
-          </Button>
-        </div>
-      </form>
-
-      <section className="assistant__section" aria-live="polite" aria-busy={status.kind === 'sending'}>
-        {status.kind === 'sending' && <p className="assistant__muted">{t('sending')}</p>}
-        {status.kind === 'done' && <Result response={status.response} t={t} />}
-      </section>
-
+      {/* What leaves the device stays in view under the input, not only the first time. */}
       <SentSummary context={context} label={t('summary.title')} t={t} />
     </>
   );
@@ -187,48 +211,49 @@ function PanelBody({ record, t }: { record: SessionRecord | null; t: T }) {
 
 function SentSummary({ context, label, t }: { context: AssistantContext | null; label: string; t: T }) {
   return (
-    <details className="assistant__summary">
-      <summary>{label}</summary>
-      {context ? <pre className="assistant__json">{JSON.stringify(context, null, 2)}</pre> : <p>{t('summary.none')}</p>}
+    <details className="co-desplegable">
+      <summary>
+        {label} <Icon name="chevron-down" />
+      </summary>
+      {context ? <pre className="co-hoja__json">{JSON.stringify(context, null, 2)}</pre> : <p className="co-nota">{t('summary.none')}</p>}
     </details>
   );
 }
 
 function Unavailable({ t, line }: { t: T; line: string }) {
   return (
-    <p className="assistant__notice" role="status">
-      {line} {t('unavailable.analysisWorks')}
-    </p>
+    <Notice role="status" title={line}>
+      <NoticeText>{t('unavailable.analysisWorks')}</NoticeText>
+    </Notice>
   );
 }
 
 function Result({ response, t }: { response: ClientResponse; t: T }) {
   if (response.status === 'unavailable') return <Unavailable t={t} line={t(`unavailable.${response.reason}`)} />;
   if (response.status === 'refused') {
-    if (response.reason === 'invalid-input') return <p className="assistant__notice">{t('refused.invalid')}</p>;
+    if (response.reason === 'invalid-input') return <Notice title={t('refused.invalid')} />;
     return (
-      <div className="assistant__refusal">
-        <h3 className="assistant__subtitle">{t('refused.title')}</h3>
-        {response.reason === 'unsafe-output' && <p>{t('refused.unsafe')}</p>}
-        <p>{t('refused.scope')}</p>
-        <p>{t('refused.examples')}</p>
-        <ul>
+      <Notice title={t('refused.title')} titleLevel={3}>
+        {response.reason === 'unsafe-output' && <NoticeText>{t('refused.unsafe')}</NoticeText>}
+        <NoticeText>{t('refused.scope')}</NoticeText>
+        <NoticeText>{t('refused.examples')}</NoticeText>
+        <ul className="co-lista co-aviso__texto">
           <li>{t('refused.example1')}</li>
           <li>{t('refused.example2')}</li>
           <li>{t('refused.example3')}</li>
         </ul>
-      </div>
+      </Notice>
     );
   }
   return (
-    <article className="assistant__answer">
-      <h3 className="assistant__subtitle">{t('answer.title')}</h3>
-      <p className="assistant__label">{t('answer.label')}</p>
-      <p className="assistant__answer-text">{response.answer}</p>
+    <article className="co-mensaje">
+      <h3 className="co-oculto">{t('answer.title')}</h3>
+      <p className="co-mensaje__texto">{response.answer}</p>
+      <p className="co-rotulo">{t('answer.label')}</p>
       {response.sources.length > 0 && (
-        <>
-          <h4 className="assistant__subtitle">{t('sources')}</h4>
-          <ul className="assistant__sources">
+        <div className="co-mensaje__fuentes">
+          <h4 className="co-micro">{t('sources')}</h4>
+          <ul className="co-lista">
             {response.sources.map((source) => (
               <li key={source.id}>
                 <a href={source.url} target="_blank" rel="noreferrer noopener">
@@ -237,7 +262,7 @@ function Result({ response, t }: { response: ClientResponse; t: T }) {
               </li>
             ))}
           </ul>
-        </>
+        </div>
       )}
     </article>
   );

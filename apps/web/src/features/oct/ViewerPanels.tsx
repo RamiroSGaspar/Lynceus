@@ -1,7 +1,8 @@
 import { SOURCES, volFileBytes, type CaptureRequest, type EyeGroundTruth, type ExamAnalysis, type ExamSummary, type Quantity, type VolHeader } from '@app/core';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n, useMessages } from '../../i18n';
-import { Button, QuantityValue } from '../../ui';
+import { StrokeSample } from './ScanFigure';
+import { Action, Button, Icon, Notice, QuantityValue, Readout } from '../../ui';
 import { BScanCanvas, type LayerSet } from './BScanCanvas';
 import type { ExamStore, ScanFrame } from './examStore';
 import { columnDistancesUm, ringOf, ringPlacement, thicknessProfileUm, type Contribution, type RingPlacement } from './geometry';
@@ -49,9 +50,9 @@ export function NumberSource({
   const one = (v: number) => formatNumber(v, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   if (analysis.status !== 'measured' || !placement) {
     return (
-      <section className="oct-subpanel">
-        <h4>{t('source.title')}</h4>
-        <p>{t('source.none')}</p>
+      <section className="oct-panel">
+        <h4 className="co-micro">{t('source.title')}</h4>
+        <p className="co-nota">{t('source.none')}</p>
       </section>
     );
   }
@@ -71,25 +72,27 @@ export function NumberSource({
   const mrwPoints = usableScans.reduce((n, scan) => n + scan.bmo.filter(Boolean).length, 0);
   const ring = measure?.startsWith('ring') ? analysis.rings[Number(measure.slice(4))] : undefined;
   return (
-    <section className="oct-subpanel" aria-labelledby="oct-source-title">
-      <h4 id="oct-source-title">{t('source.title')}</h4>
-      <fieldset className="oct-fieldset">
-        <legend>{t('source.pick')}</legend>
+    <section className="oct-panel" aria-labelledby="oct-source-title">
+      <h4 id="oct-source-title" className="co-micro">
+        {t('source.title')}
+      </h4>
+      <fieldset className="co-casillas">
+        <legend className="co-rotulo">{t('source.pick')}</legend>
         {options.map((option) => (
-          <label key={option.id} className="oct-check">
+          <label key={option.id} className="co-casilla">
             <input type="radio" name="oct-measure" checked={measure === option.id} onChange={() => onMeasure(option.id)} disabled={!option.quantity} />
             {option.label}
           </label>
         ))}
       </fieldset>
       {chosen?.quantity && (
-        <div className="oct-source">
-          <p>
+        <div className="co-pila oct-panel__texto">
+          <p className="co-texto">
             {t('source.engine')}: <QuantityValue quantity={chosen.quantity} digits={1} showOrigin />
           </p>
           {ring && contribution && (
             <>
-              <p>
+              <p className="co-nota">
                 {t('source.ringHow', {
                   columns: contribution.columns,
                   scans: contribution.scans,
@@ -99,20 +102,20 @@ export function NumberSource({
                   missing: contribution.missing,
                 })}
               </p>
-              <p>{t('source.recomputed', { value: one(contribution.valueUm) })}</p>
+              <p className="co-nota">{t('source.recomputed', { value: one(contribution.valueUm) })}</p>
             </>
           )}
-          {measure === 'mrw' && <p>{t('source.mrwHow', { points: mrwPoints })}</p>}
-          {measure === 'roughness' && contribution && <p>{t('source.roughnessHow', { columns: contribution.columns, scans: contribution.scans })}</p>}
-          <p className="oct-muted">
+          {measure === 'mrw' && <p className="co-nota">{t('source.mrwHow', { points: mrwPoints })}</p>}
+          {measure === 'roughness' && contribution && <p className="co-nota">{t('source.roughnessHow', { columns: contribution.columns, scans: contribution.scans })}</p>}
+          <p className="co-rotulo">
             {measure === 'mrw'
               ? t('source.onScanPoints', { points: analysis.scans[index]?.usable ? analysis.scans[index]!.bmo.filter(Boolean).length : 0 })
               : t('source.onScan', onScan)}
           </p>
           {placement.source !== 'this-exam' && measure !== 'mrw' && (
-            <p className="oct-muted">{t(placement.source === 'reference-shape' ? 'source.placement.reference' : 'source.placement.thisOnly')}</p>
+            <p className="co-rotulo">{t(placement.source === 'reference-shape' ? 'source.placement.reference' : 'source.placement.thisOnly')}</p>
           )}
-          {chosen.quantity.sources && chosen.quantity.sources.length > 0 && <p className="oct-muted">{t('source.sources', { sources: citations(chosen.quantity) })}</p>}
+          {chosen.quantity.sources && chosen.quantity.sources.length > 0 && <p className="co-rotulo">{t('source.sources', { sources: citations(chosen.quantity) })}</p>}
         </div>
       )}
     </section>
@@ -182,34 +185,34 @@ function ThicknessProfile({ today, before, scaleXUm, zone, label }: { today: Flo
     }
   }
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="oct-profile">
+    <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="oct-perfil">
       {zoneRects.map((r) => (
-        <rect key={r.from} x={x(r.from)} y={T} width={Math.max(x(r.to) - x(r.from), 1)} height={H - T - B} className="oct-profile__zone" />
+        <rect key={r.from} x={x(r.from)} y={T} width={Math.max(x(r.to) - x(r.from), 1)} height={H - T - B} className="oct-perfil__zona" />
       ))}
       {ticks.map((v) => (
         <g key={v}>
-          <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} className="oct-profile__grid" />
-          <text x={L - 6} y={y(v) + 4} textAnchor="end" className="oct-profile__tick">
+          <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} className="oct-perfil__grilla" />
+          <text x={L - 6} y={y(v) + 4} textAnchor="end" className="oct-perfil__eje">
             {v}
           </text>
         </g>
       ))}
       {[-2, -1, 0, 1, 2].map((mm) => (
-        <text key={mm} x={L + ((mm + halfMm) / (2 * halfMm)) * (W - L - R)} y={H - B + 16} textAnchor="middle" className="oct-profile__tick">
+        <text key={mm} x={L + ((mm + halfMm) / (2 * halfMm)) * (W - L - R)} y={H - B + 16} textAnchor="middle" className="oct-perfil__eje">
           {mm}
         </text>
       ))}
-      <text x={(L + W - R) / 2} y={H - 4} textAnchor="middle" className="oct-profile__tick">
+      <text x={(L + W - R) / 2} y={H - 4} textAnchor="middle" className="oct-perfil__eje">
         {t('compare.axisX')}
       </text>
-      <text x={12} y={T + (H - T - B) / 2} textAnchor="middle" className="oct-profile__tick" transform={`rotate(-90 12 ${T + (H - T - B) / 2})`}>
+      <text x={12} y={T + (H - T - B) / 2} textAnchor="middle" className="oct-perfil__eje" transform={`rotate(-90 12 ${T + (H - T - B) / 2})`}>
         {t('compare.axisY')}
       </text>
       {bands.map((d, i) => (
-        <path key={i} d={d} className="oct-profile__diff" />
+        <path key={i} d={d} className="oct-perfil__diferencia" />
       ))}
-      <path d={path(before)} className="oct-profile__before" />
-      <path d={path(today)} className="oct-profile__today" />
+      <path d={path(before)} className="oct-perfil__antes" />
+      <path d={path(today)} className="oct-perfil__hoy" />
     </svg>
   );
 }
@@ -217,6 +220,9 @@ function ThicknessProfile({ today, before, scaleXUm, zone, label }: { today: Flo
 /** The same scan of the pre-flight exam next to today's, with the thickness difference in view. */
 export function ComparePanel({ request, baseline, index, today }: { request: CaptureRequest; baseline?: ExamSummary; index: number; today: ExamStore }) {
   const t = useMessages(octMessages);
+  const { formatNumber } = useI18n();
+  const one = (value: number, signed = false) =>
+    formatNumber(value, { minimumFractionDigits: 1, maximumFractionDigits: 1, signDisplay: signed ? 'exceptZero' : 'auto' });
   const [open, setOpen] = useState(false);
   const job = useExamJob();
   const isReference = request.flightDay === 0 && request.attempt === 1;
@@ -241,36 +247,47 @@ export function ComparePanel({ request, baseline, index, today }: { request: Cap
   const change: Quantity | null = todayTrt && preTrt ? { value: todayTrt.value - preTrt.value, unit: 'µm', origin: 'derived', sources: todayTrt.sources } : null;
   const total = header.numBScans;
   return (
-    <section className="oct-subpanel" aria-labelledby="oct-compare-title">
-      <h4 id="oct-compare-title">{t('compare.title')}</h4>
-      <p>
-        <Button onClick={toggle} aria-expanded={open} disabled={isReference}>
+    <section className="oct-panel" aria-labelledby="oct-compare-title">
+      <h4 id="oct-compare-title" className="co-micro">
+        {t('compare.title')}
+      </h4>
+      {isReference ? (
+        <p className="co-nota">{t('compare.isReference')}</p>
+      ) : (
+        <Action icon="layers" onClick={toggle} aria-expanded={open}>
           {open ? t('compare.hide') : t('compare.show')}
-        </Button>
-      </p>
-      {isReference && <p className="oct-muted">{t('compare.isReference')}</p>}
+        </Action>
+      )}
       {open && !isReference && (
-        <div>
-          {job.status === 'running' && <p role="status">{t('compare.loading', { n: pre?.taken ?? 0, total })}</p>}
-          {(job.status === 'error' || job.status === 'unavailable') && <p className="oct-notice">{t('viewer.failed', { detail: job.error ?? '' })}</p>}
+        <div className="co-pila oct-panel__texto">
+          {job.status === 'running' && (
+            <p className="co-nota" role="status">
+              {t('compare.loading', { n: pre?.taken ?? 0, total })}
+            </p>
+          )}
+          {(job.status === 'error' || job.status === 'unavailable') && <Notice title={t('viewer.failed', { detail: job.error ?? '' })} />}
           {job.status === 'done' && todayFrame && preFrame && (
             <>
-              <div className="oct-compare">
-                <figure className="oct-figure">
-                  <figcaption>
+              <div className="oct-par">
+                <figure className="co-corte">
+                  <figcaption className="co-micro">
                     {t('compare.today')} · {t('scan.title', { n: index + 1, total })}
                   </figcaption>
-                  <BScanCanvas frame={todayFrame} layers={EDGE_LAYERS} label={`${t('compare.today')}. ${t('scan.alt', { n: index + 1, total })}`} mark={t('simulatedMark')} />
+                  <div className="co-corte__marco co-marco">
+                    <BScanCanvas frame={todayFrame} layers={EDGE_LAYERS} label={`${t('compare.today')}. ${t('scan.alt', { n: index + 1, total })}`} mark={t('simulatedMark')} />
+                  </div>
                 </figure>
-                <figure className="oct-figure">
-                  <figcaption>
+                <figure className="co-corte">
+                  <figcaption className="co-micro">
                     {t('compare.preflight')} · {t('scan.title', { n: index + 1, total })}
                   </figcaption>
-                  <BScanCanvas frame={preFrame} layers={EDGE_LAYERS} label={`${t('compare.preflight')}. ${t('scan.alt', { n: index + 1, total })}`} mark={t('simulatedMark')} />
+                  <div className="co-corte__marco co-marco">
+                    <BScanCanvas frame={preFrame} layers={EDGE_LAYERS} label={`${t('compare.preflight')}. ${t('scan.alt', { n: index + 1, total })}`} mark={t('simulatedMark')} />
+                  </div>
                 </figure>
               </div>
-              <figure className="oct-figure">
-                <figcaption>{t('compare.profile', { n: index + 1 })}</figcaption>
+              <figure className="co-corte">
+                <figcaption className="co-micro">{t('compare.profile', { n: index + 1 })}</figcaption>
                 <ThicknessProfile
                   today={thicknessProfileUm(todayFrame.analysis, scaleZUm)}
                   before={thicknessProfileUm(preFrame.analysis, scaleZUm)}
@@ -278,56 +295,44 @@ export function ComparePanel({ request, baseline, index, today }: { request: Cap
                   zone={zone}
                   label={t('compare.profileAlt', { n: index + 1 })}
                 />
-                <p className="oct-legend">
-                  <span>
-                    <svg width="28" height="10" aria-hidden="true">
-                      <line x1="1" y1="5" x2="27" y2="5" className="oct-profile__today" />
-                    </svg>
+                <ul className="co-leyenda">
+                  <li>
+                    <svg className="co-muestra" viewBox="0 0 28 10" aria-hidden="true" focusable="false">
+                      <line x1="1" y1="5" x2="27" y2="5" className="oct-perfil__hoy" />
+                    </svg>{' '}
                     {t('compare.today')}
-                  </span>
-                  <span>
-                    <svg width="28" height="10" aria-hidden="true">
-                      <line x1="1" y1="5" x2="27" y2="5" className="oct-profile__before" />
-                    </svg>
+                  </li>
+                  <li>
+                    <svg className="co-muestra" viewBox="0 0 28 10" aria-hidden="true" focusable="false">
+                      <line x1="1" y1="5" x2="27" y2="5" className="oct-perfil__antes" />
+                    </svg>{' '}
                     {t('compare.preflight')}
-                  </span>
-                  <span>
-                    <svg width="16" height="10" aria-hidden="true">
-                      <rect x="1" y="1" width="14" height="8" className="oct-profile__zone" />
-                    </svg>
-                    {t('layer.zone')}
-                  </span>
-                </p>
+                  </li>
+                  <li>
+                    <StrokeSample kind="zone" /> {t('layer.zone')}
+                  </li>
+                </ul>
               </figure>
               {todayTrt && preTrt && change && (
-                <dl className="oct-facts">
-                  <div>
-                    <dt>
-                      {t('compare.mainRing')} · {t('compare.today')}
-                    </dt>
-                    <dd>
-                      <QuantityValue quantity={todayTrt} digits={1} showOrigin />
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>
-                      {t('compare.mainRing')} · {t('compare.preflight')}
-                    </dt>
-                    <dd>
-                      <QuantityValue quantity={preTrt} digits={1} showOrigin />
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{t('compare.change')}</dt>
-                    <dd>
-                      <QuantityValue quantity={change} digits={1} signed showOrigin />
-                    </dd>
-                  </div>
-                </dl>
+                <div className="co-lecturas oct-panel__lecturas">
+                  <Readout
+                    value={one(todayTrt.value)}
+                    unit={todayTrt.unit}
+                    label={`${t('compare.mainRing')} · ${t('compare.today')}`}
+                    origin={todayTrt.origin}
+                  />
+                  <Readout
+                    value={one(preTrt.value)}
+                    unit={preTrt.unit}
+                    label={`${t('compare.mainRing')} · ${t('compare.preflight')}`}
+                    origin={preTrt.origin}
+                  />
+                  <Readout value={one(change.value, true)} unit={change.unit} label={t('compare.change')} origin={change.origin} />
+                </div>
               )}
-              <p className="oct-muted">{t('compare.registration')}</p>
+              <p className="co-rotulo">{t('compare.registration')}</p>
               {baseline && pre?.analysis && pre.analysis.examId !== baseline.examId && (
-                <p className="oct-notice">{t('compare.mismatch', { regenerated: pre.analysis.examId, given: baseline.examId })}</p>
+                <Notice title={t('compare.mismatch', { regenerated: pre.analysis.examId, given: baseline.examId })} />
               )}
             </>
           )}
@@ -373,32 +378,46 @@ export function SimulationPanel({ request, analysis }: { request: CaptureRequest
       ]
     : [];
   return (
-    <details className="oct-subpanel oct-details" onToggle={(event) => onToggle(event.currentTarget.open)}>
-      <summary>{t('sim.title')}</summary>
-      <p>{t('sim.body')}</p>
-      {failed && <p className="oct-notice">{failed}</p>}
-      {!truth && !failed && <p role="status">{t('sim.loading')}</p>}
+    <details className="oct-panel co-desplegable" onToggle={(event) => onToggle(event.currentTarget.open)}>
+      <summary>
+        {t('sim.title')} <Icon name="chevron-down" />
+      </summary>
+      <p className="co-nota">{t('sim.body')}</p>
+      {failed && <Notice title={failed} />}
+      {!truth && !failed && (
+        <p className="co-nota" role="status">
+          {t('sim.loading')}
+        </p>
+      )}
       {truth && (
-        <table className="oct-table">
-          <thead>
-            <tr>
-              <th scope="col">{t('sim.measure')}</th>
-              <th scope="col">{t('sim.measured')}</th>
-              <th scope="col">{t('sim.true')}</th>
-              <th scope="col">{t('sim.difference')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.label}>
-                <th scope="row">{row.label}</th>
-                <td>{row.measured === null ? t('sim.notMeasured') : `${fmt(row.measured, row.digits)} ${row.unit}`}</td>
-                <td>{row.truth === null ? '—' : `${fmt(row.truth, row.digits)} ${row.unit}`}</td>
-                <td>{row.measured === null || row.truth === null ? '—' : `${fmt(row.measured - row.truth, row.digits, true)} ${row.unit}`}</td>
+        <div className="co-desliza">
+          <table className="co-tabla">
+            <thead>
+              <tr>
+                <th scope="col">{t('sim.measure')}</th>
+                <th scope="col" className="es-cifra">
+                  {t('sim.measured')}
+                </th>
+                <th scope="col" className="es-cifra">
+                  {t('sim.true')}
+                </th>
+                <th scope="col" className="es-cifra">
+                  {t('sim.difference')}
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.label}>
+                  <th scope="row">{row.label}</th>
+                  <td className="es-cifra">{row.measured === null ? t('sim.notMeasured') : `${fmt(row.measured, row.digits)} ${row.unit}`}</td>
+                  <td className="es-cifra">{row.truth === null ? '—' : `${fmt(row.truth, row.digits)} ${row.unit}`}</td>
+                  <td className="es-cifra">{row.measured === null || row.truth === null ? '—' : `${fmt(row.measured - row.truth, row.digits, true)} ${row.unit}`}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </details>
   );
@@ -448,15 +467,15 @@ export function DownloadPanel({ request, header }: { request: CaptureRequest; he
     );
   };
   return (
-    <section className="oct-subpanel" aria-labelledby="oct-download-title">
-      <h4 id="oct-download-title">{t('download.title')}</h4>
-      <p>{t('download.body', { size: sizeMb, patientId: header.patientId })}</p>
-      <p>
-        <Button onClick={download} disabled={state.kind === 'writing'}>
-          {t('download.button', { size: sizeMb })}
-        </Button>
-      </p>
-      <p role="status" className="oct-muted">
+    <section className="oct-panel" aria-labelledby="oct-download-title">
+      <h4 id="oct-download-title" className="co-micro">
+        {t('download.title')}
+      </h4>
+      <p className="co-nota">{t('download.body', { size: sizeMb, patientId: header.patientId })}</p>
+      <Button icon="download" onClick={download} disabled={state.kind === 'writing'}>
+        {t('download.button', { size: sizeMb })}
+      </Button>
+      <p role="status" className="co-rotulo">
         {state.kind === 'writing' && t('download.progress', { n: state.n, total: state.total })}
         {state.kind === 'ready' && t('download.ready', { name: state.name })}
         {state.kind === 'failed' && t('download.failed', { detail: state.detail })}

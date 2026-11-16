@@ -130,6 +130,10 @@ export const resultMessages = defineMessages(
     'actions.report': 'Prepare the medical conference',
     'actions.history': 'See the history',
     'actions.home': 'Back to the start screen',
+    'answer.heading': 'Result',
+    'next.all': 'All {n} steps, and why',
+    'finding.folds': 'New folds',
+    'sure.limit': 'Limit',
   },
   {
     'eyebrow': 'Resultado · {name} · día de vuelo {day}',
@@ -255,5 +259,9 @@ export const resultMessages = defineMessages(
     'actions.report': 'Preparar la conferencia médica',
     'actions.history': 'Ver la historia',
     'actions.home': 'Volver a la pantalla de inicio',
+    'answer.heading': 'Resultado',
+    'next.all': 'Los {n} pasos y por qué',
+    'finding.folds': 'Pliegues nuevos',
+    'sure.limit': 'Límite',
   },
 );

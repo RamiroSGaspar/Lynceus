@@ -58,9 +58,50 @@ export function prepareCanvas(canvas: HTMLCanvasElement, cssWidth: number, cssHe
   return ctx;
 }
 
-/** Overlay colours come from `oct.css`, which takes them from `tokens.css`. */
+/** A value of the design tokens, read where it applies: the colours of what is drawn over an image. */
 export function cssColor(element: Element, name: string): string {
-  return getComputedStyle(element).getPropertyValue(name).trim() || '#ffffff';
+  return getComputedStyle(element).getPropertyValue(name).trim() || 'white';
+}
+
+/** The two colours of every mark over an image: the line, and the dark casing under it. */
+export interface OverlayInk {
+  line: string;
+  casing: string;
+  /** Typeface of the interface, for the few words written on an image. */
+  font: string;
+}
+
+export function overlayInk(element: Element): OverlayInk {
+  const style = getComputedStyle(element);
+  return {
+    line: style.getPropertyValue('--overlay-line').trim() || 'white',
+    casing: style.getPropertyValue('--overlay-casing').trim() || 'black',
+    font: style.fontFamily || 'sans-serif',
+  };
+}
+
+/**
+ * Strokes the current path the way every mark over an image is drawn: white over a wider
+ * dark casing, so it reads on bright and on dark tissue alike. Marks are told apart by
+ * their stroke (solid, dashed, dotted), never by colour.
+ */
+export function strokeMark(ctx: CanvasRenderingContext2D, ink: OverlayInk, width: number, dash: readonly number[] = []): void {
+  ctx.save();
+  ctx.setLineDash([]);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = ink.casing;
+  ctx.lineWidth = width + 3;
+  ctx.stroke();
+  ctx.restore();
+  ctx.save();
+  ctx.setLineDash([...dash]);
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = ink.line;
+  ctx.lineWidth = width;
+  ctx.stroke();
+  ctx.restore();
 }
 
 const grayCache = new Map<ArrayBufferLike, HTMLCanvasElement>();
@@ -102,16 +143,20 @@ export function grayCanvas(gray: Uint8Array | Uint8ClampedArray, width: number, 
   return canvas;
 }
 
-/** The simulated-data mark every image carries (AGENTS.md, rule 8). */
-export function drawSimulatedMark(ctx: CanvasRenderingContext2D, text: string, width: number, height: number): void {
+/**
+ * The simulated-data mark every image carries (AGENTS.md, rule 8), written into the picture
+ * itself so that it also travels with a saved copy: bottom left, as on the instrument's files.
+ */
+export function drawSimulatedMark(ctx: CanvasRenderingContext2D, text: string, ink: OverlayInk, height: number): void {
   ctx.save();
-  ctx.font = '600 11px system-ui, sans-serif';
-  const pad = 4;
-  const w = ctx.measureText(text).width + 2 * pad;
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(width - w - 4, height - 20, w, 16);
-  ctx.fillStyle = '#ffffff';
+  ctx.font = `500 11px ${ink.font}`;
+  const pad = 5;
+  const label = text.toUpperCase();
+  const w = ctx.measureText(label).width + 2 * pad;
+  ctx.fillStyle = ink.casing;
+  ctx.fillRect(4, height - 21, w, 17);
+  ctx.fillStyle = ink.line;
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, width - w - 4 + pad, height - 12);
+  ctx.fillText(label, 4 + pad, height - 12);
   ctx.restore();
 }

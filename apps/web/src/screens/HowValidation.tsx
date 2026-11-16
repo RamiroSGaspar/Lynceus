@@ -3,6 +3,7 @@ import { ERROR_FEATURES } from '@app/core/rules/simulatedErrorModel';
 import { ACTIVE_ERROR_MODEL, VALIDATION_SUMMARY, isProvisionalErrorModel } from '../app/core';
 import { useI18n, useMessages } from '../i18n';
 import { howMessages } from '../i18n/how';
+import { Notice } from '../ui';
 
 const PARTITIONS: readonly ValidationPartition[] = ['development', 'test-anatomy', 'test-family'];
 const MEASURES: readonly ValidationMeasure[] = ['trt', 'roughness'];
@@ -29,8 +30,8 @@ export function HowValidation() {
 
   return (
     <>
-      <p className="simulated-notice note">{t('validation.simulated')}</p>
-      <p>
+      <p className="co-nota co-simulado">{t('validation.simulated')}</p>
+      <p className="co-texto">
         {t('validation.sample', {
           captures: summary.sample.captures,
           references: summary.sample.references,
@@ -38,11 +39,9 @@ export function HowValidation() {
           crew: summary.sample.crewMembers,
         })}
       </p>
-      <p className={`callout ${active ? 'callout--advisory' : 'callout--caution'}`}>
-        {active ? t('validation.active', { model: summary.versions.model }) : t('validation.inactive')}
-      </p>
+      <Notice title={active ? t('validation.active', { model: summary.versions.model }) : t('validation.inactive')} />
       {failed.length > 0 && (
-        <ul>
+        <ul className="co-lista">
           {failed.map((c) => (
             <li key={`${c.id}-${c.partition}-${c.measure}`}>
               {t('validation.failed', {
@@ -57,10 +56,10 @@ export function HowValidation() {
         </ul>
       )}
 
-      <h3>{t('validation.partitions')}</h3>
-      <p>{t('validation.partitions.lead')}</p>
-      <div className="table-scroll">
-        <table>
+      <h3 className="co-subtitulo">{t('validation.partitions')}</h3>
+      <p className="co-nota">{t('validation.partitions.lead')}</p>
+      <div className="co-desliza">
+        <table className="co-tabla">
           <caption>{t('validation.partitions.caption')}</caption>
           <thead>
             <tr>
@@ -92,10 +91,10 @@ export function HowValidation() {
         </table>
       </div>
 
-      <h3>{t('validation.errors')}</h3>
-      <p>{t('validation.errors.lead')}</p>
-      <div className="table-scroll">
-        <table>
+      <h3 className="co-subtitulo">{t('validation.errors')}</h3>
+      <p className="co-nota">{t('validation.errors.lead')}</p>
+      <div className="co-desliza">
+        <table className="co-tabla co-tabla--ancha">
           <caption>{t('validation.errors.caption')}</caption>
           <thead>
             <tr>
@@ -130,8 +129,8 @@ export function HowValidation() {
           </tbody>
         </table>
       </div>
-      <p className="note">{t('validation.errors.note')}</p>
-      <p>
+      <p className="co-rotulo">{t('validation.errors.note')}</p>
+      <p className="co-nota">
         {t('validation.gross', {
           trt: summary.grossErrors.trt,
           roughness: summary.grossErrors.roughness,
@@ -139,7 +138,7 @@ export function HowValidation() {
           roughnessTolerance: n(summary.grossErrors.toleranceRoughnessUm, 1),
         })}
       </p>
-      <p>
+      <p className="co-nota">
         {t('validation.correlation', {
           trt: n(summary.examErrorCorrelation.trt),
           roughness: n(summary.examErrorCorrelation.roughness),
@@ -147,33 +146,33 @@ export function HowValidation() {
         })}
       </p>
 
-      <h3>{active ? t('validation.model') : t('validation.model.experimental')}</h3>
-      <p>{t('validation.model.lead')}</p>
-      <ul>
+      <h3 className="co-subtitulo">{active ? t('validation.model') : t('validation.model.experimental')}</h3>
+      <p className="co-nota">{t('validation.model.lead')}</p>
+      <ul className="co-lista co-formulas">
         {MEASURES.map((m) => (
           <li key={m}>
             {t(`measure.${m}` as Parameters<typeof t>[0])}: <code>s = exp({formula(m)}) µm</code>, <code>σ = {n(summary.model.calibration[m], 3)} · √(s₁² + s₀²)</code>
           </li>
         ))}
       </ul>
-      <ul className="note">
+      <ul className="co-lista co-formulas co-apagado">
         {[...new Set(MEASURES.flatMap((m) => summary.model[m].terms.map((x) => x.feature)))].map((feature) => (
           <li key={feature}>
             <code>z({feature})</code> = {ERROR_FEATURES[feature].transform}
           </li>
         ))}
       </ul>
-      <p>{active ? t('validation.domain') : t('validation.domain.inactive')}</p>
+      <p className="co-nota">{active ? t('validation.domain') : t('validation.domain.inactive')}</p>
 
-      <h3>{t('validation.limits')}</h3>
-      <ul>
+      <h3 className="co-subtitulo">{t('validation.limits')}</h3>
+      <ul className="co-lista">
         <li>{t('validation.limit.people')}</li>
         <li>{t('validation.limit.shared')}</li>
         <li>{t('validation.limit.quality')}</li>
         <li>{t('validation.limit.probability')}</li>
         <li>{t('validation.limit')}</li>
       </ul>
-      <p className="note">
+      <p className="co-rotulo">
         {t('validation.versions', {
           protocol: summary.protocol,
           engine: summary.versions.engine,

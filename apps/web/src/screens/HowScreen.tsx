@@ -1,8 +1,8 @@
 import { useDocumentTitle } from '../app/hooks';
 import { useMessages } from '../i18n';
 import { howMessages } from '../i18n/how';
-import { LinkButton } from '../shell/LinkButton';
-import { ScreenTitle } from '../shell/ScreenTitle';
+import { LinkAction } from '../shell/LinkButton';
+import { Section } from '../ui';
 import { HowValidation } from './HowValidation';
 
 /** The eight steps of the process, in the order of section 5 of the architecture document. */
@@ -17,35 +17,35 @@ export function HowScreen() {
   const t = useMessages(howMessages);
   useDocumentTitle(t('title'));
   return (
-    <div className="screen how">
-      <ScreenTitle>{t('title')}</ScreenTitle>
-      <p className="lead">{t('lead')}</p>
-
-      <section className="screen__section" aria-labelledby="how-real">
-        <h2 id="how-real">{t('real.heading')}</h2>
-        <div className="how__split">
-          <div className="how__side how__side--real">
-            <h3>{t('real.real')}</h3>
-            <ul>
-              {REAL.map((item) => (
-                <li key={item}>{t(`real.${item}`)}</li>
-              ))}
-            </ul>
+    <div className="co-detalle co-velo co-detalle--primera how">
+      <Section id="como" level={1} title={t('title')} note={t('lead')}>
+        <div className="co-pila co-pila--holgada">
+          <h2 className="co-micro" id="how-real">
+            {t('real.heading')}
+          </h2>
+          <div className="how__split">
+            <div className="how__side how__side--real">
+              <h3 className="co-subtitulo">{t('real.real')}</h3>
+              <ul className="co-lista">
+                {REAL.map((item) => (
+                  <li key={item}>{t(`real.${item}`)}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="how__side how__side--fictional">
+              <h3 className="co-subtitulo">{t('real.fictional')}</h3>
+              <ul className="co-lista">
+                {FICTIONAL.map((item) => (
+                  <li key={item}>{t(`real.${item}`)}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div className="how__side how__side--fictional">
-            <h3>{t('real.fictional')}</h3>
-            <ul>
-              {FICTIONAL.map((item) => (
-                <li key={item}>{t(`real.${item}`)}</li>
-              ))}
-            </ul>
-          </div>
+          <p className="co-nota">{t('real.note')}</p>
         </div>
-        <p>{t('real.note')}</p>
-      </section>
+      </Section>
 
-      <section className="screen__section" aria-labelledby="how-steps">
-        <h2 id="how-steps">{t('steps.heading')}</h2>
+      <Section id="pasos" title={t('steps.heading')} stacked>
         <ol className="how__steps">
           {STEPS.map((step) => (
             <li key={step} className="how__step">
@@ -65,37 +65,40 @@ export function HowScreen() {
             </li>
           ))}
         </ol>
-        <p>{t('steps.retry')}</p>
-        <p>{t('steps.notMeasured')}</p>
-      </section>
-
-      <section className="screen__section" aria-labelledby="how-assumptions">
-        <h2 id="how-assumptions">{t('assumptions.heading')}</h2>
-        <p>{t('assumptions.lead')}</p>
-        <ol className="how__assumptions">
-          {ASSUMPTIONS.map((assumption) => (
-            <li key={assumption}>{t(`assumption.${assumption}`)}</li>
-          ))}
-        </ol>
-        <p className="note">{t('assumptions.more')}</p>
-      </section>
-
-      <section className="screen__section" aria-labelledby="how-validation">
-        <h2 id="how-validation">{t('validation.heading')}</h2>
-        <p>{t('validation.what')}</p>
-        <p>{t('validation.use')}</p>
-        <HowValidation />
-      </section>
-
-      <section className="screen__section" aria-labelledby="how-actions">
-        <h2 id="how-actions">{t('actions.heading')}</h2>
-        <div className="actions">
-          <LinkButton to={{ name: 'brain' }}>{t('actions.brain')}</LinkButton>
-          <LinkButton to={{ name: 'home' }} variant="ghost">
-            {t('actions.home')}
-          </LinkButton>
+        <div className="co-pila">
+          <p className="co-nota">{t('steps.retry')}</p>
+          <p className="co-nota">{t('steps.notMeasured')}</p>
         </div>
-      </section>
+      </Section>
+
+      <Section id="supuestos" title={t('assumptions.heading')} note={t('assumptions.lead')}>
+        <div className="co-pila">
+          <ol className="how__assumptions">
+            {ASSUMPTIONS.map((assumption) => (
+              <li key={assumption}>{t(`assumption.${assumption}`)}</li>
+            ))}
+          </ol>
+          <p className="co-rotulo">{t('assumptions.more')}</p>
+        </div>
+      </Section>
+
+      <Section id="validacion" title={t('validation.heading')} note={t('validation.what')}>
+        <div className="co-pila co-pila--holgada">
+          <p className="co-texto">{t('validation.use')}</p>
+          <HowValidation />
+        </div>
+      </Section>
+
+      <Section id="desde-aca" title={t('actions.heading')}>
+        <div className="co-fila">
+          <LinkAction to={{ name: 'brain' }} icon="brain">
+            {t('actions.brain')}
+          </LinkAction>
+          <LinkAction to={{ name: 'home' }} icon="house">
+            {t('actions.home')}
+          </LinkAction>
+        </div>
+      </Section>
     </div>
   );
 }

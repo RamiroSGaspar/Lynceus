@@ -3,7 +3,8 @@ import { BRAIN_KNOWLEDGE, REFERENCES, type SessionRecord } from '@app/core';
 import { LOCALES, renderHtml, textOf, unfilledPlaceholders } from '../testing/render';
 import { BrainScreen } from './BrainScreen';
 
-vi.mock('../slots', () => ({
+vi.mock('../slots', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../slots')>()),
   ExamViewer: () => <div data-slot="viewer" />,
   AssistantPanel: ({ record }: { record: SessionRecord | null }) => (
     <button data-slot="assistant" data-record={record ? 'record' : 'none'}>

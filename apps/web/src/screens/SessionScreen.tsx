@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import type { CrewId, Eye, SessionRecord } from '@app/core';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { CrewId, Eye, EyeCaptureResult, SessionRecord } from '@app/core';
 import { assessSession } from '../app/core';
 import { baselineOf, historyBefore } from '../app/history';
 import { crewMember, useCrewHistory, useDocumentTitle } from '../app/hooks';
@@ -27,8 +27,10 @@ import { commonMessages } from '../i18n/common';
 import { sessionMessages } from '../i18n/session';
 import { LinkButton } from '../shell/LinkButton';
 import { ScreenTitle } from '../shell/ScreenTitle';
-import { AcuityStep, AmslerStep, OctCaptureStep, SymptomsStep } from '../slots';
-import { Button } from '../ui';
+import { SectionNav } from '../shell/SectionNav';
+import { useFieldOff } from '../shell/useFieldOff';
+import { AcuityStep, AmslerStep, CaptureSummary, OctCaptureStep, SymptomsStep } from '../slots';
+import { BrandWorking, Button, Group, Notice, NoticeText, Subject } from '../ui';
 
 /**
  * Minutes a whole control takes. An estimate of this interface, not a measured
@@ -39,68 +41,50 @@ import { Button } from '../ui';
 const SESSION_MINUTES_ESTIMATE = 10;
 
 const INTL_LOCALE = { en: 'en-US', es: 'es-AR' } as const;
+const EYES: readonly Eye[] = ['OD', 'OS'];
+/** The steps the astronaut does with the eyes on a test surface. */
+const VISION_STEPS: ReadonlySet<StepId> = new Set<StepId>(['symptoms', 'acuity', 'amsler']);
 
-/** One shape per state, so the progress can be read without colour. */
-function StepMark({ status }: { status: StepStatus }) {
-  const common = { width: 20, height: 20, viewBox: '0 0 20 20', 'aria-hidden': true, focusable: false } as const;
-  switch (status) {
-    case 'done':
-      return (
-        <svg {...common}>
-          <circle cx="10" cy="10" r="9" fill="currentColor" />
-          <path d="M5.5 10.5l3 3 6-7" fill="none" stroke="var(--color-bg)" strokeWidth="2.2" />
-        </svg>
-      );
-    case 'skipped':
-      return (
-        <svg {...common}>
-          <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="3 3" />
-          <path d="M6 10h8" stroke="currentColor" strokeWidth="2.2" />
-        </svg>
-      );
-    case 'current':
-      return (
-        <svg {...common}>
-          <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="2" />
-          <circle cx="10" cy="10" r="4.5" fill="currentColor" />
-        </svg>
-      );
-    case 'upcoming':
-      return (
-        <svg {...common}>
-          <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="2" />
-        </svg>
-      );
-  }
+const STATUS_CLASS: Record<StepStatus, string> = { done: ' is-hecho', skipped: ' is-salteado', current: '', upcoming: '' };
+
+/**
+ * Where the astronaut is in the seven steps: a checklist on a line. Done: a filled disc.
+ * Not done: a dashed one. Current: a disc with a ring, in bold. It is not navigation.
+ * During a vision test nothing but the test is on screen, so the list is kept for assistive
+ * technology only and the position is said in one line.
+ */
+function StepList({ draft, hidden = false }: { draft: SessionDraft; hidden?: boolean }) {
+  const t = useMessages(sessionMessages);
+  return (
+    <ol className={`co-sesion${hidden ? ' co-oculto' : ''}`} aria-label={t('steps.label')}>
+      {STEP_IDS.map((id, index) => {
+        const status = stepStatus(draft, index);
+        return (
+          <li
+            key={id}
+            className={`steps__item steps__item--${status} co-sesion__paso${STATUS_CLASS[status]}`}
+            aria-current={status === 'current' ? 'step' : undefined}
+          >
+            <span className="co-sesion__nodo" />
+            <span>
+              <span className="co-oculto">
+                <span className="steps__number">{index + 1}</span>.{' '}
+              </span>
+              {t(`step.${id}`)}
+            </span>
+            <span className="co-oculto"> ({t(`status.${status}`)})</span>
+          </li>
+        );
+      })}
+    </ol>
+  );
 }
 
-/** Where the astronaut is in the seven steps. */
-function StepIndicator({ draft }: { draft: SessionDraft }) {
-  const t = useMessages(sessionMessages);
-  const step = currentStep(draft);
+/** One step of the session that is read, not measured: its title, what it says and one main button to go on. */
+function StepText({ children, role }: { children: ReactNode; role?: 'alert' }) {
   return (
-    <div className="steps">
-      <ol className="steps__list" aria-label={t('steps.label')}>
-        {STEP_IDS.map((id, index) => {
-          const status = stepStatus(draft, index);
-          return (
-            <li
-              key={id}
-              className={`steps__item steps__item--${status}`}
-              aria-current={status === 'current' ? 'step' : undefined}
-            >
-              <StepMark status={status} />
-              <span className="steps__name">
-                <span className="steps__number">{index + 1}</span> {t(`step.${id}`)}
-              </span>
-              <span className="visually-hidden"> ({t(`status.${status}`)})</span>
-            </li>
-          );
-        })}
-      </ol>
-      <p className="steps__position">
-        {t('steps.position', { step: draft.stepIndex + 1, total: STEP_IDS.length, name: t(`step.${step}`) })}
-      </p>
+    <div className="co-cabina__escena co-cabina__escena--texto" role={role}>
+      <div className="co-halo co-paso-sesion">{children}</div>
     </div>
   );
 }
@@ -126,39 +110,34 @@ function IntroStep({
           new Date(baselineTimeMs),
         );
   return (
-    <div className="session__step">
+    <StepText>
       <ScreenTitle>{t('intro.title', { name, day: flightDay })}</ScreenTitle>
-      <section aria-labelledby="intro-what">
-        <h2 id="intro-what">{t('intro.what')}</h2>
-        <p>{t('intro.what.lead')}</p>
-        <ol className="session__plan">
+      <Group icon="list-checks" title={t('intro.what')} id="intro-what">
+        <p className="co-texto">{t('intro.what.lead')}</p>
+        <ol className="co-lista co-lista--numerada">
           <li>{t('intro.item.symptoms')}</li>
           <li>{t('intro.item.acuity')}</li>
           <li>{t('intro.item.amsler')}</li>
           <li>{t('intro.item.oct')}</li>
           <li>{t('intro.item.result')}</li>
         </ol>
-        <p>{t('intro.skip')}</p>
-      </section>
-      <section aria-labelledby="intro-time">
-        <h2 id="intro-time">{t('intro.time')}</h2>
-        <p>{t('intro.time.text', { minutes: SESSION_MINUTES_ESTIMATE })}</p>
-      </section>
-      <section aria-labelledby="intro-reference">
-        <h2 id="intro-reference">{t('intro.reference')}</h2>
-        {date ? (
-          <p>{t('intro.reference.text', { date })}</p>
-        ) : (
-          <p className="callout callout--caution">{t('intro.reference.missing')}</p>
-        )}
-      </section>
-      <p className="callout">{t('intro.limits')}</p>
-      <div className="actions">
-        <Button variant="primary" size="lg" disabled={date === null} onClick={onBegin}>
+        <p className="co-nota">{t('intro.skip')}</p>
+      </Group>
+      <div className="co-columnas co-columnas--dos">
+        <Group icon="clock" title={t('intro.time')} id="intro-time">
+          <p className="co-nota">{t('intro.time.text', { minutes: SESSION_MINUTES_ESTIMATE })}</p>
+        </Group>
+        <Group icon="ruler" title={t('intro.reference')} id="intro-reference">
+          {date ? <p className="co-nota">{t('intro.reference.text', { date })}</p> : <Notice kind="unmeasured" title={t('intro.reference.missing')} />}
+        </Group>
+      </div>
+      <Notice title={t('intro.limits')} />
+      <div className="co-fila">
+        <Button variant="primary" size="lg" iconEnd="arrow-right" disabled={date === null} onClick={onBegin}>
           {t('intro.begin')}
         </Button>
       </div>
-    </div>
+    </StepText>
   );
 }
 
@@ -176,23 +155,20 @@ function RedoPanel({
 }) {
   const t = useMessages(sessionMessages);
   return (
-    <div className="session__step">
+    <StepText>
       <ScreenTitle>{t(`step.${step}`)}</ScreenTitle>
-      <div className="callout">
-        <p>
-          <strong>{skipped ? t('redo.title.skipped') : t('redo.title.done')}</strong>
-        </p>
-        <p>{skipped ? t('redo.text.skipped') : t('redo.text.done')}</p>
-      </div>
-      <div className="actions">
-        <Button variant="primary" size="lg" onClick={onContinue}>
+      <Notice title={skipped ? t('redo.title.skipped') : t('redo.title.done')}>
+        <NoticeText>{skipped ? t('redo.text.skipped') : t('redo.text.done')}</NoticeText>
+      </Notice>
+      <div className="co-fila">
+        <Button variant="primary" size="lg" iconEnd="arrow-right" onClick={onContinue}>
           {t('redo.continue')}
         </Button>
-        <Button size="lg" onClick={onRedo}>
+        <Button size="lg" icon="rotate-ccw" onClick={onRedo}>
           {skipped ? t('redo.now') : t('redo.again')}
         </Button>
       </div>
-    </div>
+    </StepText>
   );
 }
 
@@ -232,15 +208,16 @@ function EvaluationStep({
 
   if (error) {
     return (
-      <div className="session__step" role="alert">
+      <StepText role="alert">
         <ScreenTitle>{t('evaluation.error.title')}</ScreenTitle>
-        <p>{t('evaluation.error.what', { message: error.message })}</p>
-        <p>{t('evaluation.error.cause')}</p>
-        <p>{t('evaluation.error.do')}</p>
-        <div className="actions">
+        <p className="co-texto">{t('evaluation.error.what', { message: error.message })}</p>
+        <p className="co-nota">{t('evaluation.error.cause')}</p>
+        <p className="co-nota">{t('evaluation.error.do')}</p>
+        <div className="co-fila">
           <Button
             variant="primary"
             size="lg"
+            icon="rotate-ccw"
             onClick={() => {
               setError(null);
               setAttempt((count) => count + 1);
@@ -249,13 +226,25 @@ function EvaluationStep({
             {t('evaluation.retry')}
           </Button>
         </div>
-      </div>
+      </StepText>
     );
   }
+  return <Evaluating text={t('evaluation.text')} />;
+}
+
+/** The evaluation has no image of its own: the brand sweeps, large, and under it what the engine is doing. Nothing else. */
+function Evaluating({ text, children }: { text: string; children?: ReactNode }) {
+  const t = useMessages(sessionMessages);
   return (
-    <div className="session__step">
-      <ScreenTitle>{t('evaluation.title')}</ScreenTitle>
-      <p role="status">{t('evaluation.text')}</p>
+    <div className="co-cabina__escena co-cabina__escena--evaluacion">
+      <BrandWorking />
+      <div className="co-halo co-paso-sesion co-paso-sesion--centro">
+        <ScreenTitle>{t('evaluation.title')}</ScreenTitle>
+        <p className="co-texto" role="status">
+          {text}
+        </p>
+        {children}
+      </div>
     </div>
   );
 }
@@ -264,6 +253,7 @@ function EvaluationStep({
 export function SessionScreen({ crewId }: { crewId: CrewId }) {
   const t = useMessages(sessionMessages);
   const tc = useMessages(commonMessages);
+  const { locale } = useI18n();
   const store = useAppStore();
   const state = useAppState();
   const member = crewMember(crewId);
@@ -308,35 +298,53 @@ export function SessionScreen({ crewId }: { crewId: CrewId }) {
     alreadyDone ? t('already.title') : `${t(`step.${step}`)} · ${t('context')} · ${member.name}`,
   );
 
+  const vision = !alreadyDone && !finished && VISION_STEPS.has(step) && !(stepHasOutcome(draft, step) && redoing !== step);
+  // During a vision test the field of stars goes dark: nothing may be mistaken for the stimulus.
+  useFieldOff(vision);
+
+  const subject = (state: ReactNode) => <Subject name={member.name} role={member.role[locale]} state={state} />;
+
   if (alreadyDone) {
     return (
-      <div className="screen session">
-        <ScreenTitle>{t('already.title')}</ScreenTitle>
-        <p>{t('already.text', { name: member.name, day: flightDay })}</p>
-        <div className="actions">
-          <LinkButton to={{ name: 'result', crewId, flightDay }} variant="primary" size="lg">
-            {t('already.result')}
-          </LinkButton>
-          <Button size="lg" onClick={() => setRepeating(true)}>
-            {t('already.repeat')}
-          </Button>
+      <>
+        <div className="co-cabina co-cabina--dos">
+          <section className="co-velo co-velo--izq co-cabina__lado" aria-label={t('context')}>
+            {subject(`${t('context')} · ${tc('flightDay', { day: flightDay })}`)}
+          </section>
+          <StepText>
+            <ScreenTitle>{t('already.title')}</ScreenTitle>
+            <p className="co-texto">{t('already.text', { name: member.name, day: flightDay })}</p>
+            <div className="co-fila">
+              <LinkButton to={{ name: 'result', crewId, flightDay }} variant="primary" size="lg" iconEnd="arrow-right">
+                {t('already.result')}
+              </LinkButton>
+              <Button size="lg" icon="rotate-ccw" onClick={() => setRepeating(true)}>
+                {t('already.repeat')}
+              </Button>
+            </div>
+            <p className="co-nota">{t('already.repeat.note')}</p>
+          </StepText>
         </div>
-        <p className="note">{t('already.repeat.note')}</p>
-      </div>
+        <SectionNav crewId={crewId} current="control" record={saved} />
+      </>
     );
   }
 
   if (finished) {
     return (
-      <div className="screen session">
-        <ScreenTitle>{t('evaluation.title')}</ScreenTitle>
-        <p role="status">{t('evaluation.done')}</p>
-        <div className="actions">
-          <LinkButton to={{ name: 'result', crewId, flightDay }} variant="primary" size="lg">
-            {t('evaluation.open')}
-          </LinkButton>
+      <>
+        <div className="co-cabina co-cabina--dos">
+          <section className="co-velo co-velo--izq co-cabina__lado" aria-label={t('context')}>
+            {subject(`${t('context')} · ${tc('flightDay', { day: flightDay })}`)}
+          </section>
+          <Evaluating text={t('evaluation.done')}>
+            <LinkButton to={{ name: 'result', crewId, flightDay }} variant="primary" size="lg" iconEnd="arrow-right">
+              {t('evaluation.open')}
+            </LinkButton>
+          </Evaluating>
         </div>
-      </div>
+        <SectionNav crewId={crewId} current="control" record={saved} />
+      </>
     );
   }
 
@@ -344,24 +352,26 @@ export function SessionScreen({ crewId }: { crewId: CrewId }) {
     const exam = baseline?.eyes[eye].accepted ?? null;
     if (!exam) {
       return (
-        <div className="session__step">
+        <StepText>
           <ScreenTitle>{t('missing.title', { eye: tc(`eye.${eye}`).toLowerCase() })}</ScreenTitle>
-          <p className="callout callout--caution">{t('missing.text')}</p>
-          <div className="actions">
+          <Notice kind="unmeasured" title={t('missing.text')} />
+          <div className="co-fila">
             <Button
               variant="primary"
               size="lg"
+              iconEnd="arrow-right"
               onClick={() => dispatch({ type: 'eye', value: { eye, attempts: [], accepted: null } })}
             >
               {t('missing.continue')}
             </Button>
           </div>
-        </div>
+        </StepText>
       );
     }
     return (
-      <div className="session__step">
-        <ScreenTitle>{t(eye === 'OD' ? 'step.oct-od' : 'step.oct-os')}</ScreenTitle>
+      <>
+        {/* The capture step opens with its own visible title: the screen heading is for the announcement after each step. */}
+        <ScreenTitle className="co-oculto">{t(eye === 'OD' ? 'step.oct-od' : 'step.oct-os')}</ScreenTitle>
         <OctCaptureStep
           crewId={crewId}
           eye={eye}
@@ -369,7 +379,7 @@ export function SessionScreen({ crewId }: { crewId: CrewId }) {
           baseline={exam}
           onComplete={(value) => dispatch({ type: 'eye', value })}
         />
-      </div>
+      </>
     );
   };
 
@@ -445,25 +455,23 @@ export function SessionScreen({ crewId }: { crewId: CrewId }) {
     }
   }
 
-  return (
-    <div className="screen session">
-      <p className="session__context">
-        {t('context')} · {member.name} · {tc('flightDay', { day: flightDay })}
-      </p>
-      <StepIndicator draft={draft} />
-      <div key={stepKey}>{content}</div>
-      <nav className="session__nav" aria-label={t('nav.label')}>
-        {draft.stepIndex > 0 && (
-          <Button onClick={() => dispatch({ type: 'back' })}>{t('nav.previous')}</Button>
-        )}
-        <LinkButton to={{ name: 'home' }} variant="ghost">
-          {t('nav.leave')}
-        </LinkButton>
-        {stored !== null &&
-          (confirmingRestart ? (
-            <span className="session__restart" role="group" aria-label={t('nav.restart')}>
-              <span>{t('nav.restart.confirm')}</span>
+  const position = t('steps.position', { step: draft.stepIndex + 1, total: STEP_IDS.length, name: t(`step.${step}`) });
+  const moves = (
+    <nav className="co-sesion-nav" aria-label={t('nav.label')}>
+      {draft.stepIndex > 0 && (
+        <Button variant="ghost" icon="arrow-left" onClick={() => dispatch({ type: 'back' })}>
+          {t('nav.previous')}
+        </Button>
+      )}
+      <LinkButton to={{ name: 'home' }} variant="ghost" icon="house">
+        {t('nav.leave')}
+      </LinkButton>
+      {stored !== null &&
+        (confirmingRestart ? (
+          <Notice kind="caution" role="group" aria-label={t('nav.restart')} title={t('nav.restart.confirm')} className="co-sesion-nav__confirmar">
+            <div className="co-fila co-aviso__acciones">
               <Button
+                icon="rotate-ccw"
                 onClick={() => {
                   setConfirmingRestart(false);
                   setRedoing(null);
@@ -472,16 +480,61 @@ export function SessionScreen({ crewId }: { crewId: CrewId }) {
               >
                 {t('nav.restart.yes')}
               </Button>
-              <Button variant="ghost" autoFocus onClick={() => setConfirmingRestart(false)}>
+              <Button variant="primary" autoFocus onClick={() => setConfirmingRestart(false)}>
                 {t('nav.restart.no')}
               </Button>
-            </span>
-          ) : (
-            <Button variant="ghost" onClick={() => setConfirmingRestart(true)}>
-              {t('nav.restart')}
-            </Button>
+            </div>
+          </Notice>
+        ) : (
+          <Button variant="ghost" icon="rotate-ccw" onClick={() => setConfirmingRestart(true)}>
+            {t('nav.restart')}
+          </Button>
+        ))}
+    </nav>
+  );
+
+  // A vision test: plain black, no veils and no navigation. Only the test, where it is in the control and the way out.
+  if (vision) {
+    return (
+      <div className="co-prueba">
+        <header className="co-prueba__cabeza">
+          <p className="co-micro">
+            {member.name} · {tc('flightDay.short', { day: flightDay })}
+          </p>
+          <p className="co-rotulo">{position}</p>
+          <StepList draft={draft} hidden />
+        </header>
+        <div key={stepKey} className="co-prueba__paso">
+          {content}
+        </div>
+        {moves}
+      </div>
+    );
+  }
+
+  const captured = EYES.filter((eye) => draft.eyes[eye] !== null && step !== (eye === 'OD' ? 'oct-od' : 'oct-os'));
+  const capturing = (step === 'oct-od' || step === 'oct-os') && !(hasOutcome && redoing !== step) && (baseline?.eyes[step === 'oct-od' ? 'OD' : 'OS'].accepted ?? null) !== null;
+
+  return (
+    <>
+      <div className={`co-cabina${capturing ? ' co-cabina--captura' : ' co-cabina--dos'}`}>
+        <section className="co-velo co-velo--izq co-cabina__lado" aria-label={t('context')}>
+          {subject(position)}
+          <Group icon="list-checks" title={`${t('context')} · ${tc('flightDay', { day: flightDay })}`} className="co-cabina__solo-ancho">
+            <StepList draft={draft} />
+          </Group>
+          {captured.map((eye) => (
+            <CaptureSummary key={eye} capture={draft.eyes[eye] as EyeCaptureResult} />
           ))}
-      </nav>
-    </div>
+          <div className="co-cabina__solo-ancho">{moves}</div>
+        </section>
+        <div key={stepKey} className="co-cabina__paso">
+          {content}
+        </div>
+        {/* In one column the ways out come after the step, not before it: who and where first, then what there is to do. */}
+        <div className="co-velo co-cabina__salidas co-cabina__solo-angosto">{moves}</div>
+      </div>
+      <SectionNav crewId={crewId} current="control" record={saved} />
+    </>
   );
 }

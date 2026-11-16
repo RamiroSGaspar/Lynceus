@@ -3,39 +3,33 @@
  * values, the texts and the available width to the position of every mark and
  * label, so it can be tested without a browser: nothing overlaps, nothing is cut.
  *
+ * The drawing is the "change scale" of the design system: the axis is the line, and it
+ * changes colour at every threshold; the thresholds are dashed lines with their value
+ * above; today is a disc with its range as a bar, and earlier controls are small hollow
+ * discs; under every stretch of the line, the shape and the name of its band.
+ *
  * All lengths are CSS pixels. Vertical metrics are multiples of the label font
  * size, so the drawing follows the type scale of the design tokens.
  */
 import { bands, linearScale, tickStep, ticks, type BandId, type ChangeThresholds, type Domain } from './scale';
-import { spansCollide, splitIntoRows, spreadRow, widestLine, wrapLines, type Measure, type RowItem } from './text';
-
-/** A number under the axis with a word under it, such as "19.4 µm" over "NASA". */
-export interface AxisNote {
-  value: string;
-  note: string;
-}
+import { spansCollide, wrapLines, type Measure } from './text';
 
 export interface ChangeScaleInput {
   width: number;
   /** Size of the labels (design token `--text-xs`, resolved to pixels). */
   fontPx: number;
-  /** Size of today's value (design token `--text-lg`). */
-  valueFontPx: number;
   measure: Measure;
   domain: Domain;
   thresholds: ChangeThresholds;
   bandNames: Readonly<Record<BandId, string>>;
-  zero: AxisNote;
-  firstSign: AxisNote;
-  clinicallyConcerning: AxisNote;
+  /** The label of 0, the pre-flight exam. */
+  zeroLabel: string;
+  /** The value of each threshold as it is written above its line, such as "19.4 µm". */
+  firstSignLabel: string;
+  clinicallyConcerningLabel: string;
   tickLabel: (valueUm: number) => string;
-  today: {
-    valueUm: number;
-    lowUm: number | null;
-    highUm: number | null;
-    valueLabel: string;
-    rangeLabel: string | null;
-  } | null;
+  today: { valueUm: number; lowUm: number | null; highUm: number | null } | null;
+  /** Earlier controls, with what is said about each under the pointer. */
   previous: readonly { valueUm: number; label: string }[];
 }
 
@@ -48,12 +42,16 @@ export interface BandBox {
 export interface BandLabel {
   id: BandId;
   lines: string[];
+  /** Left edge of the label: its shape, then its name. */
   x: number;
-  anchor: 'start' | 'middle' | 'end';
+  /** Width of the whole label, shape included. */
+  width: number;
+  /** Left edge of the name. */
+  textX: number;
   /** Baseline of the first line. */
   baseline: number;
-  /** In the stacked layout, the bar under the name that spans the band. */
-  extent: { x1: number; x2: number; y: number } | null;
+  /** The shape of the band's alert class, a square of this side at this corner. */
+  shape: { x: number; y: number; size: number };
 }
 
 export type AxisLabelKind = 'tick' | 'zero' | 'first-sign' | 'clinically-concerning';
@@ -63,72 +61,52 @@ export interface AxisLabel {
   valueUm: number;
   /** Where the value is on the axis. */
   anchorX: number;
-  /** Centre of the label; differs from `anchorX` when it had to move aside. */
+  /** Centre of the label. A threshold value sits beside its line, so it differs from `anchorX`. */
   x: number;
   width: number;
-  lines: string[];
-  /** Baseline of the first line. */
+  text: string;
   baseline: number;
-}
-
-export interface TodayMark {
-  x: number;
-  y: number;
-  /** Half the size of the diamond. */
-  half: number;
-  range: { x1: number; x2: number; cap: number } | null;
-  chip: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    valueBaseline: number;
-    rangeBaseline: number | null;
-  };
-  pointer: { x: number; y1: number; y2: number };
-}
-
-export interface PreviousMark {
-  x: number;
-  y: number;
-  r: number;
-  label: string;
-  labelX: number;
-  labelWidth: number;
-  labelBaseline: number;
 }
 
 export interface ChangeScaleLayout {
   width: number;
   height: number;
   lineHeight: number;
-  plot: { left: number; right: number; top: number; bottom: number };
-  /** Top of the part of the bands that holds the marks, under the band names. */
-  contentTop: number;
-  /** `inline`: band names inside their bands. `stacked`: one row per name above the bands, when they do not fit. */
+  /** The stretch of the drawing the axis runs along. */
+  plot: { left: number; right: number };
+  /** Height of the axis line. */
+  lineY: number;
+  /** `inline`: band names under their own stretch. `stacked`: one row per name, when they do not fit side by side. */
   bandMode: 'inline' | 'stacked';
   bands: BandBox[];
   bandLabels: BandLabel[];
-  zeroX: number;
-  thresholdLines: { kind: 'first-sign' | 'clinically-concerning'; x: number }[];
-  tickLength: number;
-  /** Position of every tick mark on the axis, labelled or not. */
-  tickMarks: number[];
+  /** The mark of 0, the pre-flight exam: a short solid line across the axis. */
+  zero: { x: number; y1: number; y2: number } | null;
+  thresholdLines: { kind: 'first-sign' | 'clinically-concerning'; x: number; y1: number; y2: number }[];
+  /** Small marks on the axis for the round values that are labelled. */
+  tickMarks: { x: number; y1: number; y2: number }[];
   axisLabels: AxisLabel[];
-  today: TodayMark | null;
-  previous: PreviousMark[];
+  today: { x: number; y: number; r: number; range: { x1: number; x2: number; height: number } | null } | null;
+  previous: { x: number; y: number; r: number; label: string }[];
 }
 
 const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), Math.max(min, max));
 
 export function layoutChangeScale(input: ChangeScaleInput): ChangeScaleLayout {
-  const { width, fontPx: f, valueFontPx, measure, domain, thresholds } = input;
-  const lineHeight = Math.round(f * 1.3);
-  const side = Math.round(f * 0.8);
+  const { width, fontPx: f, measure, domain, thresholds } = input;
+  const lineHeight = Math.round(f * 1.2 * 10) / 10;
+  // Room at both ends for today's disc and its halo, so a value at the edge of the scale is not cut.
+  const side = Math.round(f * 0.9);
   const left = side;
   const right = Math.max(left + 1, width - side);
   const x = linearScale(domain, left, right);
   const inPlot = (valueUm: number): number => clamp(x(valueUm), left, right);
+
+  // ---- Vertical metrics: two rows of numbers, the line, and the band names under it.
+  const topBaseline = Math.round(f * 0.85);
+  const lineY = Math.round(f * 2.85);
+  const zeroHalf = Math.round(f * 0.85);
+  const secondBaseline = lineY - zeroHalf - Math.round(f * 0.3);
 
   const bandBoxes: BandBox[] = bands(domain, thresholds).map((band) => ({
     id: band.id,
@@ -136,237 +114,183 @@ export function layoutChangeScale(input: ChangeScaleInput): ChangeScaleLayout {
     width: Math.max(0, x(band.to) - x(band.from)),
   }));
 
-  // ---- Band names: inside the bands when they fit (on one line, else on two), stacked above otherwise.
-  const pad = f * 0.4;
+  // ---- Threshold values: beside their dashed line, on the top row. To its right, or to its left at the end of the scale.
+  const gap = f * 0.5;
+  const beside = f * 0.3;
+  const axisLabels: AxisLabel[] = [];
+  const specials = [
+    { kind: 'first-sign' as const, valueUm: thresholds.firstSignUm, text: input.firstSignLabel },
+    { kind: 'clinically-concerning' as const, valueUm: thresholds.clinicallyConcerningUm, text: input.clinicallyConcerningLabel },
+  ].filter((special) => special.valueUm > domain.min && special.valueUm < domain.max);
+  const thresholdXs = specials.map((special) => x(special.valueUm));
+  // Placed from the last one back, so each knows where the next one starts.
+  let nextStart = width;
+  const placed: AxisLabel[] = [];
+  for (let index = specials.length - 1; index >= 0; index -= 1) {
+    const special = specials[index] as (typeof specials)[number];
+    const anchorX = x(special.valueUm);
+    const labelWidth = measure(special.text, f, true);
+    let start = anchorX + beside;
+    if (start + labelWidth > nextStart - gap) start = Math.min(start, nextStart - gap - labelWidth);
+    // No room on the right without covering its own line: it goes on the left of it.
+    if (start < anchorX + beside - 0.5) start = Math.min(anchorX - beside - labelWidth, nextStart - gap - labelWidth);
+    start = clamp(start, 0, width - labelWidth);
+    placed.unshift({ kind: special.kind, valueUm: special.valueUm, anchorX, x: start + labelWidth / 2, width: labelWidth, text: special.text, baseline: topBaseline });
+    nextStart = start;
+  }
+  // A last pass from the left guarantees that no two overlap, whatever the width.
+  let previousEnd = -Infinity;
+  for (const label of placed) {
+    const start = Math.max(label.x - label.width / 2, previousEnd + gap);
+    label.x = Math.min(start, Math.max(0, width - label.width)) + label.width / 2;
+    previousEnd = label.x + label.width / 2;
+  }
+  axisLabels.push(...placed);
+
+  // ---- 0, the pre-flight exam: a short solid mark with its number above it, on the second row.
+  const hasZero = domain.min <= 0 && domain.max >= 0;
+  const secondRow: AxisLabel[] = [];
+  if (hasZero) {
+    const zeroWidth = measure(input.zeroLabel, f);
+    secondRow.push({
+      kind: 'zero',
+      valueUm: 0,
+      anchorX: x(0),
+      x: clamp(x(0), zeroWidth / 2, width - zeroWidth / 2),
+      width: zeroWidth,
+      text: input.zeroLabel,
+      baseline: secondBaseline,
+    });
+  }
+
+  // ---- Round values, only where the scale has no other reference: beyond the thresholds and below zero.
+  const tickMarks: { x: number; y1: number; y2: number }[] = [];
+  const step = tickStep(domain, right - left, f * 3.2);
+  const referenceXs = [...(hasZero ? [x(0)] : []), ...thresholdXs];
+  for (const valueUm of ticks(domain, step)) {
+    if (valueUm <= domain.min || valueUm >= domain.max) continue;
+    if (valueUm >= 0 && valueUm <= thresholds.clinicallyConcerningUm) continue;
+    const anchorX = x(valueUm);
+    if (referenceXs.some((referenceX) => Math.abs(referenceX - anchorX) < f * 2.6)) continue;
+    const text = input.tickLabel(valueUm);
+    const labelWidth = measure(text, f);
+    const centre = clamp(anchorX, labelWidth / 2, width - labelWidth / 2);
+    if (secondRow.some((other) => spansCollide(centre, labelWidth, other.x, other.width, gap))) continue;
+    // A dashed threshold line runs through this row: a number is never struck through by one.
+    if (thresholdXs.some((lineX) => Math.abs(lineX - centre) < labelWidth / 2 + 2)) continue;
+    secondRow.push({ kind: 'tick', valueUm, anchorX, x: centre, width: labelWidth, text, baseline: secondBaseline });
+    tickMarks.push({ x: anchorX, y1: lineY - f * 0.35, y2: lineY });
+  }
+  axisLabels.push(...secondRow);
+  axisLabels.sort((a, b) => a.valueUm - b.valueUm);
+
+  // ---- Today: a disc on the line, with its range as a bar. Earlier controls: small hollow discs.
+  const today = input.today
+    ? {
+        x: inPlot(input.today.valueUm),
+        y: lineY,
+        r: f * 0.64,
+        range:
+          input.today.lowUm !== null && input.today.highUm !== null
+            ? { x1: inPlot(input.today.lowUm), x2: inPlot(input.today.highUm), height: Math.max(4, Math.round(f * 0.43)) }
+            : null,
+      }
+    : null;
+  const previous = input.previous.map((mark) => ({ x: inPlot(mark.valueUm), y: lineY, r: f * 0.36, label: mark.label }));
+
+  // ---- Band names: the shape of the class and the name, under the stretch they name.
+  const shapeSize = f;
+  const shapeGap = f * 0.3;
+  const labelsTop = lineY + f;
+  const blockWidth = (lines: readonly string[]): number =>
+    shapeSize + shapeGap + lines.reduce((widest, line) => Math.max(widest, measure(line, f)), 0);
   const names = bandBoxes.map((band) => input.bandNames[band.id]);
-  let inline: string[][] | null = null;
-  if (bandBoxes.every((band, index) => measure(names[index] as string, f, true) + 2 * pad <= band.width)) {
-    inline = names.map((name) => [name]);
-  } else {
-    const wrapped = bandBoxes.map((band, index) =>
-      band.width > 2 * pad ? wrapLines(names[index] as string, band.width - 2 * pad, f, measure, true) : null,
-    );
-    if (wrapped.every((lines) => lines !== null && lines.length <= 2)) inline = wrapped as string[][];
+  /** One line, and two lines when the name can be broken: the choices for each name, shortest first. */
+  const choices: string[][][] = names.map((name) => {
+    const one = [name];
+    const words = name.split(/\s+/).filter(Boolean);
+    if (words.length < 2) return [one];
+    const widestWord = words.reduce((widest, word) => Math.max(widest, measure(word, f)), 0);
+    const two = wrapLines(name, Math.max(widestWord, measure(name, f) * 0.62), f, measure);
+    return two && two.length === 2 ? [one, two] : [one];
+  });
+  const lastIndex = bandBoxes.length - 1;
+  const place = (lines: readonly (readonly string[])[]): number[] | null => {
+    const lefts: number[] = [];
+    for (let index = 0; index < bandBoxes.length; index += 1) {
+      const band = bandBoxes[index] as BandBox;
+      const blockW = blockWidth(lines[index] as string[]);
+      // The last name ends where the scale ends; the others start where their stretch starts.
+      lefts.push(index === lastIndex ? right - blockW : band.x);
+    }
+    for (let index = 0; index < lefts.length; index += 1) {
+      const start = lefts[index] as number;
+      const end = start + blockWidth(lines[index] as string[]);
+      if (start < -0.01 || end > width + 0.01) return null;
+      if (index > 0) {
+        const before = (lefts[index - 1] as number) + blockWidth(lines[index - 1] as string[]);
+        if (start - before < gap) return null;
+      }
+    }
+    return lefts;
+  };
+  // Every combination of one and two lines, the ones with fewer lines first.
+  const combos: string[][][] = [[]];
+  for (const options of choices) {
+    const next: string[][][] = [];
+    for (const combo of combos) for (const option of options) next.push([...combo, option]);
+    combos.splice(0, combos.length, ...next);
+  }
+  combos.sort((a, b) => a.reduce((sum, lines) => sum + lines.length, 0) - b.reduce((sum, lines) => sum + lines.length, 0));
+  let inline: { lines: string[][]; lefts: number[] } | null = null;
+  for (const combo of combos) {
+    const lefts = place(combo);
+    if (lefts) {
+      inline = { lines: combo, lefts };
+      break;
+    }
   }
 
   const bandLabels: BandLabel[] = [];
-  let plotTop: number;
-  let cursor: number;
+  let bottom: number;
+  const label = (id: BandId, lines: string[], start: number, top: number): BandLabel => ({
+    id,
+    lines,
+    x: start,
+    width: blockWidth(lines),
+    textX: start + shapeSize + shapeGap,
+    baseline: top + f * 0.82,
+    shape: { x: start, y: top + (lineHeight - shapeSize) / 2, size: shapeSize },
+  });
   if (inline) {
-    plotTop = 1;
-    const lineCount = Math.max(...inline.map((lines) => lines.length));
-    bandBoxes.forEach((band, index) => {
-      bandLabels.push({
-        id: band.id,
-        lines: inline[index] as string[],
-        x: band.x + band.width / 2,
-        anchor: 'middle',
-        baseline: plotTop + f * 1.25,
-        extent: null,
-      });
-    });
-    cursor = plotTop + f * 0.3 + lineCount * lineHeight + f * 0.2;
+    const { lines, lefts } = inline;
+    bandBoxes.forEach((band, index) => bandLabels.push(label(band.id, lines[index] as string[], lefts[index] as number, labelsTop)));
+    bottom = labelsTop + Math.max(...lines.map((entry) => entry.length)) * lineHeight;
   } else {
-    let rowTop = 0;
+    // One row per name, each starting under its own stretch as far as the drawing allows.
+    let top = labelsTop;
     bandBoxes.forEach((band, index) => {
       const name = names[index] as string;
-      const textWidth = measure(name, f, true);
-      let anchor: BandLabel['anchor'];
-      let textX: number;
-      if (band.x + textWidth <= width) {
-        anchor = 'start';
-        textX = band.x;
-      } else if (band.x + band.width - textWidth >= 0) {
-        anchor = 'end';
-        textX = band.x + band.width;
-      } else {
-        anchor = 'middle';
-        textX = clamp(band.x + band.width / 2, textWidth / 2, width - textWidth / 2);
-      }
-      bandLabels.push({
-        id: band.id,
-        lines: [name],
-        x: textX,
-        anchor,
-        baseline: rowTop + f * 0.95,
-        extent: { x1: band.x, x2: band.x + band.width, y: rowTop + lineHeight + f * 0.1 },
-      });
-      rowTop += lineHeight + f * 0.6;
+      const room = width - shapeSize - shapeGap;
+      const lines = measure(name, f) <= room ? [name] : (wrapLines(name, room, f, measure) ?? [name]);
+      bandLabels.push(label(band.id, lines, clamp(band.x, 0, width - blockWidth(lines)), top));
+      top += lines.length * lineHeight + f * 0.25;
     });
-    plotTop = rowTop + f * 0.1;
-    cursor = plotTop + f * 0.4;
+    bottom = top - f * 0.25;
   }
-
-  const contentTop = cursor;
-
-  // ---- Today's value: a chip with the number and its range, over a diamond with the range as a bar.
-  let today: TodayMark | null = null;
-  if (input.today) {
-    const { valueUm, lowUm, highUm, valueLabel, rangeLabel } = input.today;
-    const chipPadX = f * 0.55;
-    const chipPadY = f * 0.3;
-    const textWidth = Math.max(measure(valueLabel, valueFontPx, true), rangeLabel ? measure(rangeLabel, f) : 0);
-    const chipWidth = Math.min(right - left, textWidth + 2 * chipPadX);
-    const chipHeight = 2 * chipPadY + valueFontPx * 1.1 + (rangeLabel ? lineHeight : 0);
-    const markX = inPlot(valueUm);
-    const half = f * 0.62;
-    const markY = cursor + chipHeight + f * 0.55 + half;
-    today = {
-      x: markX,
-      y: markY,
-      half,
-      range: lowUm !== null && highUm !== null ? { x1: inPlot(lowUm), x2: inPlot(highUm), cap: f * 0.45 } : null,
-      chip: {
-        x: clamp(markX, left + chipWidth / 2, right - chipWidth / 2),
-        y: cursor,
-        width: chipWidth,
-        height: chipHeight,
-        valueBaseline: cursor + chipPadY + valueFontPx * 0.85,
-        rangeBaseline: rangeLabel ? cursor + chipPadY + valueFontPx * 1.1 + f * 0.95 : null,
-      },
-      pointer: { x: markX, y1: cursor + chipHeight, y2: markY - half },
-    };
-    cursor = markY + half + f * 0.5;
-  }
-
-  // ---- Earlier controls: small marks with their day, spread so the days do not overlap.
-  const previous: PreviousMark[] = [];
-  if (input.previous.length > 0) {
-    const r = f * 0.3;
-    const markY = cursor + r + f * 0.1;
-    const labelGap = f * 0.3;
-    const sorted = input.previous
-      .map((mark, index) => ({ ...mark, index, markX: inPlot(mark.valueUm) }))
-      .sort((a, b) => a.markX - b.markX || a.index - b.index);
-    const items: RowItem[] = sorted.map((mark) => ({ anchor: mark.markX, width: measure(mark.label, f) + f * 0.3 }));
-    const rows = splitIntoRows(items, 0, width, labelGap, 3);
-    rows.forEach((row, rowIndex) => {
-      const centres = spreadRow(
-        row.map((index) => items[index] as RowItem),
-        0,
-        width,
-        labelGap,
-      );
-      row.forEach((itemIndex, position) => {
-        const mark = sorted[itemIndex] as (typeof sorted)[number];
-        previous.push({
-          x: mark.markX,
-          y: markY,
-          r,
-          label: mark.label,
-          labelX: centres[position] as number,
-          labelWidth: (items[itemIndex] as RowItem).width,
-          labelBaseline: markY + r + f * 0.5 + rowIndex * lineHeight + f * 0.95,
-        });
-      });
-    });
-    cursor = markY + r + f * 0.5 + rows.length * lineHeight + f * 0.35;
-  }
-
-  if (!input.today && input.previous.length === 0) cursor += f * 2;
-  const plotBottom = cursor;
-
-  // ---- Axis: 0 ("before the flight") and the two thresholds always; round ticks where there is room left.
-  const tickLength = f * 0.35;
-  const labelTop = plotBottom + tickLength + f * 0.3;
-  const labelGap = f * 0.5;
-  interface Special {
-    kind: AxisLabelKind;
-    valueUm: number;
-    lines: string[];
-  }
-  const buildSpecials = (wrapZeroNote: boolean): (Special & RowItem)[] => {
-    const zeroNote = wrapZeroNote
-      ? (wrapLines(input.zero.note, f * 4.6, f, measure) ?? [input.zero.note])
-      : [input.zero.note];
-    const specials: Special[] = [
-      { kind: 'zero', valueUm: 0, lines: [input.zero.value, ...zeroNote] },
-      {
-        kind: 'first-sign',
-        valueUm: thresholds.firstSignUm,
-        lines: [input.firstSign.value, input.firstSign.note],
-      },
-      {
-        kind: 'clinically-concerning',
-        valueUm: thresholds.clinicallyConcerningUm,
-        lines: [input.clinicallyConcerning.value, input.clinicallyConcerning.note],
-      },
-    ];
-    return specials
-      .filter((special) => special.valueUm >= domain.min && special.valueUm <= domain.max)
-      .sort((a, b) => a.valueUm - b.valueUm)
-      .map((special) => ({
-        ...special,
-        anchor: x(special.valueUm),
-        width: Math.max(
-          measure(special.lines[0] as string, f, true),
-          widestLine(special.lines.slice(1), f, measure),
-        ),
-      }));
-  };
-  const ideal = (item: RowItem): number => clamp(item.anchor, item.width / 2, width - item.width / 2);
-  let specials = buildSpecials(false);
-  let centres = spreadRow(specials, 0, width, labelGap);
-  if (specials.some((special, index) => Math.abs((centres[index] as number) - ideal(special)) > 0.5)) {
-    // The labels had to move aside: give them room by breaking the note under 0 in two.
-    specials = buildSpecials(true);
-    centres = spreadRow(specials, 0, width, labelGap);
-  }
-  const axisLabels: AxisLabel[] = specials.map((special, index) => ({
-    kind: special.kind,
-    valueUm: special.valueUm,
-    anchorX: special.anchor,
-    x: centres[index] as number,
-    width: special.width,
-    lines: special.lines,
-    baseline: labelTop + f * 0.95,
-  }));
-
-  const step = tickStep(domain, right - left, f * 3.2);
-  const tickValues = ticks(domain, step);
-  for (const valueUm of tickValues) {
-    if (specials.some((special) => Math.abs(special.valueUm - valueUm) < 1e-9)) continue;
-    const text = input.tickLabel(valueUm);
-    const labelWidth = measure(text, f);
-    const centre = clamp(x(valueUm), labelWidth / 2, width - labelWidth / 2);
-    if (axisLabels.some((other) => spansCollide(centre, labelWidth, other.x, other.width, labelGap))) continue;
-    axisLabels.push({
-      kind: 'tick',
-      valueUm,
-      anchorX: x(valueUm),
-      x: centre,
-      width: labelWidth,
-      lines: [text],
-      baseline: labelTop + f * 0.95,
-    });
-  }
-  axisLabels.sort((a, b) => a.valueUm - b.valueUm);
-  const axisLines = Math.max(...axisLabels.map((label) => label.lines.length));
 
   return {
     width,
-    height: Math.ceil(labelTop + axisLines * lineHeight + f * 0.2),
+    height: Math.ceil(bottom + f * 0.2),
     lineHeight,
-    plot: { left, right, top: plotTop, bottom: plotBottom },
-    contentTop,
+    plot: { left, right },
+    lineY,
     bandMode: inline ? 'inline' : 'stacked',
     bands: bandBoxes,
     bandLabels,
-    zeroX: x(0),
-    thresholdLines: [
-      { kind: 'first-sign' as const, x: x(thresholds.firstSignUm), valueUm: thresholds.firstSignUm },
-      {
-        kind: 'clinically-concerning' as const,
-        x: x(thresholds.clinicallyConcerningUm),
-        valueUm: thresholds.clinicallyConcerningUm,
-      },
-    ]
-      .filter((line) => line.valueUm > domain.min && line.valueUm < domain.max)
-      .map(({ kind, x: lineX }) => ({ kind, x: lineX })),
-    tickLength,
-    tickMarks: [...new Set([...tickValues, ...specials.map((special) => special.valueUm)])]
-      .sort((a, b) => a - b)
-      .map((valueUm) => x(valueUm)),
+    zero: hasZero ? { x: x(0), y1: lineY - zeroHalf, y2: lineY + zeroHalf } : null,
+    thresholdLines: specials.map((special) => ({ kind: special.kind, x: x(special.valueUm), y1: 0, y2: lineY + zeroHalf })),
+    tickMarks,
     axisLabels,
     today,
     previous,

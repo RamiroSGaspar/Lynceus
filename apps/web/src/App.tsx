@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import type { CrewId } from '@app/core';
-import { formatRoute, routeCrewId, type Route } from './app/routes';
+import { useEffect, useRef } from 'react';
+import { formatRoute, type Route } from './app/routes';
+import { useAppState } from './app/StoreContext';
 import { useRoute } from './app/useRoute';
 import { DevOctPage } from './features/oct';
 import { DevVisionPage } from './features/vision';
@@ -44,18 +44,15 @@ function Screen({ route }: { route: Route }) {
   }
 }
 
-/** The frame around every screen: header, the screen the address points at, and footer. */
+/** Screens of one crew member carry the fixed navigation at the bottom, and the frame leaves room for it. */
+const WITH_NAVIGATION: ReadonlySet<Route['name']> = new Set(['session', 'result', 'history', 'report']);
+
+/** The frame around every screen: the top strip, the screen the address points at, and the foot. */
 function Shell({ route }: { route: Route }) {
   const t = useMessages(appMessages);
+  const { missionDay } = useAppState();
   const routeKey = formatRoute(route);
   const mainRef = useRef<HTMLElement>(null);
-
-  // The header keeps showing the last crew member chosen on screens that are not about one.
-  const [lastCrewId, setLastCrewId] = useState<CrewId | null>(null);
-  const routeCrew = routeCrewId(route);
-  useEffect(() => {
-    if (routeCrew) setLastCrewId(routeCrew);
-  }, [routeCrew]);
 
   // After navigating: back to the top, with the focus on the new screen's heading.
   const firstRender = useRef(true);
@@ -68,10 +65,13 @@ function Shell({ route }: { route: Route }) {
     mainRef.current?.querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });
   }, [routeKey]);
 
+  // The strip says when: the day of the control on screen, or the chosen mission day.
+  const flightDay = route.name === 'result' || route.name === 'report' ? route.flightDay : missionDay;
+
   return (
-    <div className="app">
+    <div className={`co-pantalla${WITH_NAVIGATION.has(route.name) ? '' : ' co-pantalla--sin-nav'}`}>
       <a
-        className="skip-link"
+        className="co-salto"
         href={routeKey}
         onClick={(event) => {
           event.preventDefault();
@@ -80,8 +80,8 @@ function Shell({ route }: { route: Route }) {
       >
         {t('skip')}
       </a>
-      <AppHeader crewId={routeCrew ?? lastCrewId} />
-      <main id="main" ref={mainRef} className="app-main" tabIndex={-1}>
+      <AppHeader flightDay={flightDay} />
+      <main id="main" ref={mainRef} className="co-principal" tabIndex={-1}>
         <ErrorBoundary key={routeKey}>
           <Screen route={route} />
         </ErrorBoundary>

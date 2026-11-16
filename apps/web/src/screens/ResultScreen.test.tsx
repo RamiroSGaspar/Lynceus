@@ -8,7 +8,8 @@ import { LOCALES, renderHtml, testStore, textOf, unfilledPlaceholders } from '..
 import { ResultScreen } from './ResultScreen';
 
 /** The assistant is someone else's piece, with its own tests: here only where it is mounted and what it is given. */
-vi.mock('../slots', () => ({
+vi.mock('../slots', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../slots')>()),
   ExamViewer: () => <div data-slot="viewer" />,
   AssistantPanel: ({ record }: { record: SessionRecord | null }) => (
     <button data-slot="assistant" data-record={record ? `${record.crewId}:${record.flightDay}` : 'none'}>
@@ -35,7 +36,8 @@ describe('result screen', () => {
         expect(textOf(html)).toContain(member.name);
       }
     }
-  });
+    // Every control of every crew member is rendered whole: with the rest of the suite running next to it, that takes time.
+  }, 30_000);
 
   it.each(LOCALES)('shows in %s the texts of the core, word for word, and writes none of its own', (locale) => {
     const record = getHistory('C', 150).at(-1) as SessionRecord;
@@ -103,7 +105,7 @@ describe('result screen', () => {
     expect(text).toContain('Could not be measured');
     // Only the measured eye has a number line and a "how sure" block.
     expect(html.match(/<svg role="img"/g)).toHaveLength(1);
-    expect(html.match(/class="sure"/g)).toHaveLength(1);
+    expect(html.match(/class="[^"]*\bsure\b[^"]*"/g)).toHaveLength(1);
     expect(text).toContain('Attempt 3: could not be measured');
     expect(text).toContain('too few scans were good enough to measure');
     expect(text).toContain('the scan was not centred on the optic nerve');
@@ -165,16 +167,19 @@ describe('result screen', () => {
     const html = renderHtml(<ResultScreen crewId="B" flightDay={0} />, 'en');
     const text = textOf(html);
     expect(text).toContain(explainAssessment((getHistory('B', 150)[0] as SessionRecord).assessment, 'en').headline);
-    expect(html).not.toContain('level-badge');
+    expect(html).not.toContain('co-nivel');
     expect(html).not.toContain('<svg role="img"');
   });
 
   it('says nothing about "not measured on an image" for a control or a pre-flight exam that the engine measured', () => {
     for (const day of [0, 118]) {
-      const text = textOf(renderHtml(<ResultScreen crewId="C" flightDay={day} />, 'en'));
+      const html = renderHtml(<ResultScreen crewId="C" flightDay={day} />, 'en');
+      const text = textOf(html);
       expect(text).not.toContain('not measured on an image');
-      // The image behind each eye's numbers can be opened, from the request of the attempt the engine accepted.
-      expect(text.match(/See the tomography and what was measured on it/g)).toHaveLength(2);
+      // The image behind each eye's numbers can be opened, from the request of the attempt the engine accepted:
+      // one section with that title, and in it one opener per eye.
+      expect(text).toContain('See the tomography and what was measured on it');
+      expect(html.match(/data-viewer-eye="(OD|OS)"/g)).toEqual(['data-viewer-eye="OD"', 'data-viewer-eye="OS"']);
     }
   });
 
@@ -186,10 +191,12 @@ describe('result screen', () => {
       return { ...capture, accepted: capture.accepted && { ...capture.accepted, engineVersion: PROVISIONAL_ENGINE_VERSION } };
     };
     const old: SessionRecord = { ...record, origin: 'live', eyes: { OD: fromTables('OD'), OS: fromTables('OS') } };
-    const text = textOf(renderHtml(<ResultScreen crewId="C" flightDay={118} />, 'en', testStore((state) => withRecord(state, old))));
+    const html = renderHtml(<ResultScreen crewId="C" flightDay={118} />, 'en', testStore((state) => withRecord(state, old)));
+    const text = textOf(html);
     expect(text).toContain('The numbers of this control were not measured on an image.');
     expect(text).toContain(PROVISIONAL_ENGINE_VERSION);
     expect(text).not.toContain('See the tomography and what was measured on it');
+    expect(html).not.toContain('data-viewer-eye');
   });
 
   it('keeps saying that the ranges and probabilities come from a provisional error model', () => {

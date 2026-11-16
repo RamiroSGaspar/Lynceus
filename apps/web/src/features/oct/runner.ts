@@ -2,7 +2,7 @@
  * What the OCT worker does with a job, written without any worker API so the
  * protocol can be tested in Node. `octWorker.ts` wires it to `postMessage`.
  */
-import type { AnalyzeOptions, AnalysisProgress, BScan, CaptureRequest, CrewId, Eye, EyeGroundTruth, ExamAnalysis, ExamSource } from '@app/core';
+import type { AnalyzeOptions, AnalysisProgress, BScan, CaptureRequest, CrewId, Eye, EyeGroundTruth, ExamAnalysis, ExamSource, ScanAnalysis, VolHeader } from '@app/core';
 import type { PostMessage, WorkerJob } from './protocol';
 
 export interface RunnerDeps {
@@ -11,6 +11,8 @@ export interface RunnerDeps {
   toDisplayGray(pixels: Float32Array): Uint8ClampedArray;
   writeVolBlocks(exam: ExamSource): Generator<Uint8Array>;
   groundTruth(crewId: CrewId, eye: Eye, flightDay: number): EyeGroundTruth;
+  /** What the engine marks on one B-scan on its own: its two edges and the ends of Bruch's membrane. */
+  segmentScan(scan: BScan, header: VolHeader): ScanAnalysis;
   now(): number;
   /** Heap in use, when the browser tells (non-standard); null otherwise. */
   heapBytes(): number | null;
@@ -80,10 +82,30 @@ function download(job: Extract<WorkerJob, { type: 'download' }>, post: PostMessa
   post({ type: 'vol-done', totalBytes }, []);
 }
 
+/** The fundus image and one scan with its edges: what a result shows before the viewer is opened. */
+function preview(job: Extract<WorkerJob, { type: 'preview' }>, post: PostMessage, deps: RunnerDeps): void {
+  const exam = deps.acquire(job.request);
+  const { header } = exam;
+  // A copy: the exam keeps its fundus image and the transfer would empty it.
+  const fundus = exam.slo.slice();
+  const scan = exam.bscan(job.scan);
+  const gray = deps.toDisplayGray(scan.pixels);
+  post(
+    {
+      type: 'preview',
+      header,
+      fundus: { width: header.sizeXSlo, height: header.sizeYSlo, gray: fundus },
+      scan: { index: scan.index, header: scan.header, width: header.sizeX, height: header.sizeZ, gray, analysis: deps.segmentScan(scan, header) },
+    },
+    [fundus.buffer, gray.buffer],
+  );
+}
+
 export function runJob(job: WorkerJob, post: PostMessage, deps: RunnerDeps): void {
   try {
     if (job.type === 'capture') capture(job, post, deps);
     else if (job.type === 'download') download(job, post, deps);
+    else if (job.type === 'preview') preview(job, post, deps);
     else post({ type: 'ground-truth', truth: deps.groundTruth(job.crewId, job.eye, job.flightDay) }, []);
   } catch (error) {
     post({ type: 'error', message: error instanceof Error ? error.message : String(error) }, []);
