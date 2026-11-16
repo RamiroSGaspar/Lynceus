@@ -1,0 +1,31 @@
+<!-- Lynceus demo video: render page. SIMULATED DATA. Served over http by ../render/render.py (the engine reads JSON and images). -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lynceus demo video · render</title>
+<link rel="icon" href="data:,">
+<style>
+  @font-face { font-family: 'Atkinson Hyperlegible Next'; src: url('../../sistema-de-diseno/sistema/fonts/atkinson-hyperlegible-next-latin-wght-normal.woff2') format('woff2'); font-weight: 200 800; font-style: normal; }
+  @font-face { font-family: 'Atkinson Hyperlegible Next'; src: url('../../sistema-de-diseno/sistema/fonts/atkinson-hyperlegible-next-latin-ext-wght-normal.woff2') format('woff2'); font-weight: 200 800; font-style: normal; unicode-range: U+0100-02BA, U+1E00-1EFF; }
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="lynceus-demo.js"></script>
+<script>
+  // Ready when fonts and assets are in: the render script waits for window.READY.
+  window.READY = (async function () {
+    for (const w of [300, 400, 500, 600]) await document.fonts.load(w + ' 40px "Atkinson Hyperlegible Next"', 'Lynceus 0123456789 µ%·');
+    await LYNCEUS_DEMO.loadAssets();
+    window.TL = LYNCEUS_DEMO.buildTimeline(window.TIEMPOS || {});
+    window.CV = document.getElementById('c');
+    window.CTX = window.CV.getContext('2d');
+    window.frame = function (t) { LYNCEUS_DEMO.drawFrame(window.CTX, window.TL, t); return window.CV.toDataURL('image/png').split(',')[1]; };
+    return window.TL.total;
+  })();
+</script>
+</body>
+</html>
