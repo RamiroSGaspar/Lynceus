@@ -22,6 +22,7 @@ De dónde sale cada cifra:
 
 - 1920 × 1080, 30 cuadros por segundo, H.264. Dura **30,000 s** exactos.
 - Voz en inglés, sin subtítulos. Música de fondo sintética. Sin efectos de sonido.
+- Aparte, una versión con subtítulos en español (ver la sección de abajo).
 
 ## Audio
 
@@ -87,10 +88,19 @@ Herramientas: el entorno de Python de los videos del TOYP (ffmpeg, Playwright, n
 ## Archivos
 
 - Las fuentes van en `monitoreo-salud-astronautas/video-demo/` y se commitean. Las imágenes generadas no: se rehacen con los pasos de `LEEME.md`.
-- Los renders y el MP4 quedan en `.tmp/video/`, sin commitear. El MP4 lo sube el equipo para el enlace de la entrega.
+- Los renders de trabajo quedan en `.tmp/video/`, sin commitear. Los dos videos finales sí van en `entrega/` (pedido del equipo, 15 nov 2026). El MP4 lo sube el equipo para el enlace de la entrega.
+
+## Versión con subtítulos en español (15 nov 2026)
+
+- Pedido del equipo, aparte de la versión sin subtítulos. Texto del equipo en `audio/subtitulos-es.json`: una línea por frase de la voz, revisada contra el guion en inglés (las 16 coinciden en orden y sentido).
+- Quemados en el video: abajo al centro, Atkinson Hyperlegible Next de 40 px, blanco sobre el halo del sistema (ninguna estrella detrás del texto), dos líneas como máximo; el corte de línea del 70 % va marcado en el texto.
+- Cada línea aparece con su frase y queda hasta justo antes de la siguiente, o 0,7 s después de terminar, para que las cortas se lleguen a leer.
+- Para que no tapen nada: en la captura el disco y su contador suben un poco; en los cuatro cortes la pieza sube, se achica un poco y va sin el contexto apagado de la pantalla; en la tarjeta final la línea va entre la frase en inglés y el aviso.
+- Se renderiza con `SUBTITULOS=es` delante de `render/render.py` (ver `LEEME.md`).
 
 ## Estado (15 nov 2026)
 
-- **Storyboard v1:** 16 cuadros dibujados por el motor, en `.tmp/video/storyboard/storyboard.png` (y cada cuadro a tamaño completo en la misma carpeta). Para corregir.
-- **Borrador v1:** el motor ya anima todo el plano; `.tmp/video/borrador-v1.mp4` lleva la voz y la música mezcladas (30,000 s, −14 LUFS). No es la entrega.
-- **Pendiente:** aprobación del storyboard y del borrador, el punto azul pálido de la Tierra (única excepción de color), ajustes que salgan de verlo, editor de tiempos si hace falta y render final.
+- **Storyboard v1** aprobado. **Borrador v1** aprobado como final por el equipo.
+- **Final:** `entrega/lynceus-demo-final.mp4`, el borrador aprobado con un solo retoque: en el corte «How much» el brillo del anillo ya no se corta en línea recta.
+- **Final con subtítulos en español:** `entrega/lynceus-demo-final-subtitulos-es.mp4`.
+- Ambos 1920 × 1080, 30 cuadros por segundo, 30,000 s, voz y música a −14 LUFS. A pedido del equipo, los dos finales se commitean en `entrega/` (el resto de los renders sigue en `.tmp/video/`).

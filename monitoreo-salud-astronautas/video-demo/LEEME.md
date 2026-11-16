@@ -9,12 +9,14 @@ El video de 30 segundos de la entrega. Las decisiones están en [`decisiones.md`
 ```
 video-demo/
 ├─ decisiones.md                 lo acordado, escena por escena, y de dónde sale cada cifra
+├─ entrega/                      los dos videos finales: sin subtítulos y con subtítulos en español
 ├─ audio/
 │  ├─ guion.txt                  el guion que lee la voz
 │  ├─ recortar_voz.py            acorta las pausas largas de la voz (no las palabras)
 │  ├─ tiempos-voz.json           dónde empieza y termina cada frase de la voz recortada
 │  ├─ musica.py                  la música de fondo, sintética
-│  └─ mezclar.py                 voz y música, a −14 LUFS
+│  ├─ mezclar.py                 voz y música, a −14 LUFS
+│  └─ subtitulos-es.json         los subtítulos en español, una línea por frase de la voz
 ├─ datos/
 │  └─ generar-control.ts         el control del día 126 del tripulante C, con el motor real
 ├─ pantallas/
@@ -30,7 +32,7 @@ video-demo/
    └─ hoja_storyboard.py         la hoja del storyboard
 ```
 
-Las imágenes generadas (fondo de ojo, cortes y capturas de pantalla) no se commitean: se rehacen con los pasos de abajo. Los renders van a `.tmp/video/` en la raíz del repositorio.
+Las imágenes generadas (fondo de ojo, cortes y capturas de pantalla) no se commitean: se rehacen con los pasos de abajo. Los renders de trabajo van a `.tmp/video/` en la raíz del repositorio; los dos videos finales se copian a `entrega/`.
 
 ## Qué hace falta
 
@@ -77,7 +79,11 @@ Desde la raíz del repositorio:
    ```
 7. **Video** (1920 × 1080, 30 cuadros por segundo; `CRF=19` delante da un borrador más liviano).
    ```bash
-   python monitoreo-salud-astronautas/video-demo/render/render.py .tmp/video/lynceus-demo.mp4 .tmp/video/audio/mezcla.wav
+   python monitoreo-salud-astronautas/video-demo/render/render.py .tmp/video/lynceus-demo-final.mp4 .tmp/video/audio/mezcla.wav
+   ```
+   La versión con subtítulos en español (`audio/subtitulos-es.json`), con `SUBTITULOS=es` delante. Sirve también con `--cuadros`.
+   ```bash
+   SUBTITULOS=es python monitoreo-salud-astronautas/video-demo/render/render.py .tmp/video/lynceus-demo-final-subtitulos-es.mp4 .tmp/video/audio/mezcla.wav
    ```
 
 `render.py` sirve `monitoreo-salud-astronautas/` en `127.0.0.1` mientras dibuja: el motor lee JSON e imágenes, y una página abierta como archivo no puede.

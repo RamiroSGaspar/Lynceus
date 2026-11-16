@@ -8,6 +8,7 @@ Usage (python with playwright; ffmpeg on the PATH for the video):
     python render.py --cuadros CARPETA 0 3.2 10.5      PNG of single frames (f_000.00.png …)
     python render.py SALIDA.mp4 [AUDIO.wav]            the whole video, with or without audio
 The CRF environment variable changes the quality (14 by default; 18 to 20 for drafts).
+SUBTITULOS=es burns in the subtitles of ../audio/subtitulos-es.json.
 """
 import asyncio
 import base64
@@ -45,7 +46,8 @@ async def open_page(p, port):
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.on('console', lambda m: errors.append(m.text) if m.type == 'error' else None)
     page.on('response', lambda r: errors.append(f'{r.status} {r.url}') if r.status >= 400 else None)
-    await page.goto(f'http://127.0.0.1:{port}/{PAGE}')
+    subs = os.environ.get('SUBTITULOS', '')
+    await page.goto(f'http://127.0.0.1:{port}/{PAGE}' + (f'?subs={subs}' if subs else ''))
     total = await page.evaluate('window.READY')
     if errors:
         sys.exit('Page errors: ' + ' | '.join(errors))

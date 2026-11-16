@@ -833,7 +833,9 @@
     // the disc: born big in the centre, then settles into its place on the screen
     var settle = E.inOut(prog(t, T.settle, T.screen + 0.25));
     var born = E.out(prog(t, T.eIn, T.eIn + 0.3));
-    var cx = lerp(960, L[0], settle), cy = lerp(520, L[1], settle), r = lerp(lerp(40, 330, born), L[2], settle);
+    // with subtitles, the disc and its counter sit a little higher to leave the bottom free
+    var cy0 = SUBS_ON ? 498 : 520, r0 = SUBS_ON ? 312 : 330;
+    var cx = lerp(960, L[0], settle), cy = lerp(cy0, L[1], settle), r = lerp(lerp(40, r0, born), L[2], settle);
     var view = E.smooth(prog(t, T.screen + 0.3, T.cuts[0])) * 0.025;
     ctx.save();
     ctx.translate(960, 540); ctx.scale(1 + view, 1 + view); ctx.translate(-960, -540);
@@ -850,7 +852,7 @@
     var ca = E.out(prog(t, T.eIn + 0.15, T.eIn + 0.35)) * (1 - prog(t, T.settle - 0.05, T.settle + 0.15));
     if (ca > 0) {
       var sweep = prog(t, T.sweepA, T.sweepB), nScans = Math.max(1, Math.round(sweep * 48));
-      lectura(ctx, { x: 960, y: 960, value: String(nScans), unit: 'of 48', size: 84, align: 'center', label: sweep < 1 ? 'Taking scans' : 'Measuring', labelSize: 24, alpha: ca, minLine: 260 });
+      lectura(ctx, { x: 960, y: SUBS_ON ? 900 : 960, value: String(nScans), unit: 'of 48', size: 84, align: 'center', label: sweep < 1 ? 'Taking scans' : 'Measuring', labelSize: 24, alpha: ca, minLine: 260 });
     }
     ctx.restore();
   }
@@ -873,22 +875,25 @@
     while (i > 0 && t < T.cuts[i]) i--;
     var cut = CUTS[i], start = T.cuts[i], end = i + 1 < T.cuts.length ? T.cuts[i + 1] : T.cutsEnd;
     var f = cut.frame;
-    var z = Math.min(4, CUT_MAX[0] / f[2], CUT_MAX[1] / f[3]) * (1 + 0.035 * E.smooth(prog(t, start, end)));
+    // with subtitles the pieces sit higher and a little smaller, to leave air above the subtitle
+    var at = SUBS_ON ? [CUT_AT[0], 556] : CUT_AT, maxH = SUBS_ON ? 740 : CUT_MAX[1];
+    var context = SUBS_ON ? 0 : cut.context;   // with subtitles, nothing dim may sit next to them
+    var z = Math.min(4, CUT_MAX[0] / f[2], maxH / f[3]) * (1 + 0.035 * E.smooth(prog(t, start, end)));
     var cx = f[0] + f[2] / 2, cy = f[1] + f[3] / 2;
-    var e = CUT_AT[0] - cx * z, fy = CUT_AT[1] - cy * z;
+    var e = at[0] - cx * z, fy = at[1] - cy * z;
     // context: the rest of the screen (without its top strip), dimmed and fading away from the piece
-    if (cut.context > 0) {
+    if (context > 0) {
       var oc = offscreen(), o = oc.getContext('2d'), k = A.img.screen.width / 1920;
       o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, W, H);
       o.setTransform(z, 0, 0, z, e, fy);
       o.drawImage(A.img.screen, 0, 84 * k, 1920 * k, 996 * k, 0, 84, 1920, 996);
       o.setTransform(1, 0, 0, 1, 0, 0);
       o.globalCompositeOperation = 'destination-in';
-      var g = o.createRadialGradient(CUT_AT[0], CUT_AT[1], 260, CUT_AT[0], CUT_AT[1], 980);
+      var g = o.createRadialGradient(at[0], at[1], 260, at[0], at[1], 980);
       g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
       o.fillStyle = g; o.fillRect(0, 0, W, H);
       o.globalCompositeOperation = 'source-over';
-      ctx.save(); ctx.globalAlpha = cut.context; ctx.drawImage(oc, 0, 0); ctx.restore();
+      ctx.save(); ctx.globalAlpha = context; ctx.drawImage(oc, 0, 0); ctx.restore();
     }
     // the piece, sharp, cut to its frame and on its own veil: no star behind its text
     var b = box(cut.pieceBox), pad = cut.pad;
@@ -1064,10 +1069,48 @@
     text(ctx, 'NASA Space Apps Challenge 2026', 960, 1016, { size: 20, weight: 400, color: C.muted, align: 'center', alpha: a * sa });
   }
 
+  // ------------------------------------------------------------------ subtitles
+  // Optional (opts.subs: one line per voice phrase). Each line shows from its phrase until just
+  // before the next one, and at least 0.7 s after the phrase ends, so short ones can be read.
+  var SUBS_ON = false;
+  function subtitleCues(tl, lines) {
+    return lines.map(function (txt, i) {
+      var p = tl.p[i], next = tl.p[i + 1];
+      return { s: p.s - 0.05, e: next ? Math.min(next.s - 0.06, p.e + 0.7) : tl.total - 0.1, text: txt };
+    });
+  }
+  /** The line breaks written in the text ("\n"); else one line, or two balanced ones when it is wider than maxW. */
+  function wrapLines(ctx, s, size, maxW) {
+    if (s.indexOf('\n') >= 0) return s.split('\n');
+    if (measure(ctx, s, size, 500) <= maxW) return [s];
+    var words = s.split(' '), best = null;
+    for (var i = 1; i < words.length; i++) {
+      var a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
+      var w = Math.max(measure(ctx, a, size, 500), measure(ctx, b, size, 500));
+      if (!best || w < best.w) best = { w: w, lines: [a, b] };
+    }
+    return best.lines;
+  }
+  function subtitles(ctx, tl, t, lines) {
+    var cues = subtitleCues(tl, lines), cue = null;
+    for (var i = 0; i < cues.length; i++) if (t >= cues[i].s && t < cues[i].e) cue = cues[i];
+    if (!cue) return;
+    var a = Math.min(prog(t, cue.s, cue.s + 0.08), 1 - prog(t, cue.e - 0.08, cue.e));
+    var size = 40, lh = Math.round(size * 1.28);
+    var rows = wrapLines(ctx, cue.text, size, 1320);
+    // Bottom centre; on the brand card, between the tagline and the small print.
+    var last = t >= tl.T.hIn ? 884 : 1034;
+    var top = last - (rows.length - 1) * lh;
+    var w = Math.max.apply(null, rows.map(function (r) { return measure(ctx, r, size, 500); }));
+    halo(ctx, 960 - w / 2 - 34, top - size - 8, w + 68, (rows.length - 1) * lh + size + 34, a);
+    rows.forEach(function (r, k) { text(ctx, r, 960, top + k * lh, { size: size, weight: 500, align: 'center', alpha: a }); });
+  }
+
   // ------------------------------------------------------------------ frame
   function drawFrame(ctx, tl, t, opts) {
     if (!A.ready) return;
     var T = tl.T;
+    SUBS_ON = !!(opts && opts.subs);
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -1086,6 +1129,7 @@
     if (t >= T.reportA && t < T.travelA) fa = prog(t, T.reportA + 0.2, T.travelA);   // the screen, still big, shows its own
     fa *= 1 - prog(t, T.hIn - 0.1, T.hIn + 0.2);
     fichaSimulado(ctx, 960, 42, fa);
+    if (SUBS_ON) subtitles(ctx, tl, t, opts.subs);
     ctx.restore();
   }
 

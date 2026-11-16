@@ -21,9 +21,17 @@
     for (const w of [300, 400, 500, 600]) await document.fonts.load(w + ' 40px "Atkinson Hyperlegible Next"', 'Lynceus 0123456789 µ%·');
     await LYNCEUS_DEMO.loadAssets();
     window.TL = LYNCEUS_DEMO.buildTimeline(window.TIEMPOS || {});
+    // ?subs=es burns in the subtitles of ../audio/subtitulos-es.json: one line per voice phrase.
+    const lang = new URLSearchParams(location.search).get('subs');
+    window.OPTS = {};
+    if (lang) {
+      const subs = (await (await fetch('../audio/subtitulos-' + lang + '.json')).json()).frases;
+      if (subs.length !== window.TL.p.length) throw new Error('Subtitles: ' + subs.length + ' lines for ' + window.TL.p.length + ' phrases');
+      window.OPTS.subs = subs;
+    }
     window.CV = document.getElementById('c');
     window.CTX = window.CV.getContext('2d');
-    window.frame = function (t) { LYNCEUS_DEMO.drawFrame(window.CTX, window.TL, t); return window.CV.toDataURL('image/png').split(',')[1]; };
+    window.frame = function (t) { LYNCEUS_DEMO.drawFrame(window.CTX, window.TL, t, window.OPTS); return window.CV.toDataURL('image/png').split(',')[1]; };
     return window.TL.total;
   })();
 </script>

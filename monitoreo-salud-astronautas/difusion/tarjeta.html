@@ -1,0 +1,83 @@
+<!-- SIMULATED DATA: the ocular shows a fictional crew member. Made by difusion/tarjeta.py; do not edit by hand. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lynceus · project card</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../sistema-de-diseno/sistema/tokens.css">
+<link rel="stylesheet" href="../sistema-de-diseno/sistema/components/bundle.css">
+<style>
+  html, body { margin: 0; overflow: hidden; }
+  body { width: 1200px; height: 627px; }
+  body.banner { width: 1584px; height: 396px; }
+  .tarjeta { position: relative; box-sizing: border-box; width: 100%; height: 100%; display: grid; grid-template-columns: 1fr auto; grid-template-rows: minmax(0, 1fr); align-items: center; column-gap: 56px; padding: 44px 72px 40px 64px; }
+  /* Where text is read, the field goes dark: a veil from the left edge. */
+  .tarjeta::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.9) 48%, rgba(0,0,0,0) 72%); pointer-events: none; }
+  .texto, .visual { position: relative; }
+  .texto { display: grid; grid-template-rows: auto 1fr auto; height: 100%; }
+  .texto .co-marca__iso { width: 44px; }
+  .texto .co-marca__nombre { font-size: 18px; }
+  .mensaje { align-self: center; }
+  h1 { margin: 0 0 18px; font-size: 62px; font-weight: 400; line-height: 1.04; letter-spacing: -0.01em; color: var(--color-text); }
+  .sub { margin: 0 0 14px; max-width: 34ch; font-size: 25px; line-height: 1.3; color: var(--color-text-secondary); }
+  .puntos { margin: 0; font-size: 17px; line-height: 1.45; color: var(--color-text-muted); }
+  .pie { display: grid; gap: 12px; }
+  .pie__linea { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+  .evento { font-size: 15px; font-weight: 600; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--color-text); }
+  .desafio { font-size: 15px; color: var(--color-text-muted); }
+  .visual { --ocular-size: 206px; display: grid; justify-items: center; align-self: center; }
+  .visual .co-ocular__cabeza { margin-bottom: 26px; }
+  .aviso { font-size: 13px; color: var(--color-text-muted); }
+
+  /* Banner: the photo covers the lower left; disc and reading side by side. */
+  .banner .tarjeta { grid-template-columns: 1fr auto; padding: 28px 72px 28px 360px; column-gap: 64px; }
+  .banner .tarjeta::before { background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.9) 62%, rgba(0,0,0,0) 80%); }
+  .banner .texto { grid-template-rows: 1fr auto; }
+  .banner .texto .co-marca { position: absolute; top: 0; left: -296px; }
+  .banner h1 { font-size: 52px; margin-bottom: 12px; }
+  .banner .sub { font-size: 21px; max-width: none; margin-bottom: 0; }
+  .banner .puntos { display: none; }
+  .banner .visual { --ocular-size: 210px; }
+  .banner .co-ocular { grid-template-columns: auto auto; grid-template-areas: "campo cabeza" "campo pie"; align-items: center; column-gap: 44px; justify-items: start; }
+  .banner .co-ocular__campo { grid-area: campo; }
+  .banner .co-ocular__cabeza { grid-area: cabeza; margin: 0; justify-items: start; text-align: left; align-self: end; }
+  .banner .co-ocular__pie { grid-area: pie; margin: 12px 0 0; justify-items: start; text-align: left; align-self: start; }
+  .banner .co-ocular__guia { display: none; }
+  .banner .co-lectura--heroe .co-lectura__valor { justify-content: flex-start; font-size: 56px; }
+  .banner .co-lectura--heroe .co-lectura__rotulo { justify-content: flex-start; }
+  .banner .pie { gap: 8px; }
+</style>
+</head>
+<body class="co co-campo">
+<main class="tarjeta">
+  <section class="texto">
+    <span class="co-marca"><span class="co-marca__iso" data-co-marca="mini"></span><span class="co-marca__nombre">Lynceus</span></span>
+    <div class="mensaje">
+      <h1>See what you can’t feel.</h1>
+      <p class="sub">On-board first read of spaceflight eye changes.</p>
+      <p class="puntos">Retinal OCT, each astronaut against their own pre-flight exam.<br>NASA thresholds, stated uncertainty, and the flight surgeon decides.</p>
+    </div>
+    <div class="pie">
+      <div class="pie__linea"><span class="evento">NASA Space Apps Challenge 2026</span><span class="desafio">Health monitoring software for astronauts</span></div>
+      <div class="pie__linea"><span class="co-ficha co-ficha--simulado"><svg class="co-ic" aria-hidden="true"><use href="#i-flask-conical"/></svg>Simulated<span class="co-ficha__resto">&#160;data</span></span><span class="aviso">Simulated data. Not a medical device. Not validated on people.</span></div>
+    </div>
+  </section>
+  <section class="visual">
+    <figure class="co-ocular co-ocular--caution">
+<div class="co-ocular__cabeza co-halo"><span class="co-ojo"><abbr class="co-ficha" title="Right eye">OD</abbr>Right eye</span><span class="co-nivel co-nivel--caution"><svg class="co-nivel__forma" aria-hidden="true"><use href="#l-caution"/></svg><span class="co-nivel__clase">Caution</span><span class="co-nivel__nombre">Clinically concerning</span></span><span class="co-ocular__hallazgo"><svg class="co-ic" aria-hidden="true"><use href="#i-corte"/></svg>New folds</span></div>
+<div class="co-ocular__campo">
+<button type="button" class="co-ocular__lente" data-ojo="OD" aria-pressed="true" aria-label="Fundus image of the right eye. The ellipse fitted to the optic nerve opening and the four measurement rings are drawn on it. Simulated data.">
+<img class="co-ocular__imagen" src="../video-demo/pantallas/img/fondo-C-OD-d126.jpg" alt=""><svg class="co-ocular__marcas" viewBox="0 0 100 100" aria-hidden="true"><ellipse class="co-zona" cx="50" cy="49.9" rx="17.7" ry="15.4" transform="rotate(99.5 50 49.9)" stroke-width="4.6"/><ellipse class="co-trazo co-trazo--base" cx="50" cy="49.9" rx="15.4" ry="13.1" transform="rotate(99.5 50 49.9)"/><ellipse class="co-trazo" cx="50" cy="49.9" rx="15.4" ry="13.1" transform="rotate(99.5 50 49.9)"/><ellipse class="co-trazo co-trazo--base" cx="50" cy="49.9" rx="20" ry="17.8" transform="rotate(99.5 50 49.9)"/><ellipse class="co-trazo co-trazo--trazos" cx="50" cy="49.9" rx="20" ry="17.8" transform="rotate(99.5 50 49.9)"/><ellipse class="co-trazo co-trazo--puntos" cx="50" cy="49.9" rx="24.6" ry="22.4" transform="rotate(99.5 50 49.9)"/><ellipse class="co-trazo co-trazo--puntos" cx="50" cy="49.9" rx="33.9" ry="31.6" transform="rotate(99.5 50 49.9)"/><ellipse class="co-trazo co-trazo--puntos" cx="50" cy="49.9" rx="43.1" ry="40.8" transform="rotate(99.5 50 49.9)"/></svg><span class="co-sello">Simulated</span>
+</button>
+<span class="co-ocular__anillo"></span>
+<svg class="co-ocular__guia" viewBox="0 0 100 100" aria-hidden="true"><line class="co-trazo co-trazo--base" x1="49.3" y1="67.6" x2="49.3" y2="99"/><line class="co-trazo" x1="49.3" y1="67.6" x2="49.3" y2="113"/><circle class="co-punto co-punto--lleno" cx="49.3" cy="67.6" r="1.4"/></svg>
+</div>
+<figcaption class="co-ocular__pie co-halo"><div class="co-lectura co-lectura--heroe"><p class="co-lectura__valor">+60 <span class="co-lectura__unidad">µm</span></p><p class="co-lectura__sub">range 51 to 69 µm</p><p class="co-lectura__rotulo"><svg class="co-origen" aria-hidden="true"><use href="#o-derived"/></svg><span class="co-oculto">Calculated</span><span>Change since before the flight</span></p></div></figcaption>
+</figure>
+  </section>
+</main>
+<script src="../sistema-de-diseno/sistema/assets/iconos/sprite.js"></script>
+<script>if (location.search.includes('banner')) document.body.classList.add('banner');</script>
+</body>
+</html>
