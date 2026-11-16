@@ -18,14 +18,7 @@ assistant explains results using a cited knowledge base.
 
 ## Watch the 30-second video
 
-[![Opening frame of the demo video: a simulated crew member looks at Earth from a spacecraft window on flight day 126. Simulated data.](docs/img/demo-video.png)](monitoreo-salud-astronautas/video-demo/entrega/lynceus-demo-final.mp4)
-
-- **[Demo video](monitoreo-salud-astronautas/video-demo/entrega/lynceus-demo-final.mp4)**: narrated in English.
-- **[Demo video with Spanish subtitles](monitoreo-salud-astronautas/video-demo/entrega/lynceus-demo-final-subtitulos-es.mp4)**: the same video, subtitled in Spanish.
-
-Each video lasts 30 seconds. If it does not play in the browser, download it from
-the file page. The scan figures come from the analysis engine run on a simulated
-control; the [video notes](monitoreo-salud-astronautas/video-demo/decisiones.md) (Spanish) give the source of every number.
+**[Watch the demo video on Google Drive](https://drive.google.com/drive/folders/1Sld-NIGFhMwSqNQt2LA9Nj9bOWyqrdIU?usp=sharing)**
 
 ## Try the demo
 
