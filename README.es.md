@@ -15,6 +15,17 @@ las imágenes localmente. El resultado muestra cambios, incertidumbre provisoria
 umbrales publicados y un próximo control propuesto. Un asistente de IA opcional
 explica resultados con una base de conocimiento citada y un alcance acotado.
 
+## Ver el video de 30 segundos
+
+[![Primer cuadro del video demo: un tripulante simulado mira la Tierra desde una ventanilla de la nave en el día de vuelo 126. Datos simulados.](docs/img/demo-video.png)](monitoreo-salud-astronautas/video-demo/entrega/lynceus-demo-final-subtitulos-es.mp4)
+
+- **[Video demo con subtítulos en español](monitoreo-salud-astronautas/video-demo/entrega/lynceus-demo-final-subtitulos-es.mp4)**: narrado en inglés y subtitulado en español.
+- **[Video demo en inglés](monitoreo-salud-astronautas/video-demo/entrega/lynceus-demo-final.mp4)**: el mismo video, sin subtítulos.
+
+Cada video dura 30 segundos. Si no se reproduce en el navegador, se puede descargar
+desde la página del archivo. Las cifras de la tomografía salen del motor de análisis
+sobre un control simulado; las [notas del video](monitoreo-salud-astronautas/video-demo/decisiones.md) indican la fuente de cada número.
+
 ## Probar la demo
 
 **[Abrir la demo pública](https://lynceus-sans.vercel.app)** — no requiere una cuenta.
